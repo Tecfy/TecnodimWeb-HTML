@@ -129,11 +129,10 @@
                                 <label class="col-12 col-form-label text-white"
                                        for="classification-code"><b>Código</b></label>
                                 <div class="col-md-9 pr-0">
-                                    <input type="text" class="form-control" id="classification-code"
-                                           name="example-text-input">
+                                    <input type="text" class="form-control" id="classification-code" name="example-text-input" v-model="searchField">
                                 </div>
                                 <div class="col-md-3">
-                                    <button type="submit" class="btn btn-alt-primary btn-block p-0">
+                                    <button type="submit" class="btn btn-alt-primary btn-block p-0" @click="searchByCode">
                                         <i class="fa fa-search"></i>
                                     </button>
                                 </div>
@@ -155,7 +154,7 @@
                                         </div>
                                     </div>
                                     <div class="col-12 mt-20">
-                                        <v-select v-model="selected_category" :options="categories" label="name"></v-select>
+                                        <v-select ref="selectCategory" v-model="selected_category" :options="categories" label="name"></v-select>
                                     </div>
                                 </div>
                             </form>
@@ -304,7 +303,8 @@
                 rotatePage: 0,
                 zoom: 1,
                 subCategories: [],
-                validateSubCategories: false
+                validateSubCategories: false,
+                searchField: ''
             }
         },
         methods: {
@@ -454,8 +454,6 @@
                 api.post('/classifications', request)
                     .then(() => {
                         this.loading.pagesPdf = false;
-                        this.countPage = 0;
-                        this.getPdf();
 
                         if (this.student.notClassificated === 0) {
                             return swal({
@@ -472,6 +470,17 @@
                                 type: "success",
                                 showConfirmButton: false,
                             })
+                                .then(() => {
+                                    this.countPage = 0;
+                                    this.itemsSliced.slicePages = [];
+                                    this.getPdf();
+
+                                    this.subCategories = [];
+                                    this.selected_category = 'Selecione';
+                                    this.additionalFields = 0;
+                                    this.validateSubCategories = false;
+                                });
+
                         }
                     })
                     .catch(() => {
@@ -506,54 +515,29 @@
                             showConfirmButton: false,
                         });
                     })
+            },
+            searchByCode() {
+                api.get('/categories/GetCategoryBySearch?code=' + this.searchField)
+                    .then(({data}) => {
+                        this.categoryId = data.result.categoryId;
+                        this.updateSubCategories(this.categoryId);
+                        this.selected_category = {
+                            categoryId: data.result.categoryId,
+                            name: data.result.name
+                        }
+                    })
+                    .catch(() => {
+                        this.loading.pagesPdf = false;
+                        return swal({
+                            title: 'Erro ao localizar Categoria!',
+                            toast: true,
+                            timer: 3000,
+                            type: "error",
+                            showConfirmButton: false,
+                        })
+                    });
             }
         },
-        //     postSubmit(){
-        //         let request = {
-        //             sliceId: this.slice_id,
-        //             categoryId: this.categoryId,
-        //             slicePages: this.slicePages,
-        //             additionalFields: this.additionalFields
-        //         };
-        //
-        //         this.loading.pagesPdf = true;
-        //
-        //         api.post('/classifications', request)
-        //             .then(() => {
-        //                 this.loading.pagesPdf = false;
-        //                 this.getPdf();
-        //                 this.getCategories();
-        //                 this.getDetails();
-        //
-        //                 if (this.student.notClassificated === 0) {
-        //                     return swal({
-        //                         title: 'Classificação de Dossiê finalizado!',
-        //                         text: 'Todas os recortes foram classificadas com sucesso.',
-        //                         type: "success",
-        //                     })
-        //                         .then(() => this.$router.push('/rate-dossie'))
-        //                 }
-        //                 return swal({
-        //                     title: 'Classificação de Dossiê salva com sucesso!',
-        //                     toast: true,
-        //                     timer: 3000,
-        //                     type: "success",
-        //                     showConfirmButton: false,
-        //                 })
-        //             })
-        //             .catch(() => {
-        //                 this.loading.pagesPdf = false;
-        //                 return swal({
-        //                     title: 'Erro ao salvar classificação!',
-        //                     toast: true,
-        //                     timer: 3000,
-        //                     type: "error",
-        //                     showConfirmButton: false,
-        //                 })
-        //                     .then(() => window.location.reload());
-        //             })
-        //     }
-        // },
         watch: {
             selected_category(newVal) {
                 if (newVal === 'Selecione' || newVal === null) {
@@ -566,6 +550,7 @@
                     // this.saveButton = true;
                     this.updateSubCategories(newVal.categoryId);
                 }
+                this.searchField = '';
             }
         },
         mounted() {

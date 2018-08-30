@@ -12,19 +12,15 @@
                 <form action="" method="post" onsubmit="return false;">
                     <div class="form-group row">
                         <div class="col-md-4">
-                            <label class="col-12 pl-0 text-white" for="registration-number">Número da
-                                matrícula</label>
-                            <input type="text" class="form-control form-control-lg" id="registration-number"
-                                   name="example-text-input">
+                            <label class="col-12 pl-0 text-white" for="registration-number">Número da matrícula</label>
+                            <input v-model="searchRegistration" @blur.native="validaReg === true" type="text" class="form-control form-control-lg" id="registration-number" name="example-text-input">
                         </div>
                         <div class="col-md-6">
                             <label class="col-12 pl-0 text-white" for="student-name">Nome do aluno</label>
-                            <input type="text" class="form-control form-control-lg" id="student-name"
-                                   name="example-text-input">
+                            <input v-model="searchName" type="text" class="form-control form-control-lg" id="student-name" name="example-text-input">
                         </div>
                         <div class="col-md-2 pt-20 mt-5">
-                            <button type="submit" class="btn btn-alt-primary btn-lg btn-block">Buscar <i
-                                    class="fa fa-search ml-5"></i></button>
+                            <button type="submit" class="btn btn-alt-primary btn-lg btn-block">Buscar <i class="fa fa-search ml-5"></i></button>
                         </div>
                     </div>
                 </form>
@@ -41,12 +37,12 @@
                     </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item,index) in searchResult" :key="index">
-                            <th scope="row">{{ item.registration }}</th>
-                            <td>{{ item.name }}</td>
+                        <tr v-for="customer in filteredCustomers">
+                            <th scope="row">{{ customer.registration }}</th>
+                            <td>{{ customer.name }}</td>
                             <td class="text-right">
                                 <div class="btn-group">
-                                    <router-link :to="'/cut-selected/'+item.documentId" class="btn btn-lg btn-success js-tooltip-enabled"><i class="fa fa-crop"></i></router-link>
+                                    <router-link :to="'/cut-selected/'+customer.documentId" class="btn btn-lg btn-success js-tooltip-enabled"><i class="fa fa-crop"></i></router-link>
                                 </div>
                             </td>
                         </tr>
@@ -69,7 +65,10 @@
         data() {
             return {
                 searchResult: [],
-                loadingDossies: true
+                loadingDossies: true,
+                searchName: '',
+                searchRegistration: '',
+                validaReg: false
             }
         },
         methods: {
@@ -80,6 +79,25 @@
                         this.loadingDossies = false;
                         this.searchResult = data.result;
                     })
+            }
+        },
+        computed: {
+            filteredCustomers: function() {
+                console.log(this.validaReg);
+                return this.searchResult.filter(function (cust) {
+
+                    var result = true;
+
+                    // if (this.hasOwnProperty('searchName') && this.searchName !== ''){
+                    //      result = cust.name.toLowerCase().indexOf(this.searchName.toLowerCase()) >= 0;
+                    // }
+                    //
+                    // if (this.hasOwnProperty('searchRegistration') && this.searchRegistration !== ''){
+                    //     result = cust.registration.toLowerCase().indexOf(this.searchRegistration.toLowerCase()) >= 0
+                    // }
+
+                    return result;
+                });
             }
         },
         mounted(){
