@@ -1,0 +1,23 @@
+// Custom Utilities
+@mixin gradient-menu-horizontal($first-color, $second-color) {
+  background: $first-color; /* Old browsers */
+  background: -moz-linear-gradient(left, $first-color 0%, $second-color 80%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left, $first-color 0%,$second-color 80%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right, $first-color 0%,$second-color 80%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$first-color', endColorstr='$second-color',GradientType=1 ); /* IE6-9 */
+}
+
+@mixin gradient-menu-vertical($first-color, $second-color) {
+  background: $first-color; /* Old browsers */
+  background: -moz-linear-gradient(top, $first-color 0%, $second-color 80%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top, $first-color 0%,$second-color 80%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom, $first-color 0%,$second-color 80%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$first-color', endColorstr='$second-color',GradientType=1 ); /* IE6-9 */
+}
+
+@mixin vertical-align {
+  margin: 0 auto;
+  position: relative;
+  transform: translateY(-50%);
+  top: 50%;
+}

@@ -1,0 +1,40 @@
+{
+  "result": {
+    "sliceId": 1,
+    "categoryId": null,
+    "name": "Tecnodim 1",
+    "slicePages": [
+      {
+        "slicePageId": 1,
+        "page": 1,
+        "rotate": null,
+        "thumb": "assets/codebase/media/various/image-pdf-thumb-1.jpg",
+        "image": "assets/codebase/media/various/image-pdf-1.jpg"
+      },
+      {
+        "slicePageId": 2,
+        "page": 5,
+        "rotate": null,
+        "thumb": "assets/codebase/media/various/image-pdf-thumb-5.jpg",
+        "image": "assets/codebase/media/various/image-pdf-5.jpg"
+      },
+      {
+        "slicePageId": 3,
+        "page": 9,
+        "rotate": null,
+        "thumb": "assets/codebase/media/various/image-pdf-thumb-9.jpg",
+        "image": "assets/codebase/media/various/image-pdf-9.jpg"
+      },
+      {
+        "slicePageId": 4,
+        "page": 10,
+        "rotate": null,
+        "thumb": "assets/codebase/media/various/image-pdf-thumb-10.jpg",
+        "image": "assets/codebase/media/various/image-pdf-10.jpg"
+      }
+    ]
+  },
+  "success": true,
+  "messages": [],
+  "successMessage": null
+}

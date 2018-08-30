@@ -1,0 +1,57 @@
+{
+  "result": [
+    {
+      "categoryId": 1,
+      "code": "120",
+      "name": "Cursos de Graduação"
+    },
+    {
+      "categoryId": 2,
+      "code": "125",
+      "name": "Vida acadêmica dos alunos"
+    },
+    {
+      "categoryId": 3,
+      "code": "125.4",
+      "name": "Documentação acadêmica"
+    },
+    {
+      "categoryId": 4,
+      "code": "125.43",
+      "name": "Assentamentos individuais dos alunos"
+    },
+    {
+      "categoryId": 5,
+      "code": "125.43.1",
+      "name": "Registro Geral"
+    },
+    {
+      "categoryId": 6,
+      "code": "125.43.2",
+      "name": "CPF"
+    },
+    {
+      "categoryId": 7,
+      "code": "125.43.3",
+      "name": "Certidão de nascimento ou casamento"
+    },
+    {
+      "categoryId": 8,
+      "code": "125.43.4",
+      "name": "Certidão de quitação com o serviço militar"
+    },
+    {
+      "categoryId": 9,
+      "code": "125.43.5",
+      "name": "Título de eleitor"
+    },
+    {
+      "categoryId": 10,
+      "code": "125.43.6",
+      "name": "Comprovante de quitação eleitoral"
+    }
+  ],
+  "success": true,
+  "messages": [],
+  "successMessage": null
+}

@@ -1,0 +1,119 @@
+<template>
+    <div class="cut-dossie">
+        <p class="content-heading pt-0">
+            <i class="si si-arrow-left"></i> <span class="h3">Dossiês à classificar</span>
+        </p>
+        <div class="block block-themed block-rounded shadow-lg">
+            <div class="block-header bg-gd-emerald shadow">
+                <h3 class="block-title text-black">Utilize a busca abaixo para localizar um dossiê por matrícula ou por
+                    nome.</h3>
+            </div>
+            <div class="block-content bg-primary">
+                <form action="" method="post" onsubmit="return false;">
+                    <div class="form-group row">
+                        <div class="col-md-4">
+                            <label class="col-12 pl-0 text-white" for="registration-number">Número da
+                                matrícula</label>
+                            <input type="text" class="form-control form-control-lg" id="registration-number" name="example-text-input">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="col-12 pl-0 text-white" for="student-name">Nome do aluno</label>
+                            <input type="text" class="form-control form-control-lg" id="student-name" name="example-text-input">
+                        </div>
+                        <div class="col-md-2 pt-20 mt-5">
+                            <button type="submit" class="btn btn-alt-primary btn-lg btn-block">Buscar <i
+                                    class="fa fa-search ml-5"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="block mt-50">
+            <div class="block-content">
+                <table class="table table-vcenter" v-if="!loadingDossies">
+                    <thead class="thead-light mb-50">
+                    <tr class="p-50">
+                        <th class="py-20" style="width: 15%;"><b>Matrícula</b></th>
+                        <th class="py-20" style="width: 45%;"><b>Nome</b></th>
+                        <th class="py-20" style="width: 20%;"></th>
+                        <th class="py-20" style="width: 15%;"></th>
+                        <th class="py-20" style="width: 15%;"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in searchResult" :key="item.id" v-if="item.statusId === 3 || item.statusId === 4">
+                            <th scope="row">{{ item.registration }}</th>
+                            <td>{{ item.name }}</td>
+                            <td class="text-center">
+                                <span v-if="item.statusId === 3" class="badge badge-danger">Não iniciado</span>
+                                <span v-if="item.statusId === 4" class="badge badge-warning">Iniciado</span>
+                                <!--<span v-if="item.statusId === 5" class="badge badge-primary">Finalizado</span>-->
+                            </td>
+                            <!--<td class="text-right">-->
+                                <!--<div class="btn-group">-->
+                                    <!--<router-link v-if="item.statusId === 5" :to="'/rate-dossie-selected-single/'+item.documentId" class="btn btn-lg btn-dark js-tooltip-enabled"><i class="fa fa-save"></i></router-link>-->
+                                <!--</div>-->
+                            <!--</td>-->
+                            <td class="text-right">
+                                <div class="btn-group">
+                                    <router-link v-if="item.statusId === 3" :to="'/rate-dossie-selected-single/'+item.documentId" class="btn btn-lg btn-success js-tooltip-enabled"><i class="fa fa-file-text-o"></i></router-link>
+                                </div>
+                                <div class="btn-group">
+                                    <router-link v-if="item.statusId === 4" :to="'/rate-dossie-selected-single/'+item.documentId" class="btn btn-lg btn-success js-tooltip-enabled"><i class="fa fa-file-text-o"></i></router-link>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div v-else>
+                    <h2 class="text-center">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import api from '../lib/api';
+
+    export default {
+        data() {
+            return {
+                searchResult: [],
+                searchField: '',
+                loadingDossies: true,
+                search: '',
+                customers: [
+                    { id: '1', name: 'Jhon Snow', profile_pic: 'https://i.stack.imgur.com/CE5lz.png'},
+                    { id: '2', name: 'Deanerys Targarian', profile_pic: 'https://i.stack.imgur.com/CE5lz.png'},
+                    { id: '3', name: 'Jaime Lanister', profile_pic: 'https://i.stack.imgur.com/CE5lz.png'},
+                    { id: '4', name: 'Tyron Lanister', profile_pic: 'https://i.stack.imgur.com/CE5lz.png'}
+                ]
+            }
+        },
+        methods: {
+            getDocumentClassificateds() {
+                this.loadingDossies = true;
+                api.get('/Documents/getDocumentClassificateds/1')
+                    .then( ({data}) => {
+                        this.loadingDossies = false;
+                        this.searchResult = data.result;
+                    });
+            }
+        },
+        computed:
+            {
+                filteredCustomers:function()
+                {
+                    var self=this;
+                    return this.customers.filter(function(cust){return cust.name.toLowerCase().indexOf(self.search.toLowerCase())>=0;});
+                    //return this.customers;
+                }
+            },
+        mounted() {
+            this.getDocumentClassificateds();
+        }
+    }
+</script>

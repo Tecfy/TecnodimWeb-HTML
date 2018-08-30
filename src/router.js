@@ -1,23 +1,90 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Login from './views/Login'
 import Home from './views/Home.vue'
+
+//import CutDossieSelected from './views/CutDossieSelected'
+// const CutDossieSelected = () => import('./views/CutDossieSelected')
 
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: Home
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
-    }
-  ]
+    routes: [
+        {
+            path: '/login',
+            name: 'login',
+            component: Login,
+            meta:{
+                requiresAuth: false,
+                enabled: true
+            }
+        },
+        {
+            path: '/home',
+            name: 'home',
+            component: Home,
+            meta:{
+                requiresAuth: true,
+                enabled: true
+            }
+        },
+        // {
+        //     path: '/cut-dossie',
+        //     component:  () => import('./views/CutDossie.vue'),
+        //     children: [
+        //         {
+        //             path: 'cut-selected',
+        //             component:  () => import('./views/CutDossieSelected'),
+        //         }
+        //     ]
+        // }
+        {
+            path: '/cut-dossie',
+            component:  () => import('./views/CutDossie.vue'),
+            meta:{
+                requiresAuth: true,
+                enabled: true
+            }
+        },
+        {
+            path: '/cut-selected/:id',
+            component:  () => import('./views/CutDossieSelected'),
+            meta:{
+                requiresAuth: true,
+                enabled: true
+            }
+        },
+        {
+            path: '/rate-dossie',
+            component:  () => import('./views/RateDossie'),
+             meta:{
+                requiresAuth: true,
+                enabled: true
+            }
+        },
+        {
+            path: '/rate-dossie-selected/:id',
+            component:  () => import('./views/RateDossieSelected'),
+             meta:{
+                requiresAuth: true,
+                enabled: true
+            }
+        },
+        {
+            path: '/rate-dossie-selected-single/:id',
+            component:  () => import('./views/RateDossieSelectedGroup'),
+             meta:{
+                requiresAuth: true,
+                enabled: true
+            }
+        },
+        {
+            path: '/rate-dossie-selected-group/:id/:slice_id',
+            component:  () => import('./views/RateDossieSelectedGroup'),
+             meta:{
+                requiresAuth: true,
+                enabled: true
+            }
+        }
+    ]
 })
