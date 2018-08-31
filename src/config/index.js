@@ -1,3 +1,3 @@
 export default {
-    apiUrl: 'http://tecnodim.devplace.ddns.net/api'
+    apiUrl: 'http://adm.tecnodim.devplace.ddns.net/api'
 }

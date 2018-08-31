@@ -12,8 +12,9 @@
                 <form action="" method="post" onsubmit="return false;">
                     <div class="form-group row">
                         <div class="col-md-4">
-                            <label class="col-12 pl-0 text-white" for="registration-number">Número da matrícula</label>
-                            <input v-model="searchRegistration" @blur.native="validaReg === true" type="text" class="form-control form-control-lg" id="registration-number" name="example-text-input">
+                            <label class="col-12 pl-0 text-white" for="registration-number">Número da
+                                matrícula</label>
+                            <input v-model="searchRegistration" type="text" class="form-control form-control-lg" id="registration-number" name="example-text-input" v-mask="'#####################'">
                         </div>
                         <div class="col-md-6">
                             <label class="col-12 pl-0 text-white" for="student-name">Nome do aluno</label>
@@ -37,15 +38,15 @@
                     </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="customer in filteredCustomers">
-                            <th scope="row">{{ customer.registration }}</th>
-                            <td>{{ customer.name }}</td>
-                            <td class="text-right">
-                                <div class="btn-group">
-                                    <router-link :to="'/cut-selected/'+customer.documentId" class="btn btn-lg btn-success js-tooltip-enabled"><i class="fa fa-crop"></i></router-link>
-                                </div>
-                            </td>
-                        </tr>
+                    <tr v-for="customer in filteredCustomers">
+                        <th scope="row">{{ customer.registration }}</th>
+                        <td>{{ customer.name }}</td>
+                        <td class="text-right">
+                            <div class="btn-group">
+                                <router-link :to="'/cut-selected/'+customer.documentId" class="btn btn-lg btn-success js-tooltip-enabled"><i class="fa fa-crop"></i></router-link>
+                            </div>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
                 <div v-else>
@@ -67,8 +68,7 @@
                 searchResult: [],
                 loadingDossies: true,
                 searchName: '',
-                searchRegistration: '',
-                validaReg: false
+                searchRegistration: ''
             }
         },
         methods: {
@@ -83,20 +83,13 @@
         },
         computed: {
             filteredCustomers: function() {
-                console.log(this.validaReg);
+                let self = this;
                 return this.searchResult.filter(function (cust) {
-
-                    var result = true;
-
-                    // if (this.hasOwnProperty('searchName') && this.searchName !== ''){
-                    //      result = cust.name.toLowerCase().indexOf(this.searchName.toLowerCase()) >= 0;
-                    // }
-                    //
-                    // if (this.hasOwnProperty('searchRegistration') && this.searchRegistration !== ''){
-                    //     result = cust.registration.toLowerCase().indexOf(this.searchRegistration.toLowerCase()) >= 0
-                    // }
-
-                    return result;
+                    if (self.searchName.length > 0) {
+                        return cust.name.toLowerCase().indexOf(self.searchName.toLowerCase()) >= 0;
+                    } else {
+                        return cust.registration.toLowerCase().indexOf(self.searchRegistration.toLowerCase()) >= 0;
+                    }
                 });
             }
         },

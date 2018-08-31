@@ -269,15 +269,13 @@
                         <div class="block-content pt-0">
                             <div class="block block-themed block-rounded shadow actions-content">
                                 <div class="block-header bg-white shadow">
-                                    <h4 class="block-title text-center text-dark">Você tem <strong>{{ numSelected()
-                                        }}</strong> página{{ pluralAditional()}} selecionada{{ pluralAditional()}}.</h4>
+                                    <h4 class="block-title text-center text-dark">Você tem <strong>{{ numSelected() }}</strong> página{{ pluralAditional()}} selecionada{{ pluralAditional()}}.</h4>
                                 </div>
                             </div>
 
                             <h6 class="mb-20 mt-50">
                                 <small><i class="fa fa-chevron-right"></i></small>
-                                Você tem <b>certeza</b> que deseja exluir a{{ pluralAditional()}} página{{
-                                pluralAditional()}}?
+                                Você tem <b>certeza</b> que deseja exluir a{{ pluralAditional()}} página{{ pluralAditional() }}?
                             </h6>
                         </div>
                     </div>
@@ -293,8 +291,8 @@
         <!-- END Modal Delete Pages -->
 
         <!-- Modal Zoom Image -->
-        <div class="modal fade" id="modalZoomImg" tabindex="-1" role="dialog" aria-labelledby="modalZoomImg" aria-hidden="true">
-            <div class="col-1 loadImg vertical-align mx-auto">
+        <div class="modal fade" ref="modalZoomImg" id="modalZoomImg" tabindex="-1" role="dialog" aria-labelledby="modalZoomImg" aria-hidden="true">
+            <div class="col-1 loadImg vertical-align mx-auto" v-if="loadImg">
                 <i class="fa fa-spinner fa-spin fa-4x text-white"></i>
             </div>
             <a @click="navPage('prev')" class="btn btn-lg btn-alt-primary pt-3 nav prev vertical-align pl-20 mb-50" data-nav="prev" data-toggle="cropper" data-method="prevPage" title="Voltar página" v-show="linkPos !== 0">
@@ -311,7 +309,7 @@
             <div class="modal-dialog modal-dialog-slideup modal-lg" role="document">
 
                 <div class="modal-content">
-                    <img v-bind:src="apiUrl+linkImg">
+                    <img v-bind:src="apiUrl+linkImg" class="img-fluid"  @load="imgLoaded" v-show="!loadImg">
                 </div>
             </div>
         </div>
@@ -348,11 +346,13 @@
                 apiUrl: config.apiUrl,
                 slices: [],
                 linkImg: '',
-                linkPos: null
+                linkPos: null,
+                loadImg: false
             }
         },
         methods: {
             zoomImg(e) {
+                this.loadImg = true;
                 if (e === 'over') {
                     this.selectPage = true;
                 } else if (e === 'out') {
@@ -361,10 +361,18 @@
                     this.linkImg = this.pages[e].image;
                     this.linkPos = e;
                     this.selectPage = true;
+                    $('#modalZoomImg').modal({
+                        backdrop: 'static'
+
+                    });
                 }
+            },
+            imgLoaded() {
+                this.loadImg = false;
             },
             navPage(nav) {
                 let numPages = this.pages.length;
+                this.loadImg = true;
 
                 if (nav === 'prev' && this.linkPos > 0) {
                     this.linkPos--;
@@ -528,6 +536,7 @@
                         this.pages = itemsA;
                         this.loading.pagesPdf = false;
                         this.loading.slicesCategory = false;
+
 
                         this.selected = Array(this.pages.length).fill(false);
                         this.selectPage = false;

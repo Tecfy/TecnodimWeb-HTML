@@ -41,28 +41,28 @@
                     </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in searchResult" :key="item.id" v-if="item.statusId === 3 || item.statusId === 4">
-                            <th scope="row">{{ item.registration }}</th>
-                            <td>{{ item.name }}</td>
-                            <td class="text-center">
-                                <span v-if="item.statusId === 3" class="badge badge-danger">Não iniciado</span>
-                                <span v-if="item.statusId === 4" class="badge badge-warning">Iniciado</span>
-                                <!--<span v-if="item.statusId === 5" class="badge badge-primary">Finalizado</span>-->
-                            </td>
-                            <!--<td class="text-right">-->
-                                <!--<div class="btn-group">-->
-                                    <!--<router-link v-if="item.statusId === 5" :to="'/rate-dossie-selected-single/'+item.documentId" class="btn btn-lg btn-dark js-tooltip-enabled"><i class="fa fa-save"></i></router-link>-->
-                                <!--</div>-->
-                            <!--</td>-->
-                            <td class="text-right">
-                                <div class="btn-group">
-                                    <router-link v-if="item.statusId === 3" :to="'/rate-dossie-selected-single/'+item.documentId" class="btn btn-lg btn-success js-tooltip-enabled"><i class="fa fa-file-text-o"></i></router-link>
-                                </div>
-                                <div class="btn-group">
-                                    <router-link v-if="item.statusId === 4" :to="'/rate-dossie-selected-single/'+item.documentId" class="btn btn-lg btn-success js-tooltip-enabled"><i class="fa fa-file-text-o"></i></router-link>
-                                </div>
-                            </td>
-                        </tr>
+                    <tr  v-for="customer in filteredCustomers" v-if="customer.statusId === 3 || customer.statusId === 4">
+                        <th scope="row">{{ customer.registration }}</th>
+                        <td>{{ customer.name }}</td>
+                        <td class="text-center">
+                            <span v-if="customer.statusId === 3" class="badge badge-danger">Não iniciado</span>
+                            <span v-if="customer.statusId === 4" class="badge badge-warning">Iniciado</span>
+                            <!--<span v-if="item.statusId === 5" class="badge badge-primary">Finalizado</span>-->
+                        </td>
+                        <!--<td class="text-right">-->
+                        <!--<div class="btn-group">-->
+                        <!--<router-link v-if="item.statusId === 5" :to="'/rate-dossie-selected-single/'+item.documentId" class="btn btn-lg btn-dark js-tooltip-enabled"><i class="fa fa-save"></i></router-link>-->
+                        <!--</div>-->
+                        <!--</td>-->
+                        <td class="text-right">
+                            <div class="btn-group">
+                                <router-link v-if="customer.statusId === 3" :to="'/rate-dossie-selected-single/'+customer.documentId" class="btn btn-lg btn-success js-tooltip-enabled"><i class="fa fa-file-text-o"></i></router-link>
+                            </div>
+                            <div class="btn-group">
+                                <router-link v-if="customer.statusId === 4" :to="'/rate-dossie-selected-single/'+customer.documentId" class="btn btn-lg btn-success js-tooltip-enabled"><i class="fa fa-file-text-o"></i></router-link>
+                            </div>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
                 <div v-else>
@@ -84,8 +84,8 @@
                 searchResult: [],
                 searchField: '',
                 loadingDossies: true,
-                search: '',
-
+                searchName: '',
+                searchRegistration: ''
             }
         },
         methods: {
@@ -98,14 +98,18 @@
                     });
             }
         },
-        computed:
-            {
-                filteredCustomers:function()
-                {
-                    var self=this;
-                    return this.customers.filter(function(cust){return cust.name.toLowerCase().indexOf(self.search.toLowerCase())>=0;});
-                }
-            },
+        computed: {
+            filteredCustomers: function() {
+                let self = this;
+                return this.searchResult.filter(function (cust) {
+                    if (self.searchName.length > 0) {
+                        return cust.name.toLowerCase().indexOf(self.searchName.toLowerCase()) >= 0;
+                    } else {
+                        return cust.registration.toLowerCase().indexOf(self.searchRegistration.toLowerCase()) >= 0;
+                    }
+                });
+            }
+        },
         mounted() {
             this.getDocumentClassificateds();
         }
