@@ -14,15 +14,14 @@
                         <div class="col-md-4">
                             <label class="col-12 pl-0 text-white" for="registration-number">Número da
                                 matrícula</label>
-                            <input type="text" class="form-control form-control-lg" id="registration-number" name="example-text-input">
+                            <input v-model="searchRegistration" type="text" class="form-control form-control-lg" id="registration-number" name="example-text-input" v-mask="'#####################'">
                         </div>
                         <div class="col-md-6">
                             <label class="col-12 pl-0 text-white" for="student-name">Nome do aluno</label>
-                            <input type="text" class="form-control form-control-lg" id="student-name" name="example-text-input">
+                            <input v-model="searchName" type="text" class="form-control form-control-lg" id="student-name" name="example-text-input">
                         </div>
                         <div class="col-md-2 pt-20 mt-5">
-                            <button type="submit" class="btn btn-alt-primary btn-lg btn-block">Buscar <i
-                                    class="fa fa-search ml-5"></i></button>
+                            <button type="submit" class="btn btn-alt-primary btn-lg btn-block">Buscar <i class="fa fa-search ml-5"></i></button>
                         </div>
                     </div>
                 </form>
@@ -41,7 +40,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr  v-for="customer in filteredCustomers" v-if="customer.statusId === 3 || customer.statusId === 4">
+                    <tr v-for="customer in filteredCustomers" v-if="customer.statusId === 3 || customer.statusId === 4">
                         <th scope="row">{{ customer.registration }}</th>
                         <td>{{ customer.name }}</td>
                         <td class="text-center">

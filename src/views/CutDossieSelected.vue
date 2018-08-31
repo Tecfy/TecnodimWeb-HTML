@@ -142,7 +142,7 @@
                          v-if="!loading.slicesCategory">
                         <div class="row">
                             <div class="col-md-3" v-for="(item,i) in slices" :key="i">
-                                <button type="button" class="btn btn-block btn-outline-primary my-1" v-bind:title="item.name">
+                                <button type="button" class="btn btn-block btn-outline-primary my-3 text-left" v-bind:title="item.name">
                                     <i class="fa fa-folder mr-5"></i> <span class="text-black">{{ item.name }}</span>
                                 </button>
                             </div>
@@ -309,7 +309,7 @@
             <div class="modal-dialog modal-dialog-slideup modal-lg" role="document">
 
                 <div class="modal-content">
-                    <img v-bind:src="apiUrl+linkImg" class="img-fluid"  @load="imgLoaded" v-show="!loadImg">
+                    <img v-bind:src="apiUrl+linkImg" class="img-fluid" @load="imgLoaded" v-show="!loadImg">
                 </div>
             </div>
         </div>

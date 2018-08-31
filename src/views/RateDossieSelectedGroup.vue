@@ -26,9 +26,12 @@
                     <div class="block-content pr-15 pt-0" v-if="!loading.pagesPdf">
                         <div class="row">
                             <div class="pt-30 pr-0" v-bind:class="{'col-10': itemsSliced.slicePages.length === 1, 'col-9': itemsSliced.slicePages.length !== 1}">
+                                <div class="col-1 loadImg vertical-align mx-auto" v-if="loadImg">
+                                    <i class="fa fa-spinner fa-spin fa-3x"></i>
+                                </div>
                                 <div class="pageContainer">
                                     <div class="imgPage" v-dragged="onDragged">
-                                        <img id="imagePage" class="img-fluid" :src="apiUrl+itemsSliced.slicePages[countPage].image" alt="photo" ref="imagePage">
+                                        <img id="imagePage" class="img-fluid" :src="apiUrl+itemsSliced.slicePages[countPage].image" alt="photo" ref="imagePage" @load="imgLoaded" v-show="!loadImg">
                                     </div>
                                 </div>
                             </div>
@@ -304,7 +307,9 @@
                 zoom: 1,
                 subCategories: [],
                 validateSubCategories: false,
-                searchField: ''
+                searchField: '',
+                loadImg: true,
+                dragged: false
             }
         },
         methods: {
@@ -323,22 +328,23 @@
                 el.style.top = t + deltaY + 'px';
             },
             getPdf() {
+                this.id = this.$route.params.id;
                 this.loading.pagesPdf = true;
                 if(!this.slice_id) {
                     api.get('/slices/GetSlicePending/' + this.id)
                         .then(({data}) => {
                             this.itemsSliced = data.result;
                             this.loading.pagesPdf = false;
-                            this.numPages = this.itemsSliced.slicePages.length;
-                            this.slice_id = this.itemsSliced.sliceId;
+                            // this.numPages = this.itemsSliced.slicePages.length;
+                            // this.slice_id = this.itemsSliced.sliceId;
                         });
                 } else {
                     api.get('/slices/GetSliceById/' + this.slice_id)
                         .then(({data}) => {
                             this.itemsSliced = data.result;
                             this.loading.pagesPdf = false;
-                            this.numPages = this.itemsSliced.slicePages.length;
-                            this.slice_id = this.itemsSliced.sliceId;
+                            // this.numPages = this.itemsSliced.slicePages.length;
+                            // this.slice_id = this.itemsSliced.sliceId;
                         });
                 }
             },
@@ -370,6 +376,7 @@
                 this.pageRotate();
             },
             navPage: function(e) {
+                this.loadImg = true;
                 if (e === "next") {
                     if (this.countPage !== this.numPages - 1) {
                         this.countPage ++;
@@ -386,6 +393,9 @@
                 this.zoom = 1;
                 this.stepClass(this.countPage);
                 this.pageRotate();
+            },
+            imgLoaded() {
+                this.loadImg = false;
             },
             stepClass(stepElement) {
                 if (stepElement === this.countPage) {
@@ -454,8 +464,12 @@
                 api.post('/classifications', request)
                     .then(() => {
                         this.loading.pagesPdf = false;
-
+                        this.getPdf();
                         if (this.student.notClassificated === 0) {
+                            // let requestFinish = {
+                            //     documentId: this.$route.params.id,
+                            //     // documentStatusId: 3
+                            // };
                             return swal({
                                 title: 'Classificação de Dossiê finalizado!',
                                 text: 'Todas os recortes foram classificadas com sucesso.',
