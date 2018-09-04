@@ -6,11 +6,20 @@ export default {
     login(UserName, Password) {
         return api.post('/Account/Login', {
             UserName,
-            Password,
+            Password
         });
     },
     logout() {
         window.localStorage.removeItem("token");
+        window.localStorage.removeItem("units");
+        window.localStorage.removeItem("claims");
+        window.localStorage.removeItem("fullName");
+    },
+    changeUnity() {
+        // window.localStorage.removeItem("token");
+        window.localStorage.removeItem("units");
+        // window.localStorage.removeItem("claims");
+        window.localStorage.removeItem("fullName");
     },
     recoveryPassword(request, successHandler) {
         return window.axios.post('/password/recovery', request)

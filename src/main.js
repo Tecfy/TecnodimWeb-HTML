@@ -31,20 +31,23 @@ new Vue({
 // navigation guards before each
 router.beforeEach((to, from, next) => {
     if (to.path !== '/login') {
-
         if (to.meta.enabled) {
             if (to.meta.requiresAuth) {
                 let token = window.localStorage.token;
-                if (token) {
+                let authorized = getAuthorization(to);
+                if (token && authorized) {
                     next()
                 } else {
-                    swal({
-                        toast: true,
-                        timer: 3000,
-                        showConfirmButton: false,
-                        title: 'Acesso restrito.'
-                    });
-                    next(from.path)
+                    next(from.path);
+                    if (this.logged) {
+                        swal({
+                            toast: true,
+                            timer: 3000,
+                            type: 'error',
+                            showConfirmButton: false,
+                            title: 'Acesso restrito.'
+                        });
+                    }
                 }
             } else {
                 // Route dont require authentication
@@ -62,4 +65,36 @@ router.beforeEach((to, from, next) => {
     } else {
         next()
     }
-})
+});
+
+function getClaims(){
+    let claims = JSON.parse( window.localStorage.claims);
+    let claimsOb = {
+        Recortar:false,
+        Classificar:false
+    };
+    claims.map( claim => {
+        if(claim.ClaimType === "Recortar"){
+            claimsOb = {...claimsOb, Recortar: true}
+        }else if(claim.ClaimType === "Classificar"){
+            claimsOb = {...claimsOb, Classificar: true}
+        }
+    });
+    return claimsOb;
+}
+
+function getAuthorization(route){
+    // Se rota possui permissão de acesso, valida se usuário logado tem os privilégios
+    if(route.meta.claim){
+        let claims = getClaims();
+        if(claims[route.meta.claim]){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    return true;
+}
+
+
+

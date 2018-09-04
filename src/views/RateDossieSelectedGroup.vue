@@ -1,14 +1,14 @@
 <!-- Page JS Plugins CSS -->
 <template>
-    <div class="rate-dossie-selected-group">
+    <div class="rate-dossie-selected-group" v-if="itemsSliced !== null">
         <!-- Page Content -->
         <div class="row">
             <div class="col-8">
                 <p class="content-heading pt-0">
                     <i class="si si-arrow-left"></i><span class="h3">Classificar Dossiê - <span class="h5"><i>({{ itemsSliced.name }})</i></span></span>
-                    <a href="#" class="btn btn-dark btn-lg float-right shadow-sm text-uppercase">
+                    <router-link :to="'/rate-dossie/'" class="btn btn-dark btn-lg float-right shadow-sm text-uppercase">
                         <i class="fa fa-arrow-left mr-10"></i> Voltar
-                    </a>
+                    </router-link>
                 </p>
             </div>
         </div>
@@ -25,17 +25,17 @@
                     </div>
                     <div class="block-content pr-15 pt-0" v-if="!loading.pagesPdf">
                         <div class="row">
-                            <div class="pt-30 pr-0" v-bind:class="{'col-10': itemsSliced.slicePages.length === 1, 'col-9': itemsSliced.slicePages.length !== 1}">
+                            <div class="pt-30 pr-0" v-bind:class="{'col-10': !loading.buttonsPage, 'col-9': loading.buttonsPage}">
                                 <div class="col-1 loadImg vertical-align mx-auto" v-if="loadImg">
                                     <i class="fa fa-spinner fa-spin fa-3x"></i>
                                 </div>
                                 <div class="pageContainer">
                                     <div class="imgPage" v-dragged="onDragged">
-                                        <img id="imagePage" class="img-fluid" :src="apiUrl+itemsSliced.slicePages[countPage].image" alt="photo" ref="imagePage" @load="imgLoaded" v-show="!loadImg">
+                                        <img draggable="false" id="imagePage" class="img-fluid" :src="imageUrl" alt="photo" ref="imagePage" @load="imgLoaded" v-show="!loadImg">
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-1 px-0 mx-0" v-if="itemsSliced.slicePages.length !== 1">
+                            <div class="col-1 px-0 mx-0" v-if="loading.buttonsPage">
                                 <div class="row text-center vertical-align nav-pages" >
                                     <div class="col-12 px-0">
                                         <a @click="navPage('next')" class="btn btn-lg btn-alt-primary pt-3 push" title="Próxima página">
@@ -71,7 +71,7 @@
                                             <i class="fa fa-rotate-right"></i>
                                         </a>
                                     </div>
-                                    <div class="col-12" v-if="itemsSliced.slicePages.length > 1">
+                                    <div class="col-12" v-if="loading.buttonsPage">
                                         <a class="btn btn-lg btn-success js-tooltip pt-3 push text-white" title="Excluir página" data-toggle="modal" data-target="#modal-del-page">
                                             <i class="fa fa-trash"></i>
                                         </a>
@@ -132,7 +132,7 @@
                                 <label class="col-12 col-form-label text-white"
                                        for="classification-code"><b>Código</b></label>
                                 <div class="col-md-9 pr-0">
-                                    <input type="text" class="form-control" id="classification-code" name="example-text-input" v-model="searchField">
+                                    <input type="text" class="form-control" id="classification-code" name="example-text-input" v-model="searchField" placeholder="Ex.: 001, 125.3">
                                 </div>
                                 <div class="col-md-3">
                                     <button type="submit" class="btn btn-alt-primary btn-block p-0" @click="searchByCode">
@@ -196,9 +196,9 @@
                             <div class="form-group row">
                                 <div class="col-12 pt-20 mt-5">
                                     <!--<button type="submit" class="btn btn-lg btn-dark shadow-sm btn-block text-uppercase" data-toggle="modal" data-target="#modal-save">-->
-                                        <!--<i class="fa fa-save"></i> Salvar-->
+                                    <!--<i class="fa fa-save"></i> Salvar-->
                                     <!--</button>-->
-                                    <button type="submit" class="btn btn-lg btn-dark shadow-sm btn-block text-uppercase" @click="sendClassification()" :disabled="loading.pagesPdf">
+                                    <button type="submit" class="btn btn-lg btn-dark shadow-sm btn-block text-uppercase" @click="sendClassification()">
                                         <i class="fa fa-save"></i> Salvar
                                     </button>
                                 </div>
@@ -288,9 +288,11 @@
                 categories: [],
                 itemsSliced: [],
                 loading: {
-                    pagesPdf: true,
-                    pagesThumb: true
+                    pagesPdf: false,
+                    pagesThumb: false,
+                    buttonsPage: false
                 },
+                imageUrl: '',
                 countPage: 0,
                 numPages: 1,
                 slicePages: [],
@@ -329,22 +331,48 @@
             },
             getPdf() {
                 this.id = this.$route.params.id;
+                this.slice_id = this.$route.params.slice_id;
                 this.loading.pagesPdf = true;
                 if(!this.slice_id) {
                     api.get('/slices/GetSlicePending/' + this.id)
                         .then(({data}) => {
-                            this.itemsSliced = data.result;
-                            this.loading.pagesPdf = false;
-                            // this.numPages = this.itemsSliced.slicePages.length;
-                            // this.slice_id = this.itemsSliced.sliceId;
+                            if (data.result == null) {
+                                return swal({
+                                    title: 'Classificação de Dossiê finalizado!',
+                                    text: 'Todas os recortes foram classificadas com sucesso.',
+                                    type: "success",
+                                })
+                                    .then(() => this.$router.push('/rate-dossie'))
+                            } else {
+                                this.itemsSliced = data.result;
+                                this.slice_id = this.itemsSliced.sliceId;
+                                this.numPages = this.itemsSliced.slicePages.length;
+                                this.loading.pagesPdf = false;
+                                this.imageUrl = this.apiUrl+this.itemsSliced.slicePages[this.countPage].image;
+
+                                if (this.itemsSliced.slicePages.length > 1) {
+                                    this.loading.buttonsPage = true;
+                                }
+                            }
+
                         });
                 } else {
                     api.get('/slices/GetSliceById/' + this.slice_id)
                         .then(({data}) => {
-                            this.itemsSliced = data.result;
-                            this.loading.pagesPdf = false;
-                            // this.numPages = this.itemsSliced.slicePages.length;
-                            // this.slice_id = this.itemsSliced.sliceId;
+                            if (this.itemsSliced === null) {
+                                return swal({
+                                    title: 'Classificação de Dossiê finalizado!',
+                                    text: 'Todas os recortes foram classificadas com sucesso.',
+                                    type: "success",
+                                })
+                                    .then(() => this.$router.push('/rate-dossie'))
+                            } else {
+                                this.itemsSliced = data.result;
+                                this.loading.pagesPdf = false;
+                                this.numPages = this.itemsSliced.slicePages.length;
+                                this.slice_id = this.itemsSliced.sliceId;
+                                this.$router.push('/rate-dossie-selected-single/' + this.id);
+                            }
                         });
                 }
             },
@@ -371,6 +399,7 @@
                 this.categoryId = categoryId;
             },
             thumbNav(stepElement) {
+                this.loadImg = true;
                 this.countPage = stepElement;
                 this.stepClass(stepElement);
                 this.pageRotate();
@@ -441,6 +470,8 @@
             sendClassification() {
                 this.$validator.validate().then((result) => {
                     if (result && this.validateSubCategories) {
+                        this.loading.pagesPdf = false;
+                        this.loading.pagesThumb = false;
                         return this.postSubmit();
                     } else {
                         return swal({
@@ -461,41 +492,39 @@
                 };
 
                 this.loading.pagesPdf = true;
+                this.loading.pagesThumb = true;
+
                 api.post('/classifications', request)
                     .then(() => {
                         this.loading.pagesPdf = false;
+                        this.countPage = 0;
+                        this.itemsSliced = [];
+                        this.subCategories = [];
+                        this.selected_category = 'Selecione';
+                        this.additionalFields = 0;
+                        this.validateSubCategories = false;
+
+                        this.getDetails();
+                        this.getCategories();
                         this.getPdf();
-                        if (this.student.notClassificated === 0) {
-                            // let requestFinish = {
-                            //     documentId: this.$route.params.id,
-                            //     // documentStatusId: 3
-                            // };
-                            return swal({
-                                title: 'Classificação de Dossiê finalizado!',
-                                text: 'Todas os recortes foram classificadas com sucesso.',
-                                type: "success",
-                            })
-                                .then(() => this.$router.push('/rate-dossie'))
-                        } else {
-                            return swal({
-                                title: 'Classificação do Dossiê salvo com sucesso!',
-                                toast: true,
-                                timer: 3000,
-                                type: "success",
-                                showConfirmButton: false,
-                            })
-                                .then(() => {
-                                    this.countPage = 0;
-                                    this.itemsSliced.slicePages = [];
-                                    this.getPdf();
 
-                                    this.subCategories = [];
-                                    this.selected_category = 'Selecione';
-                                    this.additionalFields = 0;
-                                    this.validateSubCategories = false;
-                                });
+                        // if (this.numPages === 0) {
+                        //     return swal({
+                        //         title: 'Classificação de Dossiê finalizado!',
+                        //         text: 'Todas os recortes foram classificadas com sucesso.',
+                        //         type: "success",
+                        //     })
+                        //         .then(() => this.$router.push('/rate-dossie'))
+                        // }
+                        return swal({
+                            title: 'Classificação do Dossiê salva com sucesso!',
+                            toast: true,
+                            timer: 3000,
+                            type: "success",
+                            showConfirmButton: false,
+                        }) .then(() => {
 
-                        }
+                        })
                     })
                     .catch(() => {
                         this.loading.pagesPdf = false;
@@ -568,9 +597,12 @@
             }
         },
         mounted() {
-            this.getPdf();
-            this.getCategories();
-            this.getDetails();
+            // console.log('mounted', this.slice_id);
+            if (this.sliceId !== null) {
+                this.getDetails();
+                this.getCategories();
+                this.getPdf();
+            }
         }
     }
 </script>

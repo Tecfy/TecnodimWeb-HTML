@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from './views/Login'
 import Home from './views/Home.vue'
+import SelectUnity from './views/SelectUnity.vue'
 
 //import CutDossieSelected from './views/CutDossieSelected'
 // const CutDossieSelected = () => import('./views/CutDossieSelected')
@@ -14,6 +15,15 @@ export default new Router({
             path: '/login',
             name: 'login',
             component: Login,
+            meta:{
+                requiresAuth: false,
+                enabled: true
+            }
+        },
+        {
+            path: '/select-unity',
+            name: 'select-unity',
+            component: SelectUnity,
             meta:{
                 requiresAuth: false,
                 enabled: true
@@ -43,15 +53,18 @@ export default new Router({
             component:  () => import('./views/CutDossie.vue'),
             meta:{
                 requiresAuth: true,
-                enabled: true
+                enabled: true,
+                claim: "Recortar"
             }
         },
+
         {
             path: '/cut-selected/:id',
             component:  () => import('./views/CutDossieSelected'),
             meta:{
                 requiresAuth: true,
-                enabled: true
+                enabled: true,
+                claim: "Recortar"
             }
         },
         {
@@ -59,7 +72,8 @@ export default new Router({
             component:  () => import('./views/RateDossie'),
              meta:{
                 requiresAuth: true,
-                enabled: true
+                enabled: true,
+                 claim: "Classificar"
             }
         },
         {
@@ -67,7 +81,8 @@ export default new Router({
             component:  () => import('./views/RateDossieSelected'),
              meta:{
                 requiresAuth: true,
-                enabled: true
+                enabled: true,
+                claim: "Classificar"
             }
         },
         {
@@ -75,15 +90,17 @@ export default new Router({
             component:  () => import('./views/RateDossieSelectedGroup'),
              meta:{
                 requiresAuth: true,
-                enabled: true
-            }
+                enabled: true,
+                claim: "Classificar"
+             }
         },
         {
             path: '/rate-dossie-selected-group/:id/:slice_id',
             component:  () => import('./views/RateDossieSelectedGroup'),
              meta:{
                 requiresAuth: true,
-                enabled: true
+                enabled: true,
+                claim: "Classificar"
             }
         }
     ]

@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <div class="block block-rounded bg-gd-dusk">
+    <div class="block block-rounded bg-gd-dusk mt-50">
       <div class="block-content bg-white-op-5">
         <div class="py-30 text-center">
           <h1 class="font-w700 text-white mb-10">Dashboard</h1>
