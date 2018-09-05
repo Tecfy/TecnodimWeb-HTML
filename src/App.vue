@@ -83,7 +83,7 @@
     <!-- END Sidebar -->
     <!-- Main Container -->
     <main id="main-container">
-        <div class="row py-10 px-20 bg-black-op-90 top-menu" v-if="!notLogged">
+        <div class="row py-10 px-20 bg-white top-menu" v-if="!notLogged">
             <div class="col-11 pl-20 pt-5 text-white text-right">
                 <h6 class="mb-0">
                     <i class="fa fa-graduation-cap text-primary"></i> <span class="text-primary"> {{ unity }}</span>
