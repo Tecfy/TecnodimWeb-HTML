@@ -38,7 +38,7 @@
                             <div class="col-1 px-0 mx-0" v-if="loading.buttonsPage">
                                 <div class="row text-center vertical-align nav-pages" >
                                     <div class="col-12 px-0">
-                                        <a @click="navPage('next')" class="btn btn-lg btn-alt-primary pt-3 push" title="Próxima página">
+                                        <a @click="navPage('next')" class="btn btn-lg btn-alt-primary pt-3 push" data-toggle="tooltip" data-placement="left" title="Próxima página">
                                             <i class="fa fa-angle-double-right"></i>
                                         </a>
                                     </div>
