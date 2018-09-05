@@ -129,10 +129,9 @@
                     <div class="block-content bg-primary pt-10 pb-10">
                         <form action="" method="post" onsubmit="return false;">
                             <div class="form-group row">
-                                <label class="col-12 col-form-label text-white"
-                                       for="classification-code"><b>Código</b></label>
+                                <label class="col-12 col-form-label text-white" for="classification-code"><b>Código</b></label>
                                 <div class="col-md-9 pr-0">
-                                    <input type="text" class="form-control" id="classification-code" name="example-text-input" v-model="searchField" placeholder="Ex.: 001, 125.3">
+                                    <input type="text" class="form-control" id="classification-code" name="example-text-input" ref="searchCode" v-model="searchField" placeholder="Ex.: 001, 125.3">
                                 </div>
                                 <div class="col-md-3">
                                     <button type="submit" class="btn btn-alt-primary btn-block p-0" @click="searchByCode">
@@ -241,7 +240,7 @@
         <!-- END Modal Agrupar -->
 
         <!-- Modal Delete Pages -->
-        <div class="modal fade" id="modal-del-page" tabindex="-1" role="dialog" aria-labelledby="modal-del-page" aria-hidden="true">
+        <div class="modal fade" ref="delmodal" id="modal-del-page" tabindex="-1" role="dialog" aria-labelledby="modal-del-page" aria-hidden="true">
             <div class="modal-dialog modal-dialog-slideup" role="document">
                 <div class="modal-content">
                     <div class="block block-themed block-transparent mb-0 ">
@@ -311,7 +310,8 @@
                 validateSubCategories: false,
                 searchField: '',
                 loadImg: true,
-                dragged: false
+                dragged: false,
+                keys: []
             }
         },
         methods: {
@@ -368,9 +368,14 @@
                                     .then(() => this.$router.push('/rate-dossie'))
                             } else {
                                 this.itemsSliced = data.result;
-                                this.loading.pagesPdf = false;
-                                this.numPages = this.itemsSliced.slicePages.length;
                                 this.slice_id = this.itemsSliced.sliceId;
+                                this.numPages = this.itemsSliced.slicePages.length;
+                                this.loading.pagesPdf = false;
+                                this.imageUrl = this.apiUrl+this.itemsSliced.slicePages[this.countPage].image;
+
+                                if (this.itemsSliced.slicePages.length > 1) {
+                                    this.loading.buttonsPage = true;
+                                }
                                 this.$router.push('/rate-dossie-selected-single/' + this.id);
                             }
                         });
@@ -444,16 +449,25 @@
             },
             pageRotate(e) {
                 let rotate = 0;
+
                 this.rotatePage = this.itemsSliced.slicePages[this.countPage].rotate;
 
                 if (this.rotatePage == null) {
                     this.rotatePage = 0;
                 }
 
+                if (this.itemsSliced.slicePages[this.countPage].rotate === null) {
+                    this.rotatePage = 0
+                } else {
+                    this.rotatePage = this.itemsSliced.slicePages[this.countPage].rotate
+                }
+
                 if (e === 'l') {
                     rotate -= 90;
                 } else if (e === 'r') {
                     rotate += 90;
+                } else {
+                    rotate = 0;
                 }
 
                 if ((this.rotatePage + rotate) > 270) {
@@ -463,9 +477,10 @@
                 } else {
                     this.rotatePage += rotate;
                 }
+
                 this.itemsSliced.slicePages[this.countPage].rotate = this.rotatePage;
                 this.$refs.imagePage.style.transform = "rotate(" + this.rotatePage + "deg)";
-                this.zoom = 1;
+                // this.zoom = 1;
             },
             sendClassification() {
                 this.$validator.validate().then((result) => {
@@ -507,15 +522,6 @@
                         this.getDetails();
                         this.getCategories();
                         this.getPdf();
-
-                        // if (this.numPages === 0) {
-                        //     return swal({
-                        //         title: 'Classificação de Dossiê finalizado!',
-                        //         text: 'Todas os recortes foram classificadas com sucesso.',
-                        //         type: "success",
-                        //     })
-                        //         .then(() => this.$router.push('/rate-dossie'))
-                        // }
                         return swal({
                             title: 'Classificação do Dossiê salva com sucesso!',
                             toast: true,
@@ -579,30 +585,81 @@
                             showConfirmButton: false,
                         })
                     });
+            },
+            shortCut(e) {
+                if (!e.shiftKey || !e.ctrlKey) {
+                    return
+                }
+                switch (e.code) {
+                    // Zoom In
+                    case "KeyZ":
+                        this.zoomPage('zoomIn');
+                        break;
+                    // Zoom Out
+                    case "KeyX":
+                        this.zoomPage('zoomOut');
+                        break;
+                    // Rotate Left
+                    case "Comma":
+                        this.pageRotate('l');
+                        break;
+                    // Rotate Right
+                    case "Period":
+                        this.pageRotate('r');
+                        break;
+                    // Navegation Left
+                    case "ArrowLeft":
+                        this.navPage('prev');
+                        break;
+                    // Navegation Right
+                    case "ArrowRight":
+                        this.navPage('next');
+                        break;
+                    // Navegation Left
+                    case "Backspace":
+                        if (this.numPages >= 2) {
+                            $('#modal-del-page').modal('show');
+                            // this.$refs.delModal.modal('show');
+                        }
+                        break;
+                    case "Space":
+                        this.$refs.searchCode.focus();
+                        break;
+                    case "KeyS":
+                        this.sendClassification();
+                        break;
+
+                }
             }
         },
         watch: {
             selected_category(newVal) {
                 if (newVal === 'Selecione' || newVal === null) {
-                    // this.saveButton = false;
                     this.subCategories = [];
                     this.selected_category = 'Selecione';
                     this.additionalFields = 0;
                     this.validateSubCategories = false;
                 } else {
-                    // this.saveButton = true;
                     this.updateSubCategories(newVal.categoryId);
                 }
                 this.searchField = '';
             }
         },
         mounted() {
-            // console.log('mounted', this.slice_id);
             if (this.sliceId !== null) {
                 this.getDetails();
                 this.getCategories();
                 this.getPdf();
             }
+        },
+
+        created() {
+            window.addEventListener('keyup', this.shortCut);
+        },
+
+        beforeDestroy() {
+            console.log('destruindo');
+            window.removeEventListener('keyup', this.shortCut);
         }
     }
 </script>
