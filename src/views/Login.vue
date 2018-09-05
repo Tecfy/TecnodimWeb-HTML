@@ -87,7 +87,6 @@
                 password: "",
                 loadingLogin: true,
                 validaForm: false
-
             }
         },
         methods: {

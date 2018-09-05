@@ -25,7 +25,7 @@ export default new Router({
             name: 'select-unity',
             component: SelectUnity,
             meta:{
-                requiresAuth: false,
+                requiresAuth: true,
                 enabled: true
             }
         },

@@ -27,7 +27,7 @@ export default {
             .catch(errorHandler);
     },
     profile() {
-        return api.get('/profile');
+        return api.get('/profile')
     }
 };
 

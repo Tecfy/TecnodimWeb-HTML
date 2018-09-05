@@ -39,15 +39,15 @@ router.beforeEach((to, from, next) => {
                     next()
                 } else {
                     next(from.path);
-                    if (this.logged) {
-                        swal({
-                            toast: true,
-                            timer: 3000,
-                            type: 'error',
-                            showConfirmButton: false,
-                            title: 'Acesso restrito.'
-                        });
-                    }
+                    // if (window.localStorage.token) {
+                    //     swal({
+                    //         toast: true,
+                    //         timer: 3000,
+                    //         type: 'error',
+                    //         showConfirmButton: false,
+                    //         title: 'Acesso restrito.'
+                    //     });
+                    // }
                 }
             } else {
                 // Route dont require authentication

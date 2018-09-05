@@ -77,7 +77,6 @@
                 this.loadingDossies = true;
                 api.get('/Documents/getDocumentSlices?unityId=' + unityId)
                     .then( ({data}) => {
-                        console.log('data', data);
                         this.loadingDossies = false;
                         this.searchResult = data.result;
                     })
