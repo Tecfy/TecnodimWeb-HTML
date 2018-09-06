@@ -36,14 +36,14 @@
                                 </div>
                             </div>
                             <div class="col-1 px-0 mx-0" v-if="loading.buttonsPage">
-                                <div class="row text-center vertical-align nav-pages" >
+                                <div class="row text-center vertical-align nav-pages">
                                     <div class="col-12 px-0">
-                                        <a @click="navPage('next')" class="btn btn-lg btn-alt-primary pt-3 push" data-toggle="tooltip" data-placement="left" title="Próxima página">
+                                        <a @click="navPage('next')" class="btn btn-lg btn-alt-primary pt-3 push" data-title="Próxima página | → ">
                                             <i class="fa fa-angle-double-right"></i>
                                         </a>
                                     </div>
                                     <div class="col-12 px-0">
-                                        <a @click="navPage('prev')" class="btn btn-lg btn-alt-primary pt-3 push" title="Voltar página">
+                                        <a @click="navPage('prev')" class="btn btn-lg btn-alt-primary pt-3 push" data-title="Voltar página | ← ">
                                             <i class="fa fa-angle-double-left"></i>
                                         </a>
                                     </div>
@@ -52,27 +52,27 @@
                             <div class="col-2 bg-gray-lighter image-buttons">
                                 <div class="row text-center vertical-align">
                                     <div class="col-12">
-                                        <a @click="zoomPage('zoomIn')" class="btn btn-lg btn-success pt-3 push text-white" title="Aumentar zoom">
+                                        <a @click="zoomPage('zoomIn')" class="btn btn-lg btn-success pt-3 push text-white" data-title="Aumentar zoom | z ">
                                             <i class="fa fa-search-plus"></i>
                                         </a>
                                     </div>
                                     <div class="col-12">
-                                        <a @click="zoomPage('zoomOut')" class="btn btn-lg btn-success pt-3 push text-white" title="Diminuir zoom">
+                                        <a @click="zoomPage('zoomOut')" class="btn btn-lg btn-success pt-3 push text-white" data-title="Diminuir zoom | x ">
                                             <i class="fa fa-search-minus"></i>
                                         </a>
                                     </div>
                                     <div class="col-12">
-                                        <a @click="pageRotate('l')" class="btn btn-lg btn-success pt-3 push text-white" title="Rotacionar para esquerda">
+                                        <a @click="pageRotate('l')" class="btn btn-lg btn-success pt-3 push text-white" data-title="Rotacionar para esquerda | < ">
                                             <i class="fa fa-rotate-left"></i>
                                         </a>
                                     </div>
                                     <div class="col-12">
-                                        <a @click="pageRotate('r')" class="btn btn-lg btn-success pt-3 push text-white" title="Rotacionar para direita">
+                                        <a @click="pageRotate('r')" class="btn btn-lg btn-success pt-3 push text-white" data-title="Rotacionar para direita | > ">
                                             <i class="fa fa-rotate-right"></i>
                                         </a>
                                     </div>
                                     <div class="col-12" v-if="loading.buttonsPage">
-                                        <a class="btn btn-lg btn-success js-tooltip pt-3 push text-white" title="Excluir página" data-toggle="modal" data-target="#modal-del-page">
+                                        <a class="btn btn-lg btn-success js-tooltip pt-3 push text-white" data-title="Excluir página | ◄ " data-toggle="modal" data-target="#modal-del-page">
                                             <i class="fa fa-trash"></i>
                                         </a>
                                     </div>
@@ -155,7 +155,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-12 mt-20">
+                                    <div class="col-12" v-bind:class="{'mt-20': this.additionalFields !== 0}">
                                         <v-select ref="selectCategory" v-model="selected_category" :options="categories" label="name"></v-select>
                                     </div>
                                 </div>
@@ -578,7 +578,7 @@
                     .catch(() => {
                         this.loading.pagesPdf = false;
                         return swal({
-                            title: 'Erro ao localizar Categoria!',
+                            title: 'Erro ao localizar Código da Categoria.',
                             toast: true,
                             timer: 3000,
                             type: "error",
@@ -595,29 +595,39 @@
                     case "KeyZ":
                         this.zoomPage('zoomIn');
                         break;
+
                     // Zoom Out
                     case "KeyX":
                         this.zoomPage('zoomOut');
                         break;
+
                     // Rotate Left
                     case "Comma":
                         this.pageRotate('l');
                         break;
+
                     // Rotate Right
                     case "Period":
                         this.pageRotate('r');
                         break;
+
                     // Navegation Left
                     case "ArrowLeft":
-                        this.navPage('prev');
+                        if (this.numPages > 1) {
+                            this.navPage('prev');
+                        }
                         break;
+
                     // Navegation Right
                     case "ArrowRight":
-                        this.navPage('next');
+                        if (this.numPages > 1) {
+                            this.navPage('next');
+                        }
                         break;
+
                     // Navegation Left
                     case "Backspace":
-                        if (this.numPages >= 2) {
+                        if (this.numPages > 1) {
                             $('#modal-del-page').modal('show');
                             // this.$refs.delModal.modal('show');
                         }
@@ -658,7 +668,6 @@
         },
 
         beforeDestroy() {
-            console.log('destruindo');
             window.removeEventListener('keyup', this.shortCut);
         }
     }

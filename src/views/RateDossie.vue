@@ -55,10 +55,10 @@
                         <!--</td>-->
                         <td class="text-right">
                             <div class="btn-group">
-                                <router-link v-if="customer.statusId === 3" :to="'/rate-dossie-selected-single/'+customer.documentId" class="btn btn-lg btn-success js-tooltip-enabled"><i class="fa fa-file-text-o"></i></router-link>
+                                <router-link v-if="customer.statusId === 3" :to="'/rate-dossie-selected-single/'+customer.documentId" class="btn btn-lg btn-success js-tooltip-enabled" data-title="Iniciar classificação"><i class="fa fa-file-text-o"></i></router-link>
                             </div>
                             <div class="btn-group">
-                                <router-link v-if="customer.statusId === 4" :to="'/rate-dossie-selected-single/'+customer.documentId" class="btn btn-lg btn-success js-tooltip-enabled"><i class="fa fa-file-text-o"></i></router-link>
+                                <router-link v-if="customer.statusId === 4" :to="'/rate-dossie-selected-single/'+customer.documentId" class="btn btn-lg btn-success js-tooltip-enabled" data-title="Iniciar classificação"><i class="fa fa-file-text-o"></i></router-link>
                             </div>
                         </td>
                     </tr>

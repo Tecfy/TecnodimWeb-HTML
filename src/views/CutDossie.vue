@@ -43,7 +43,7 @@
                         <td>{{ customer.name }}</td>
                         <td class="text-right">
                             <div class="btn-group">
-                                <router-link :to="'/cut-selected/'+customer.documentId" class="btn btn-lg btn-success js-tooltip-enabled"><i class="fa fa-crop"></i></router-link>
+                                <router-link :to="'/cut-selected/'+customer.documentId" class="btn btn-lg btn-success js-tooltip-enabled" data-title="Iniciar recorte"><i class="fa fa-crop"></i></router-link>
                             </div>
                         </td>
                     </tr>

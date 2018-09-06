@@ -1,6 +1,7 @@
 <template>
     <!-- Page Container -->
-    <div id="page-container" v-bind:class="{notLogged}" class="sidebar-o enable-page-overlay side-scroll page-header-modern main-content-boxed">
+    <div id="page-container" v-bind:class="{notLogged}"
+         class="sidebar-o enable-page-overlay side-scroll page-header-modern main-content-boxed">
         <!-- Sidebar -->
         <nav id="sidebar">
             <!-- Sidebar Scroll Container -->
@@ -13,9 +14,9 @@
                         <div class="content-header-section sidebar-mini-visible-b">
                             <!-- Logo -->
                             <span class="content-header-item font-w700 font-size-xl float-left animated fadeIn">
-                <span class="text-dual-primary-dark">c</span>
-                <span class="text-primary">b</span>
-              </span>
+                                <span class="text-dual-primary-dark">c</span>
+                                <span class="text-primary">b</span>
+                            </span>
                             <!-- END Logo -->
                         </div>
                         <!-- END Mini Mode -->
@@ -24,12 +25,15 @@
                         <div class="content-header-section text-center align-parent sidebar-mini-hidden">
                             <!-- Close Sidebar, Visible only on mobile screens -->
                             <!-- Layout API, functionality initialized in Codebase() -> uiApiLayout() -->
-                            <button type="button" class="btn btn-circle btn-dual-secondary d-lg-none align-v-r" data-toggle="layout" data-action="sidebar_close"> <i class="fa fa-times text-danger"></i></button>
+                            <button type="button" class="btn btn-circle btn-dual-secondary d-lg-none align-v-r"
+                                    data-toggle="layout" data-action="sidebar_close"><i
+                                    class="fa fa-times text-danger"></i></button>
                             <!-- END Close Sidebar -->
                             <!-- Logo -->
                             <div class="logo-content">
                                 <router-link to="/home">
-                                    <img src="assets/codebase/media/logo_tecfy.png" alt="Tecfy - Business Solutions" class="img-fluid">
+                                    <img src="assets/codebase/media/logo_tecfy.png" alt="Tecfy - Business Solutions"
+                                         class="img-fluid">
                                 </router-link>
                             </div>
                             <!--<div class="top-navegation py-30">-->
@@ -65,12 +69,14 @@
 
                             <router-link tag="li" to="/cut-dossie" active-class="active" v-if="claims.recortar">
                                 <a><span><img src="assets/codebase/media/various/link-label.svg" alt=""></span><i
-                                        class="fa fa-crop"></i><span class="sidebar-mini-hide">Recortar Dossiê</span></a>
+                                        class="fa fa-crop"></i><span
+                                        class="sidebar-mini-hide">Recortar Dossiê</span></a>
                             </router-link>
 
                             <router-link tag="li" to="/rate-dossie" active-class="active" v-if="claims.classificar">
                                 <a><span><img src="assets/codebase/media/various/link-label.svg" alt=""></span><i
-                                        class="fa fa-file-text-o"></i><span class="sidebar-mini-hide">Classificar Dossiê</span></a>
+                                        class="fa fa-file-text-o"></i><span
+                                        class="sidebar-mini-hide">Classificar Dossiê</span></a>
                             </router-link>
                         </ul>
                     </div>
@@ -85,13 +91,14 @@
         <main id="main-container">
             <div class="row py-10 px-20 bg-white top-menu" v-if="!notLogged">
                 <div class="col-11 pl-20 pt-5 text-white text-right">
-                    <h6 class="mb-0">
+                    <h6 class="mb-0 vertical-align">
                         <i class="fa fa-graduation-cap text-primary"></i> <span class="text-primary"> {{ unity }}</span>
                     </h6>
                 </div>
                 <div class="col-1 text-right">
                     <div class="btn-group" role="group">
-                        <a id="btnGroupDrop1" class="dropdown-toggle h4 mb-0 text-primary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a id="btnGroupDrop1" class="btn btn-lg btn-alt-primary dropdown-toggle h4 mb-0" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-user-circle-o"></i>
                         </a>
                         <div class="dropdown-menu mr-20 mt-10 text-center p-0 pb-10" aria-labelledby="btnGroupDrop1">
@@ -100,10 +107,10 @@
                             </p>
                             <hr class="m-0 py-5 ">
                             <router-link @click="changeUnity()" :to="'/select-unity'" class="btn link-effect">
-                            Alterar unidade
+                                Alterar unidade
                             </router-link>
                             <hr class="mb-0 py-2">
-                            <a @click="logout" class="link-effect">
+                            <a @click="logout" class="btn link-effect">
                                 Sair
                             </a>
                         </div>
@@ -141,6 +148,7 @@
 
 <script>
     import Auth from './models/Auth';
+    // import swal from 'sweetalert2';
 
     export default {
         data() {
@@ -158,12 +166,12 @@
                 loadingLogin: false
             }
         },
-        methods:{
+        methods: {
             logout() {
                 Auth.logout();
                 this.notLogged = true;
-                this.$router.push('login');
-                this.selectedUnit = 0;
+                this.$router.push('/login');
+                // this.selectedUnit = 0;
                 //this.classStyle();
             },
             changeUnity() {
@@ -181,22 +189,22 @@
                     this.notLogged = true;
                 }
             },
-            loadClaims(){
-                if(typeof window.localStorage.claims === 'string') {
-                    let claims = JSON.parse( window.localStorage.claims);
-                    claims.map( claim => {
-                        if(claim.ClaimType === "Recortar"){
+            loadClaims() {
+                if (typeof window.localStorage.claims === 'string') {
+                    let claims = JSON.parse(window.localStorage.claims);
+                    claims.map(claim => {
+                        if (claim.ClaimType === "Recortar") {
                             this.claims.recortar = true;
-                        }else if(claim.ClaimType === "Classificar"){
+                        } else if (claim.ClaimType === "Classificar") {
                             this.claims.classificar = true;
                         }
                     });
                 }
             },
-            loadUnitsFromStorage(){
+            loadUnitsFromStorage() {
                 try {
                     let selUnitStorage = window.localStorage.selectedUnit;
-                    this.units = JSON.parse( window.localStorage.units);
+                    this.units = JSON.parse(window.localStorage.units);
 
                     if (selUnitStorage === null || selUnitStorage === "undefined" || selUnitStorage === "Selecione") {
                         this.selectedUnit = "Selecione";
@@ -204,16 +212,16 @@
                         this.selectedUnit = this.units[window.localStorage.selectedUnit - 1].unityId;
                         this.unity = this.units[this.selectedUnit - 1].name;
                     }
-                }  catch (e) {
+                } catch (e) {
                     // console.log(e);
-                    // swal({
+                    // return swal({
                     //     type: 'error',
                     //     text: 'Não foi possível carregar as unidades.',
                     // });
                 }
             }
         },
-        mounted(){
+        mounted() {
             this.loadClaims();
             this.loadUnitsFromStorage();
         },
