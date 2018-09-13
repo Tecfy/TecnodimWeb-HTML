@@ -511,7 +511,10 @@ input:-moz-placeholder { /* Firefox 18- */
           background-color: #5fc5a3;
         }
       }
-      //.dropdown {
+      .dropdown {
+        &.open {
+          margin-bottom: 300px;
+        }
       //  .dropdown-toggle {
       //    position: relative;
       //    height: auto;
@@ -525,15 +528,16 @@ input:-moz-placeholder { /* Firefox 18- */
       //      width: 100%;
       //    }
       //  }
-      //  .dropdown-menu {
+        .dropdown-menu {
+          margin-bottom: 200px;
       //    li {
       //      a {
       //        padding-left: 5px;
       //        height: auto;
       //      }
       //    }
-      //  }
-      //}
+        }
+      }
     }
   }
 }

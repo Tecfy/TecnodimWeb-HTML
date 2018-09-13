@@ -337,6 +337,19 @@
                     api.get('/slices/GetSlicePending/' + this.id)
                         .then(({data}) => {
                             if (data.result == null) {
+                                let requestFinish = {
+                                    documentId: this.id,
+                                    documentStatusId: 6
+                                };
+
+                                api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
+                                    .then(() => {
+
+                                    })
+                                    .catch(() => {
+
+                                    });
+
                                 return swal({
                                     title: 'Classificação de Dossiê finalizado!',
                                     text: 'Todas os recortes foram classificadas com sucesso.',
@@ -350,8 +363,10 @@
                                 this.loading.pagesPdf = false;
                                 this.imageUrl = this.apiUrl+this.itemsSliced.slicePages[this.countPage].image;
 
-                                if (this.itemsSliced.slicePages.length > 1) {
+                                if (this.itemsSliced.slicePages.length >= 2) {
                                     this.loading.buttonsPage = true;
+                                } else {
+                                    this.loading.buttonsPage = false;
                                 }
                             }
 
@@ -360,12 +375,27 @@
                     api.get('/slices/GetSliceById/' + this.slice_id)
                         .then(({data}) => {
                             if (this.itemsSliced === null) {
+
+                                let requestFinish = {
+                                    documentId: this.id,
+                                    documentStatusId: 6
+                                };
+
+                                api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
+                                    .then(() => {
+
+                                    })
+                                    .catch(() => {
+
+                                    });
+
                                 return swal({
                                     title: 'Classificação de Dossiê finalizado!',
                                     text: 'Todas os recortes foram classificadas com sucesso.',
                                     type: "success",
                                 })
                                     .then(() => this.$router.push('/rate-dossie'))
+
                             } else {
                                 this.itemsSliced = data.result;
                                 this.slice_id = this.itemsSliced.sliceId;
@@ -373,8 +403,10 @@
                                 this.loading.pagesPdf = false;
                                 this.imageUrl = this.apiUrl+this.itemsSliced.slicePages[this.countPage].image;
 
-                                if (this.itemsSliced.slicePages.length > 1) {
+                                if (this.itemsSliced.slicePages.length >= 2) {
                                     this.loading.buttonsPage = true;
+                                } else {
+                                    this.loading.buttonsPage = false;
                                 }
                                 this.$router.push('/rate-dossie-selected-single/' + this.id);
                             }
@@ -523,7 +555,7 @@
                         this.getCategories();
                         this.getPdf();
                         return swal({
-                            title: 'Classificação do Dossiê salva com sucesso!',
+                            title: 'Classificação do Dossiê salvo com sucesso!',
                             toast: true,
                             timer: 3000,
                             type: "success",
