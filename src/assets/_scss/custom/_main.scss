@@ -365,6 +365,7 @@ input:-moz-placeholder { /* Firefox 18- */
         button {
           overflow-x: hidden;
           cursor: auto;
+          text-overflow: ellipsis;
         }
       }
     }

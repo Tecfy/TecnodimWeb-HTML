@@ -101,38 +101,6 @@
                     </div>
                 </div>
 
-                <!--<div class="block block-rounded shadow-sm pb-10 block-thumbails">-->
-                <!--<div class="block-header">-->
-                <!--<h3 class="block-title"><strong>Recortes Pendentes <span>({{ numPendingPages }})</span></strong></h3>-->
-                <!--</div>-->
-                <!--<div class="block-content">-->
-                <!--<div class="row">-->
-                <!--<div class="col-12 px-0">-->
-                <!--<div v-selectable="{ selectedGetter: selectedGetter, selectedSetter: selectedSetter, selectingSetter: selectingSetter}"-->
-                <!--class="container">-->
-                <!--&lt;!&ndash;<div id="selection-area" class="selection"></div>&ndash;&gt;-->
-                <!--<div class="row gutters-tiny js-gallery">-->
-                <!--<div v-for="(item, i) in pagesResult" v-if="!item.done" :key="item.id" class="selectable col-sm-6 col-xl-3 mb-30 card-thumb" :class="{ selected: !!selected[i], selecting: !!selecting[i] }">-->
-                <!--<img :src="item.thumbnail" alt="Pdf thumbnail" class="img-fluid shadow">-->
-                <!--<div class="form-group">-->
-                <!--<div class="custom-control custom-checkbox custom-control-inline">-->
-                <!--<input class="custom-control-input" type="checkbox">-->
-                <!--<label class="custom-control-label"></label>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="col-12">-->
-                <!--<div class="zoom-content text-center">-->
-                <!--<router-link to="assets/media/various/image-pdf.jpg" class="btn btn-alt-primary btn-sm text-uppercase my-5 img-link img-link-simple img-thumb img-lightbox"><i class="fa fa-search-plus"></i></router-link>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-
                 <div class="block block-rounded shadow-sm pb-10 block-group" @mouseover="zoomImg('over')">
                     <div class="block-header">
                         <h3 class="block-title"><strong>Recortes Realizados
@@ -145,7 +113,7 @@
                         <div class="row">
                             <div class="col-md-3" v-for="(item,i) in slices" :key="i">
                                 <button type="button" class="btn btn-block btn-outline-primary my-3 text-left" v-bind:title="item.name">
-                                    <i class="fa fa-folder mr-5"></i> <span class="text-black">{{ item.name }}</span>
+                                    <i class="fa fa-folder mr-5"></i> <span class="text-black"> {{ i + 1 }} - {{ item.name }}</span>
                                 </button>
                             </div>
                         </div>
@@ -238,7 +206,7 @@
                             <form action="">
                                 <div class="form-group row">
                                     <div class="col-12">
-                                        <input type="text" class="form-control" v-model="newGroupName" placeholder="Digite aqui...">
+                                        <input type="text" class="form-control" v-model="newGroupName" placeholder="Digite aqui..." autofocus>
                                     </div>
                                 </div>
                             </form>
@@ -309,8 +277,7 @@
                 </button>
             </div>
             <div class="modal-dialog modal-dialog-slideup modal-lg" role="document">
-
-                <div class="modal-content">
+                <div class="text-center">
                     <img v-bind:src="apiUrl+linkImg" class="img-fluid" @load="imgLoaded" v-show="!loadImg">
                 </div>
             </div>
@@ -602,6 +569,64 @@
             },
             openModal: function () {
                 this.selectPage = true;
+            },
+            shortCut(e) {
+                if (!e.shiftKey || !e.ctrlKey) {
+                    return
+                }
+                switch (e.code) {
+                    // Zoom In
+                    case "KeyZ":
+                        this.zoomPage('zoomIn');
+                        break;
+
+                    // Zoom Out
+                    case "KeyX":
+                        this.zoomPage('zoomOut');
+                        break;
+
+                    // Rotate Left
+                    case "Comma":
+                        this.pageRotate('l');
+                        break;
+
+                    // Rotate Right
+                    case "Period":
+                        this.pageRotate('r');
+                        break;
+
+                    // Navegation Left
+                    case "ArrowLeft":
+                        if (this.numPages > 1) {
+                            this.navPage('prev');
+                        }
+                        break;
+
+                    // Navegation Right
+                    case "ArrowRight":
+                        if (this.numPages > 1) {
+                            this.navPage('next');
+                        }
+                        break;
+
+                    // Navegation Left
+                    case "Backspace":
+                        if (this.numPages > 1) {
+                            $('#modal-del-page').modal('show');
+                            // this.$refs.delModal.modal('show');
+                        }
+                        break;
+
+                    // Focus on search code
+                    case "Space":
+                        this.$refs.searchCode.focus();
+                        break;
+
+                    // Save Button Classification
+                    case "KeyS":
+                        this.sendClassification();
+                        break;
+                }
             }
         },
         directives: {
@@ -611,6 +636,13 @@
             this.getDetails();
             this.getPdf();
             this.getSlices();
+        },
+        created() {
+            window.addEventListener('keyup', this.shortCut);
+        },
+
+        beforeDestroy() {
+            window.removeEventListener('keyup', this.shortCut);
         }
     }
 </script>

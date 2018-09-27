@@ -519,7 +519,20 @@
                     if (result && this.validateSubCategories) {
                         this.loading.pagesPdf = false;
                         this.loading.pagesThumb = false;
-                        return this.postSubmit();
+                        return swal({
+                            title: 'Confirmar classificação',
+                            text: 'Deseja realmente fazer a classificação?',
+                            showCancelButton: true,
+                            cancelButtonText: 'Cancelar'
+                            // timer: 3000,
+                            //type: "success",
+
+                        }).then(result => {
+                            if(result.value){
+                                return this.postSubmit();
+                            }
+                        });
+
                     } else {
                         return swal({
                             title: 'Dossiê não classificado',
@@ -664,13 +677,16 @@
                             // this.$refs.delModal.modal('show');
                         }
                         break;
+
+                    // Focus on search code
                     case "Space":
                         this.$refs.searchCode.focus();
                         break;
+
+                    // Save Button Classification
                     case "KeyS":
                         this.sendClassification();
                         break;
-
                 }
             }
         },
