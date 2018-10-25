@@ -379,6 +379,19 @@ input:-moz-placeholder { /* Firefox 18- */
       }
     }
   }
+
+  .v-select {
+    .dropdown-toggle {
+      position: relative;
+      height: 41px;
+      .form-control {
+        position: absolute;
+      }
+      .clear {
+        //display: none;
+      }
+    }
+  }
 }
 
 /* END Cut Dossie */
@@ -408,9 +421,6 @@ input:-moz-placeholder { /* Firefox 18- */
       }
       &.dossie-classificated {
         .btn-block {
-          &:hover {
-            cursor: default;
-          }
           &.btn-outline-primary {
             border-color: #575757;
           }

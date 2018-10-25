@@ -50,9 +50,9 @@
                         <div class="block-content pt-0 pb-20" data-toggle="slimscroll" data-height="160px" data-color="#37b78c" data-opacity="1" data-size="8px" data-always-visible="true" data-rail-visible="true" data-rail-color="#eee" data-rail-opacity="1">
                             <div class="row">
                                 <div class="col-md-3" v-for="(item, i) in classificatedGroups" :key="i">
-                                    <a class="btn btn-block btn-outline-primary my-1" data-toggle="tooltip" data-placement="bottom" v-bind:title="item.name">
+                                    <router-link v-bind:to="'/rate-dossie-selected-group/' + id+ '/' + item.sliceId" class="btn btn-block btn-outline-primary my-1" data-toggle="tooltip" data-placement="bottom" v-bind:title="item.name">
                                         <i class="fa fa-folder mr-5 vertical-align"></i> <div class="text-black vertical-align text-left">{{ item.name }}</div>
-                                    </a>
+                                    </router-link>
                                 </div>
                             </div>
                         </div>

@@ -156,7 +156,7 @@
                                         </div>
                                     </div>
                                     <div class="col-12" v-bind:class="{'mt-20': this.additionalFields !== 0}">
-                                        <v-select ref="selectCategory" v-model="selected_category" :options="categories" label="name"></v-select>
+                                        <v-select ref="selectCategory" v-model="selected_category" :options="categories" label="name" class="btn-sm" :selected="selected_category.categoryId"></v-select>
                                     </div>
                                 </div>
                             </form>
@@ -173,7 +173,7 @@
                                     <div class="form-group row">
                                         <label class="col-12 col-form-label text-white" :for="'field'+i"><b>{{ e.name }}</b></label>
                                         <div class="col-12">
-                                            <input v-if="e.type==='string'" type="text" :data-vv-as="e.name" :name="e.categoryAdditionalFieldId.toString()" class="form-control" :id="'field'+i" v-model="additionalFields[i].value" v-validate="{required:e.required}">
+                                            <input ref="identificador" v-if="e.type==='string'" type="text" :data-vv-as="e.name" :name="e.categoryAdditionalFieldId.toString()" class="form-control" :id="'field'+i" v-model="additionalFields[i].value" v-validate="{required:e.required}">
                                             <input v-if="e.type==='datetime'" type="text" :data-vv-as="e.name" :name="e.categoryAdditionalFieldId.toString()" class="form-control u-full-width" :id="'field'+i" placeholder="dd/mm/aaaa" v-mask="'##/##/####'" v-model="additionalFields[i].value" v-validate="{required:e.required,date_format:'DD/MM/YYYY'}"/>
                                             <div v-if="e.type==='bool'" >
                                                 <div class="custom-control custom-radio custom-control-inline">
@@ -290,6 +290,7 @@
                     pagesPdf: false,
                     pagesThumb: false,
                     buttonsPage: false
+                    // addFields: false
                 },
                 imageUrl: '',
                 countPage: 0,
@@ -341,7 +342,6 @@
                                     documentId: this.id,
                                     documentStatusId: 6
                                 };
-
                                 api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
                                     .then(() => {
 
@@ -369,7 +369,6 @@
                                     this.loading.buttonsPage = false;
                                 }
                             }
-
                         });
                 } else {
                     api.get('/slices/GetSliceById/' + this.slice_id)
@@ -380,7 +379,6 @@
                                     documentId: this.id,
                                     documentStatusId: 6
                                 };
-
                                 api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
                                     .then(() => {
 
@@ -403,13 +401,20 @@
                                 this.loading.pagesPdf = false;
                                 this.imageUrl = this.apiUrl+this.itemsSliced.slicePages[this.countPage].image;
 
+                                this.$router.push('/rate-dossie-selected-single/' + this.id);
+
                                 if (this.itemsSliced.slicePages.length >= 2) {
                                     this.loading.buttonsPage = true;
                                 } else {
                                     this.loading.buttonsPage = false;
                                 }
-                                this.$router.push('/rate-dossie-selected-single/' + this.id);
+                                this.categoryId = this.itemsSliced.categoryId;
+                                console.log('1', this.categoryId);
+                                // this.updateSubCategories(this.categoryId);
+                                console.log('2', this.categoryId);
                             }
+                            this.validaSubCateLoad = false
+                            this.updateSubCategories(this.categoryId);
                         });
                 }
             },
@@ -426,14 +431,29 @@
                         this.categories = data.result;
                     });
             },
-            updateSubCategories(categoryId) {
-                api.get('/Categories/GetCategoryById/' + categoryId)
+            updateSubCategories() {
+                //console.log('3', categoryId);
+                api.get('/Categories/GetCategoryById/' + this.categoryId)
                     .then(({data}) => {
                         this.subCategories = data.result.parents;
                         this.additionalFields = data.result.additionalFields;
                         this.validateSubCategories = true;
+
+                        let i;
+                        let numCat;
+                        if (this.additionalFields.length >= 1 && this.itemsSliced.additionalFields.length >= 1) {
+                            for (i = 0; i < 3; i++) {
+                                this.additionalFields[i].value = this.itemsSliced.additionalFields[i].value;
+                            }
+                            numCat = this.categories.length;
+                            for (i = 0; i < numCat; i++) {
+                                if (this.categories[i].categoryId === this.itemsSliced.categoryId) {
+                                    this.selected_category = this.categories[i].name;
+                                }
+                            }
+                        }
                     });
-                this.categoryId = categoryId;
+                // this.categoryId = categoryId;
             },
             thumbNav(stepElement) {
                 this.loadImg = true;
@@ -550,7 +570,6 @@
                     slicePages: this.itemsSliced.slicePages,
                     additionalFields: this.additionalFields
                 };
-
                 this.loading.pagesPdf = true;
                 this.loading.pagesThumb = true;
 
@@ -692,13 +711,16 @@
         },
         watch: {
             selected_category(newVal) {
+                console.log(newVal);
                 if (newVal === 'Selecione' || newVal === null) {
                     this.subCategories = [];
                     this.selected_category = 'Selecione';
                     this.additionalFields = 0;
                     this.validateSubCategories = false;
                 } else {
-                    this.updateSubCategories(newVal.categoryId);
+                    console.log('this.categoryId', this.categoryId);
+                    this.categoryId = newVal.categoryId;
+                    this.updateSubCategories();
                 }
                 this.searchField = '';
             }
