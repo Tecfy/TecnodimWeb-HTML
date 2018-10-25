@@ -25,7 +25,7 @@
                             <!--<input v-model="searchStatus" type="text" class="form-control form-control-lg" id="dossie-status" name="dossie-status">-->
                         </div>
                         <div class="col-lg-2 col-md-6 pt-20 mt-5">
-                            <button @click="getDossies(1)"  class="btn btn-alt-primary btn-lg btn-block">Buscar <i class="fa fa-search ml-5"></i></button>
+                            <button @click="getDossies(1)"  class="btn btn-alt-primary btn-lg btn-block mt-1">Buscar <i class="fa fa-search ml-5"></i></button>
                         </div>
                     </div>
                 </form>
@@ -110,7 +110,7 @@
                 selected: {id: 0, label: 'Selecione'},
                 currentPage: 1,
                 totalCount: null,
-                totalShow: 2,
+                totalShow: 10,
                 numPagination: 0,
                 searchActivate: false
             }
