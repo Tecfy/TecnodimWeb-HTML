@@ -380,16 +380,17 @@ input:-moz-placeholder { /* Firefox 18- */
     }
   }
 
-  .v-select {
-    .dropdown-toggle {
-      position: relative;
-      height: 41px;
-      .form-control {
-        position: absolute;
-      }
-      .clear {
-        //display: none;
-      }
+
+}
+.v-select {
+  .dropdown-toggle {
+    position: relative;
+    height: 41px;
+    .form-control {
+      position: absolute;
+    }
+    .clear {
+      display: none;
     }
   }
 }

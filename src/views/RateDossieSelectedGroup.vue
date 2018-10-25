@@ -344,12 +344,9 @@
                                 };
                                 api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
                                     .then(() => {
-
                                     })
                                     .catch(() => {
-
                                     });
-
                                 return swal({
                                     title: 'Classificação de Dossiê finalizado!',
                                     text: 'Todas os recortes foram classificadas com sucesso.',
@@ -374,7 +371,6 @@
                     api.get('/slices/GetSliceById/' + this.slice_id)
                         .then(({data}) => {
                             if (this.itemsSliced === null) {
-
                                 let requestFinish = {
                                     documentId: this.id,
                                     documentStatusId: 6
@@ -409,11 +405,10 @@
                                     this.loading.buttonsPage = false;
                                 }
                                 this.categoryId = this.itemsSliced.categoryId;
-                                console.log('1', this.categoryId);
-                                // this.updateSubCategories(this.categoryId);
+                                // console.log('1', this.categoryId);
+                                this.updateSubCategories(this.categoryId);
                                 console.log('2', this.categoryId);
                             }
-                            this.validaSubCateLoad = false
                             this.updateSubCategories(this.categoryId);
                         });
                 }
@@ -432,7 +427,10 @@
                     });
             },
             updateSubCategories() {
-                //console.log('3', categoryId);
+                console.log('3', this.categoryId);
+                if (this.categoryId === null || this.categoryId === undefined) {
+                    this.categoryId = this.itemsSliced.categoryId;
+                }
                 api.get('/Categories/GetCategoryById/' + this.categoryId)
                     .then(({data}) => {
                         this.subCategories = data.result.parents;
@@ -720,6 +718,7 @@
                 } else {
                     console.log('this.categoryId', this.categoryId);
                     this.categoryId = newVal.categoryId;
+                    console.log('this.categoryId 2', this.categoryId);
                     this.updateSubCategories();
                 }
                 this.searchField = '';

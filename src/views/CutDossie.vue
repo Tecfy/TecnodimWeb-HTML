@@ -32,8 +32,11 @@
             </div>
         </div>
         <div class="block mt-50">
-            <div class="block-content">
-                <table class="table table-vcenter" v-if="!loadingDossies">
+            <div class="block-content" v-if="!loadingDossies">
+                <h5 class="pt-1 text-right">
+                    <span class="mr-10"><strong>{{ totalCount }}</strong></span><small>registros encontrados</small>
+                </h5>
+                <table class="table table-vcenter" >
                     <thead class="thead-light mb-50">
                     <tr class="p-50">
                         <th class="py-20"><b>Matrícula</b></th>
@@ -57,9 +60,14 @@
                             </td>
                         </tr>
                     </tbody>
-                    <tfoot>
+                </table>
+                <div class="row">
+                    <div class="col-12">
                         <nav>
-                            <ul class="pagination justify-content-center mx-auto">
+                            <ul class="pagination float-right mt-20">
+                                <li class="">
+
+                                </li>
                                 <li class="page-item" :class="{'disabled': currentPage === 1}">
                                     <a class="page-link" @click="getDossies('back')">Anterior</a>
                                 </li>
@@ -71,13 +79,13 @@
                                 </li>
                             </ul>
                         </nav>
-                    </tfoot>
-                </table>
-                <div v-else>
-                    <h2 class="text-center">
-                        <i class="fa fa-spinner fa-spin"></i>
-                    </h2>
+                    </div>
                 </div>
+            </div>
+            <div v-else>
+                <h2 class="text-center">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </h2>
             </div>
         </div>
     </div>
@@ -104,7 +112,6 @@
                 totalCount: null,
                 totalShow: 2,
                 numPagination: 0,
-                newUrlApi: '',
                 searchActivate: false
             }
         },
@@ -120,32 +127,34 @@
                 } else {
                     this.currentPage = p;
                 }
-                if (this.searchRegistration.length === 0 && this.searchName.length === 0) {
-                    this.createPagination('/Documents/getDocumentSlices?unityId=' + unityId);
-                    this.newUrlApi = '/Documents/getDocumentSlices?unityId=' + unityId + '&currentPage=' + this.currentPage + '&qtdEntries=' + this.totalShow;
-                } else if (this.searchRegistration.length !== 0) {
-                    this.createPagination('/Documents/getDocumentSlices?unityId=' + unityId + '&registration=' + this.searchRegistration);
-                    this.newUrlApi = '/Documents/getDocumentSlices?unityId=' + unityId + '&currentPage=' + this.currentPage + '&qtdEntries=' + this.totalShow + '&registration=' + this.searchRegistration;
-                } else if (this.searchName.length !== 0) {
-                    this.createPagination('/Documents/getDocumentSlices?unityId=' + unityId + '&name=' + this.searchName);
-                    this.newUrlApi = '/Documents/getDocumentSlices?unityId=' + unityId + '&currentPage=' + this.currentPage + '&qtdEntries=' + this.totalShow + '&name=' + this.searchName;
+
+                let newPageUrlApi = '/Documents/getDocumentSlices?unityId=' + unityId;
+                let newUrlApi = '/Documents/getDocumentSlices?unityId=' + unityId + '&currentPage=' + this.currentPage + '&qtdEntries=' + this.totalShow;
+
+                if (this.searchRegistration.length !== 0) {
+                    newPageUrlApi += '&registration=' + this.searchRegistration;
+                    newUrlApi += '&registration=' + this.searchRegistration;
                 }
-                if (this.selected.id === 1 || this.selected.id === 0) {
-                    this.createPagination('/Documents/getDocumentSlices?unityId=' + unityId + '&documentStatusId=' + 1);
-                    this.newUrlApi = '/Documents/getDocumentSlices?unityId=' + unityId + '&currentPage=' + this.currentPage + '&qtdEntries=' + this.totalShow + '&documentStatusId=' + 1;
+                if (this.searchName.length !== 0) {
+                    newPageUrlApi += '&name=' + this.searchName;
+                    newUrlApi += '&name=' + this.searchName;
                 }
-                else if (this.selected.id === 2) {
-                    this.createPagination('/Documents/getDocumentSlices?unityId=' + unityId + '&documentStatusId=' + 2);
-                    this.newUrlApi = '/Documents/getDocumentSlices?unityId=' + unityId + '&currentPage=' + this.currentPage + '&qtdEntries=' + this.totalShow + '&documentStatusId=' + 2;
+                if (this.selected.id === 1) {
+                    newPageUrlApi += '&documentStatusId=' + 1;
+                    newUrlApi += '&documentStatusId=' + 1;
                 }
-                api.get(this.newUrlApi).then(({data}) => {
+                if (this.selected.id === 2) {
+                    newPageUrlApi += '&documentStatusId=' + 2;
+                    newUrlApi += '&documentStatusId=' + 2;
+                }
+                this.createPagination(newPageUrlApi);
+                api.get(newUrlApi).then(({data}) => {
                     this.loadingDossies = false;
                     this.searchResult = data.result;
                 });
             },
             createPagination(url) {
                 api.get(url).then(({data}) => {
-                    console.log('url', url);
                     this.loadingDossies = false;
                     this.totalCount = data.result.length;
                     this.numPagination = Math.ceil(this.totalCount / this.totalShow);

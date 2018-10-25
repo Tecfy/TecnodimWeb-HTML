@@ -33,8 +33,11 @@
         </div>
         <div class="block mt-50">
             <div class="block mt-50">
-                <div class="block-content">
-                    <table class="table table-vcenter" v-if="!loadingDossies">
+                <div class="block-content" v-if="!loadingDossies">
+                    <h5 class="pt-1 text-right">
+                        <span class="mr-10"><strong>{{ totalCount }}</strong></span><small>registros encontrados</small>
+                    </h5>
+                    <table class="table table-vcenter">
                         <thead class="thead-light mb-50">
                         <tr class="p-50">
                             <th class="py-20"><b>Matrícula</b></th>
@@ -59,27 +62,32 @@
                             </td>
                         </tr>
                         </tbody>
-                        <tfoot>
-                        <nav>
-                            <ul class="pagination justify-content-center mx-auto">
-                                <li class="page-item" :class="{'disabled': currentPage === 1}">
-                                    <a class="page-link" @click="getDossies('back')">Anterior</a>
-                                </li>
-                                <li v-for="n in numPagination" class="page-item" :class="{'disabled': currentPage === n}">
-                                    <a class="page-link" href="#" @click="getDossies(n)">{{ n }}</a>
-                                </li>
-                                <li class="page-item" :class="{'disabled': currentPage === numPagination}">
-                                    <a class="page-link" @click="getDossies('next')">Próximo</a>
-                                </li>
-                            </ul>
-                        </nav>
-                        </tfoot>
                     </table>
-                    <div v-else>
-                        <h2 class="text-center">
-                            <i class="fa fa-spinner fa-spin"></i>
-                        </h2>
+                    <div class="row">
+                        <div class="col-12">
+                            <nav>
+                                <ul class="pagination float-right mt-20">
+                                    <li class="">
+
+                                    </li>
+                                    <li class="page-item" :class="{'disabled': currentPage === 1}">
+                                        <a class="page-link" @click="getDossies('back')">Anterior</a>
+                                    </li>
+                                    <li v-for="n in numPagination" class="page-item" :class="{'disabled': currentPage === n}">
+                                        <a class="page-link" href="#" @click="getDossies(n)">{{ n }}</a>
+                                    </li>
+                                    <li class="page-item" :class="{'disabled': currentPage === numPagination}">
+                                        <a class="page-link" @click="getDossies('next')">Próximo</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
+                </div>
+                <div v-else>
+                    <h2 class="text-center">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </h2>
                 </div>
             </div>
         </div>
@@ -107,7 +115,6 @@
                 totalCount: null,
                 totalShow: 2,
                 numPagination: 0,
-                newUrlApi: '',
                 searchActivate: false
             }
         },
@@ -123,26 +130,28 @@
                 } else {
                     this.currentPage = p;
                 }
-                if (this.searchRegistration.length === 0 && this.searchName.length === 0) {
-                    this.createPagination('/Documents/GetDocumentClassificateds?unityId=' + unityId);
-                    this.newUrlApi = '/Documents/GetDocumentClassificateds?unityId=' + unityId + '&currentPage=' + this.currentPage + '&qtdEntries=' + this.totalShow;
-                } else if (this.searchRegistration.length !== 0) {
-                    this.createPagination('/Documents/GetDocumentClassificateds?unityId=' + unityId + '&registration=' + this.searchRegistration);
-                    this.newUrlApi = '/Documents/GetDocumentClassificateds?unityId=' + unityId + '&currentPage=' + this.currentPage + '&qtdEntries=' + this.totalShow + '&registration=' + this.searchRegistration;
-                } else if (this.searchName.length !== 0) {
-                    this.createPagination('/Documents/GetDocumentClassificateds?unityId=' + unityId + '&name=' + this.searchName);
-                    this.newUrlApi = '/Documents/GetDocumentClassificateds?unityId=' + unityId + '&currentPage=' + this.currentPage + '&qtdEntries=' + this.totalShow + '&name=' + this.searchName;
+
+                let newPageUrlApi = '/Documents/GetDocumentClassificateds?unityId=' + unityId;
+                let newUrlApi = '/Documents/GetDocumentClassificateds?unityId=' + unityId + '&currentPage=' + this.currentPage + '&qtdEntries=' + this.totalShow;
+
+                if (this.searchRegistration.length !== 0) {
+                    newPageUrlApi += '&registration=' + this.searchRegistration;
+                    newUrlApi += '&registration=' + this.searchRegistration;
                 }
-                if (this.selected.id === 1 || this.selected.id === 0) {
-                    this.createPagination('/Documents/GetDocumentClassificateds?unityId=' + unityId + '&documentStatusId=' + 3);
-                    this.newUrlApi = '/Documents/GetDocumentClassificateds?unityId=' + unityId + '&currentPage=' + this.currentPage + '&qtdEntries=' + this.totalShow + '&documentStatusId=' + 3;
+                if (this.searchName.length !== 0) {
+                    newPageUrlApi += '&name=' + this.searchName;
+                    newUrlApi += '&name=' + this.searchName;
                 }
-                if (this.selected.id === 2 || this.selected.id === 0) {
-                    this.createPagination('/Documents/GetDocumentClassificateds?unityId=' + unityId + '&documentStatusId=' + 4);
-                    this.newUrlApi = '/Documents/GetDocumentClassificateds?unityId=' + unityId + '&currentPage=' + this.currentPage + '&qtdEntries=' + this.totalShow + '&documentStatusId=' + 4;
+                if (this.selected.id === 1) {
+                    newPageUrlApi += '&documentStatusId=' + 3;
+                    newUrlApi += '&documentStatusId=' + 3;
                 }
-                api.get(this.newUrlApi).then(({data}) => {
-                    console.log('this.newUrlApi', this.newUrlApi);
+                if (this.selected.id === 2) {
+                    newPageUrlApi += '&documentStatusId=' + 4;
+                    newUrlApi += '&documentStatusId=' + 4;
+                }
+                this.createPagination(newPageUrlApi);
+                api.get(newUrlApi).then(({data}) => {
                     this.loadingDossies = false;
                     this.searchResult = data.result;
                 });
