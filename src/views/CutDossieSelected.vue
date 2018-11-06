@@ -113,7 +113,7 @@
                         <div class="row">
                             <div class="col-md-3" v-for="(item,i) in slices" :key="i">
                                 <button type="button" class="btn btn-block btn-outline-primary my-3 text-left" v-bind:title="item.name">
-                                    <i class="fa fa-folder mr-5"></i> <span class="text-black"> {{ i + 1 }} - {{ item.name }}</span>
+                                    <i class="fa fa-folder mr-5"></i> <span class="text-black">{{ item.name }}</span>
                                 </button>
                             </div>
                         </div>
@@ -179,42 +179,41 @@
         <!-- END Page Content -->
 
         <!-- Modal Agrupar -->
-        <div class="modal fade" id="modalGroup" tabindex="-1" role="dialog" aria-labelledby="modalGroup" aria-hidden="true">
+        <div class="modal fade" id="modalGroup" tabindex="-1" role="dialog" aria-labelledby="modalGroup" aria-hidden="true" ref="modalTeste" >
             <div class="modal-dialog modal-dialog-slideup" role="document">
                 <div class="modal-content">
-                    <div class="block block-themed block-transparent mb-0 ">
-                        <div class="block-header p-0 pt-10 mb-30">
-                            <h4 class="text-white mx-auto pt-10 pl-50"><b>Identificar novo recorte</b></h4>
-                            <div class="block-options mr-15">
-                                <button type="button" class="btn-block-option text-dark" data-dismiss="modal"
-                                        aria-label="Close" @click="allowSelectPages">
-                                    <h5><i class="si si-close"></i></h5>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="block-content pt-0">
-                            <div class="block block-themed block-rounded shadow actions-content">
-                                <div class="block-header bg-white shadow">
-                                    <h4 class="block-title text-center text-dark">Você tem <strong>{{ numSelected() }}</strong> página{{ pluralAditional()}} selecionada{{ pluralAditional()}}.</h4>
+                    <form>
+                        <div class="block block-themed block-transparent mb-0 ">
+                            <div class="block-header p-0 pt-10 mb-30">
+                                <h4 class="text-white mx-auto pt-10 pl-50"><b>Identificar novo recorte</b></h4>
+                                <div class="block-options mr-15">
+                                    <button type="button" class="btn-block-option text-dark" data-dismiss="modal"
+                                            aria-label="Close" @click="allowSelectPages">
+                                        <h5><i class="si si-close"></i></h5>
+                                    </button>
                                 </div>
                             </div>
-
-                            <h6 class="mb-10 mt-50">
-                                <small><i class="fa fa-chevron-right"></i></small>
-                                Digite o <b>nome </b>para identificação do novo recorte.
-                            </h6>
-                            <form action="">
-                                <div class="form-group row">
-                                    <div class="col-12">
-                                        <input type="text" class="form-control" v-model="newGroupName" placeholder="Digite aqui..." autofocus>
+                            <div class="block-content pt-0">
+                                <div class="block block-themed block-rounded shadow actions-content">
+                                    <div class="block-header bg-white shadow">
+                                        <h4 class="block-title text-center text-dark">Você tem <strong>{{ numSelected() }}</strong> página{{ pluralAditional()}} selecionada{{ pluralAditional()}}.</h4>
                                     </div>
                                 </div>
-                            </form>
+                                <h6 class="mb-10 mt-50">
+                                    <small><i class="fa fa-chevron-right"></i></small>
+                                    Digite o <b>nome </b>para identificação do novo recorte.
+                                </h6>
+                                <div class="form-group mb-3">
+                                    <label class="mr-2 font-weight-bold" for="newSlice">{{ slices.length + 1 }} - </label>
+                                    <input type="text" class="form-control" v-model="newGroupName" placeholder="Digite aqui..." ref="identificationField" tabindex="1" id="newSlice">
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn-dark btn-lg shadow-sm text-uppercase" data-dismiss="modal" @click="createGroup()" :disabled="!allowCreateGroup()"><i class="si si-check mr-10"></i> Salvar Grupo</button>
-                    </div>
+
+                        <div class="modal-footer text-center">
+                            <button type="submit" class="btn-dark btn-lg shadow-sm text-uppercase" data-dismiss="modal" @click="createGroup()"><i class="si si-check mr-10"></i> Salvar Grupo</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -403,7 +402,7 @@
                 this.pages = itemsA;
 
                 let newCut = {
-                    name: this.newGroupName,
+                    name: (this.slices.length + 1) + " - "  + this.newGroupName,
                     items: itemsR
                 };
                 this.cutGroups.push(newCut);
@@ -555,11 +554,6 @@
             numGroupCreated() {
                 return this.slices.length;
             },
-            allowCreateGroup() {
-                if (this.newGroupName.length >= 2) {
-                    return true
-                }
-            },
             pluralAditional() {
                 if (this.numSelected() === 1) {
                     return ""
@@ -567,7 +561,10 @@
                     return "s"
                 }
             },
-            openModal: function () {
+            openModal() {
+                setTimeout(function(){
+                    document.getElementById("newSlice").focus()
+                }, 500);
                 this.selectPage = true;
             },
             shortCut(e) {
@@ -640,7 +637,6 @@
         created() {
             window.addEventListener('keyup', this.shortCut);
         },
-
         beforeDestroy() {
             window.removeEventListener('keyup', this.shortCut);
         }

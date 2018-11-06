@@ -13,7 +13,7 @@
                     <div class="form-group row">
                         <div class="col-lg-4 col-md-6">
                             <label class="col-12 pl-0 text-white h5 mb-2" for="registration-number">Número da matrícula</label>
-                            <input v-model="searchRegistration" type="text" class="form-control form-control-lg" id="registration-number" name="registration-number" v-mask="'#####################'">
+                            <input ref="fieldRegistration" v-model="searchRegistration" type="text" class="form-control form-control-lg" id="registration-number" name="registration-number" v-mask="'#####################'">
                         </div>
                         <div class="col-lg-4 col-md-6">
                             <label class="col-12 pl-0 text-white h5 mb-2" for="student-name">Nome do aluno</label>
@@ -25,7 +25,7 @@
                             <!--<input v-model="searchStatus" type="text" class="form-control form-control-lg" id="dossie-status" name="dossie-status">-->
                         </div>
                         <div class="col-lg-2 col-md-6 pt-20 mt-5">
-                            <button @click="getDossies(1)"  class="btn btn-alt-primary btn-lg btn-block mt-1">Buscar <i class="fa fa-search ml-5"></i></button>
+                            <button @click="getDossies(1)" ref="searchButton" class="btn btn-alt-primary btn-lg btn-block mt-1">Buscar <i class="fa fa-search ml-5"></i></button>
                         </div>
                     </div>
                 </form>
@@ -152,6 +152,7 @@
                     this.loadingDossies = false;
                     this.searchResult = data.result;
                 });
+                this.$refs.fieldRegistration.focus();
             },
             createPagination(url) {
                 api.get(url).then(({data}) => {
@@ -163,6 +164,13 @@
         },
         mounted(){
             this.getDossies(this.currentPage);
+        },
+        watch: {
+            selected: function () {
+                if(this.selected !== 'Selecione') {
+                    this.$refs.searchButton.focus();
+                }
+            }
         }
     }
 </script>

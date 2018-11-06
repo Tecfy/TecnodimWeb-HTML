@@ -38,12 +38,12 @@
                             <div class="col-1 px-0 mx-0" v-if="loading.buttonsPage">
                                 <div class="row text-center vertical-align nav-pages">
                                     <div class="col-12 px-0">
-                                        <a @click="navPage('next')" class="btn btn-lg btn-alt-primary pt-3 push" data-title="Próxima página | → ">
+                                        <a @click="navPage('next')" class="btn btn-lg btn-alt-primary pt-3 push" data-title="Próxima página | ctrl + alt + → ">
                                             <i class="fa fa-angle-double-right"></i>
                                         </a>
                                     </div>
                                     <div class="col-12 px-0">
-                                        <a @click="navPage('prev')" class="btn btn-lg btn-alt-primary pt-3 push" data-title="Voltar página | ← ">
+                                        <a @click="navPage('prev')" class="btn btn-lg btn-alt-primary pt-3 push" data-title="Voltar página | ctrl + alt + ← ">
                                             <i class="fa fa-angle-double-left"></i>
                                         </a>
                                     </div>
@@ -52,27 +52,27 @@
                             <div class="col-2 bg-gray-lighter image-buttons">
                                 <div class="row text-center vertical-align">
                                     <div class="col-12">
-                                        <a @click="zoomPage('zoomIn')" class="btn btn-lg btn-success pt-3 push text-white" data-title="Aumentar zoom | z ">
+                                        <a @click="zoomPage('zoomIn')" class="btn btn-lg btn-success pt-3 push text-white" data-title="Aumentar zoom | ctrl + alt + z ">
                                             <i class="fa fa-search-plus"></i>
                                         </a>
                                     </div>
                                     <div class="col-12">
-                                        <a @click="zoomPage('zoomOut')" class="btn btn-lg btn-success pt-3 push text-white" data-title="Diminuir zoom | x ">
+                                        <a @click="zoomPage('zoomOut')" class="btn btn-lg btn-success pt-3 push text-white" data-title="Diminuir zoom | ctrl + alt + x ">
                                             <i class="fa fa-search-minus"></i>
                                         </a>
                                     </div>
                                     <div class="col-12">
-                                        <a @click="pageRotate('l')" class="btn btn-lg btn-success pt-3 push text-white" data-title="Rotacionar para esquerda | < ">
+                                        <a @click="pageRotate('l')" class="btn btn-lg btn-success pt-3 push text-white" data-title="Rotacionar para esquerda | ctrl + alt + < ">
                                             <i class="fa fa-rotate-left"></i>
                                         </a>
                                     </div>
                                     <div class="col-12">
-                                        <a @click="pageRotate('r')" class="btn btn-lg btn-success pt-3 push text-white" data-title="Rotacionar para direita | > ">
+                                        <a @click="pageRotate('r')" class="btn btn-lg btn-success pt-3 push text-white" data-title="Rotacionar para direita | ctrl + alt + > ">
                                             <i class="fa fa-rotate-right"></i>
                                         </a>
                                     </div>
                                     <div class="col-12" v-if="loading.buttonsPage">
-                                        <a class="btn btn-lg btn-success js-tooltip pt-3 push text-white" data-title="Excluir página | ◄ " data-toggle="modal" data-target="#modal-del-page">
+                                        <a class="btn btn-lg btn-success js-tooltip pt-3 push text-white" data-title="Excluir página | ctrl + alt + ◄ " data-toggle="modal" data-target="#modal-del-page">
                                             <i class="fa fa-trash"></i>
                                         </a>
                                     </div>
@@ -84,6 +84,11 @@
                         <h2 class="text-center">
                             <i class="fa fa-spinner fa-spin"></i>
                         </h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <p><small><b>Aumentar Zoom:</b> ctrl + shift + z / <b>Diminuir Zoom:</b> ctrl + shift + x / <b>Rot. Esquerda:</b> ctrl + shift + < / <b>Rot. Direita:</b> ctrl + shift + > / <b>Apagar página</b> ctrl + shift + backspace / <b>Salvar</b> ctrl + shift + s / <b>Avançar página</b> ctrl + shift + → / <b>Voltar página</b> ctrl + shift + ←</small></p>
                     </div>
                 </div>
             </div>
@@ -131,7 +136,7 @@
                             <div class="form-group row">
                                 <label class="col-12 col-form-label text-white" for="classification-code"><b>Código</b></label>
                                 <div class="col-md-9 pr-0">
-                                    <input type="text" class="form-control" id="classification-code" name="example-text-input" ref="searchCode" v-model="searchField" placeholder="Ex.: 001, 125.3">
+                                    <input type="text" class="form-control" id="classification-code" ref="searchCode" v-model="searchField" placeholder="Ex.: 001, 125.3">
                                 </div>
                                 <div class="col-md-3">
                                     <button type="submit" class="btn btn-alt-primary btn-block p-0" @click="searchByCode">
@@ -197,7 +202,7 @@
                                     <!--<button type="submit" class="btn btn-lg btn-dark shadow-sm btn-block text-uppercase" data-toggle="modal" data-target="#modal-save">-->
                                     <!--<i class="fa fa-save"></i> Salvar-->
                                     <!--</button>-->
-                                    <button type="submit" class="btn btn-lg btn-dark shadow-sm btn-block text-uppercase" @click="sendClassification()">
+                                    <button type="submit" ref="saveCategoryButton" class="btn btn-lg btn-dark shadow-sm btn-block text-uppercase" @click="sendClassification()">
                                         <i class="fa fa-save"></i> Salvar
                                     </button>
                                 </div>
@@ -405,9 +410,7 @@
                                     this.loading.buttonsPage = false;
                                 }
                                 this.categoryId = this.itemsSliced.categoryId;
-                                // console.log('1', this.categoryId);
                                 this.updateSubCategories(this.categoryId);
-                                console.log('2', this.categoryId);
                             }
                             this.updateSubCategories(this.categoryId);
                         });
@@ -427,31 +430,34 @@
                     });
             },
             updateSubCategories() {
-                console.log('3', this.categoryId);
                 if (this.categoryId === null || this.categoryId === undefined) {
                     this.categoryId = this.itemsSliced.categoryId;
-                }
-                api.get('/Categories/GetCategoryById/' + this.categoryId)
-                    .then(({data}) => {
-                        this.subCategories = data.result.parents;
-                        this.additionalFields = data.result.additionalFields;
-                        this.validateSubCategories = true;
+                } else {
+                    api.get('/Categories/GetCategoryById/' + this.categoryId)
+                        .then(({data}) => {
+                            this.subCategories = data.result.parents;
+                            this.additionalFields = data.result.additionalFields;
+                            this.validateSubCategories = true;
 
-                        let i;
-                        let numCat;
-                        if (this.additionalFields.length >= 1 && this.itemsSliced.additionalFields.length >= 1) {
-                            for (i = 0; i < 3; i++) {
-                                this.additionalFields[i].value = this.itemsSliced.additionalFields[i].value;
+                            let i;
+                            let numCat;
+                            if (this.additionalFields === null || this.additionalFields.length === 0) {
+                                this.$refs.saveCategoryButton.focus();
                             }
-                            numCat = this.categories.length;
-                            for (i = 0; i < numCat; i++) {
-                                if (this.categories[i].categoryId === this.itemsSliced.categoryId) {
-                                    this.selected_category = this.categories[i].name;
+                            else if (this.additionalFields.length >= 1 && this.itemsSliced.additionalFields.length >= 1) {
+                                for (i = 0; i < 3; i++) {
+                                    this.additionalFields[i].value = this.itemsSliced.additionalFields[i].value;
+                                    this.$refs.identificador.focus();
+                                }
+                                numCat = this.categories.length;
+                                for (i = 0; i < numCat; i++) {
+                                    if (this.categories[i].categoryId === this.itemsSliced.categoryId) {
+                                        this.selected_category = this.categories[i].name;
+                                    }
                                 }
                             }
-                        }
-                    });
-                // this.categoryId = categoryId;
+                        });
+                }
             },
             thumbNav(stepElement) {
                 this.loadImg = true;
@@ -530,7 +536,6 @@
 
                 this.itemsSliced.slicePages[this.countPage].rotate = this.rotatePage;
                 this.$refs.imagePage.style.transform = "rotate(" + this.rotatePage + "deg)";
-                // this.zoom = 1;
             },
             sendClassification() {
                 this.$validator.validate().then((result) => {
@@ -636,6 +641,7 @@
                             categoryId: data.result.categoryId,
                             name: data.result.name
                         }
+                        this.$refs.saveCategoryButton.focus();
                     })
                     .catch(() => {
                         this.loading.pagesPdf = false;
@@ -694,7 +700,6 @@
                             // this.$refs.delModal.modal('show');
                         }
                         break;
-
                     // Focus on search code
                     case "Space":
                         this.$refs.searchCode.focus();
@@ -709,16 +714,13 @@
         },
         watch: {
             selected_category(newVal) {
-                console.log(newVal);
                 if (newVal === 'Selecione' || newVal === null) {
                     this.subCategories = [];
                     this.selected_category = 'Selecione';
                     this.additionalFields = 0;
                     this.validateSubCategories = false;
                 } else {
-                    console.log('this.categoryId', this.categoryId);
                     this.categoryId = newVal.categoryId;
-                    console.log('this.categoryId 2', this.categoryId);
                     this.updateSubCategories();
                 }
                 this.searchField = '';
@@ -729,13 +731,12 @@
                 this.getDetails();
                 this.getCategories();
                 this.getPdf();
+                this.$refs.searchCode.focus();
             }
         },
-
         created() {
             window.addEventListener('keyup', this.shortCut);
         },
-
         beforeDestroy() {
             window.removeEventListener('keyup', this.shortCut);
         }
