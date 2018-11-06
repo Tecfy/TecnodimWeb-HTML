@@ -178,8 +178,8 @@
                                     <div class="form-group row">
                                         <label class="col-12 col-form-label text-white" :for="'field'+i"><b>{{ e.name }}</b></label>
                                         <div class="col-12">
-                                            <input ref="identificador" v-if="e.type==='string'" type="text" :data-vv-as="e.name" :name="e.categoryAdditionalFieldId.toString()" class="form-control" :id="'field'+i" v-model="additionalFields[i].value" v-validate="{required:e.required}">
-                                            <input v-if="e.type==='datetime'" type="text" :data-vv-as="e.name" :name="e.categoryAdditionalFieldId.toString()" class="form-control u-full-width" :id="'field'+i" placeholder="dd/mm/aaaa" v-mask="'##/##/####'" v-model="additionalFields[i].value" v-validate="{required:e.required,date_format:'DD/MM/YYYY'}"/>
+                                            <input :ref="'identificador'+i" v-if="e.type==='string'" type="text" :data-vv-as="e.name" :name="e.categoryAdditionalFieldId.toString()" class="form-control" :id="'field'+i" v-model="additionalFields[i].value" v-validate="{required:e.required}">
+                                            <input :ref="'identificador'+i" v-if="e.type==='datetime'" type="text" :data-vv-as="e.name" :name="e.categoryAdditionalFieldId.toString()" class="form-control u-full-width" :id="'field'+i" placeholder="dd/mm/aaaa" v-mask="'##/##/####'" v-model="additionalFields[i].value" v-validate="{required:e.required,date_format:'DD/MM/YYYY'}"/>
                                             <div v-if="e.type==='bool'" >
                                                 <div class="custom-control custom-radio custom-control-inline">
                                                     <input type="radio" :id="'yes_field'+i" :data-vv-as="e.name"  :name="e.categoryAdditionalFieldId.toString()" class="custom-control-input" value="SIM" v-model="additionalFields[i].value" v-validate="{required:e.required,included: ['SIM','NÃO']}">
@@ -460,8 +460,10 @@
                 }
             },
             thumbNav(stepElement) {
+                // console.log(stepElement)
                 this.loadImg = true;
                 this.countPage = stepElement;
+                this.imageUrl = this.apiUrl+this.itemsSliced.slicePages[this.countPage].image;
                 this.stepClass(stepElement);
                 this.pageRotate();
             },
@@ -481,6 +483,7 @@
                     }
                 }
                 this.zoom = 1;
+                this.imageUrl = this.apiUrl+this.itemsSliced.slicePages[this.countPage].image;
                 this.stepClass(this.countPage);
                 this.pageRotate();
             },
@@ -559,7 +562,7 @@
                     } else {
                         return swal({
                             title: 'Dossiê não classificado',
-                            text: 'Erro na classificação do dossiê',
+                            text: 'Preencha todos os campos obrigatórios',
                             timer: 3000,
                             type: "error",
                         });
@@ -642,6 +645,9 @@
                             name: data.result.name
                         }
                         this.$refs.saveCategoryButton.focus();
+                        setTimeout(function () {
+                            window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
+                        }, 800);
                     })
                     .catch(() => {
                         this.loading.pagesPdf = false;
@@ -736,6 +742,9 @@
         },
         created() {
             window.addEventListener('keyup', this.shortCut);
+            setTimeout(function () {
+                window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
+            }, 800);
         },
         beforeDestroy() {
             window.removeEventListener('keyup', this.shortCut);
