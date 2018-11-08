@@ -78,6 +78,12 @@
                                         class="fa fa-file-text-o"></i><span
                                         class="sidebar-mini-hide">Classificar Dossiê</span></a>
                             </router-link>
+
+                            <router-link tag="li" to="/scanning" active-class="active" v-if="claims.digitalizar">
+                                <a><span><img src="assets/codebase/media/various/link-label.svg" alt=""></span><i
+                                        class="fa fa-print"></i><span
+                                        class="sidebar-mini-hide">Digitalizar</span></a>
+                            </router-link>
                         </ul>
                     </div>
                     <!-- END Side Navigation -->
@@ -158,6 +164,7 @@
                 claims: {
                     recortar: false,
                     classificar: false,
+                    digitalizar: false
                 },
                 fullName: window.localStorage.fullName,
                 units: [],
@@ -175,7 +182,6 @@
                 //this.classStyle();
             },
             changeUnity() {
-                alert('asas');
                 Auth.changeUnity();
                 this.notLogged = true;
                 this.$router.push('select-unity');
@@ -197,6 +203,8 @@
                             this.claims.recortar = true;
                         } else if (claim.ClaimType === "Classificar") {
                             this.claims.classificar = true;
+                        } else if (claim.ClaimType === "Digitalizar") {
+                            this.claims.digitalizar = true;
                         }
                     });
                 }

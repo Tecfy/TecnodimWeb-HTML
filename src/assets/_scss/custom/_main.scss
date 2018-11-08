@@ -214,6 +214,18 @@ input:-moz-placeholder { /* Firefox 18- */
       background-color: #fff;
       border: 0;
     }
+    &.select-multiple {
+      .dropdown-toggle {
+        border: 1px solid #ccc;
+        height: 34px;
+        line-height: 31px;
+        .selected-tag {
+          input {
+            border: 1px solid #37b78c;
+          }
+        }
+      }
+    }
   }
 }
 

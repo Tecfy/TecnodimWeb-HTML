@@ -38,29 +38,18 @@ export default new Router({
                 enabled: true
             }
         },
-        // {
-        //     path: '/cut-dossie',
-        //     component:  () => import('./views/CutDossie.vue'),
-        //     children: [
-        //         {
-        //             path: 'cut-selected',
-        //             component:  () => import('./views/CutDossieSelected'),
-        //         }
-        //     ]
-        // }
         {
             path: '/cut-dossie',
-            component:  () => import('./views/CutDossie.vue'),
+            component: () => import('./views/CutDossie.vue'),
             meta:{
                 requiresAuth: true,
                 enabled: true,
                 claim: "Recortar"
             }
         },
-
         {
             path: '/cut-selected/:id',
-            component:  () => import('./views/CutDossieSelected'),
+            component: () => import('./views/CutDossieSelected'),
             meta:{
                 requiresAuth: true,
                 enabled: true,
@@ -69,16 +58,16 @@ export default new Router({
         },
         {
             path: '/rate-dossie',
-            component:  () => import('./views/RateDossie'),
+            component: () => import('./views/RateDossie'),
              meta:{
                 requiresAuth: true,
                 enabled: true,
-                 claim: "Classificar"
+                claim: "Classificar"
             }
         },
         {
             path: '/rate-dossie-selected/:id',
-            component:  () => import('./views/RateDossieSelected'),
+            component: () => import('./views/RateDossieSelected'),
              meta:{
                 requiresAuth: true,
                 enabled: true,
@@ -87,7 +76,7 @@ export default new Router({
         },
         {
             path: '/rate-dossie-selected-single/:id',
-            component:  () => import('./views/RateDossieSelectedGroup'),
+            component: () => import('./views/RateDossieSelectedGroup'),
              meta:{
                 requiresAuth: true,
                 enabled: true,
@@ -96,11 +85,20 @@ export default new Router({
         },
         {
             path: '/rate-dossie-selected-group/:id/:slice_id',
-            component:  () => import('./views/RateDossieSelectedGroup'),
+            component: () => import('./views/RateDossieSelectedGroup'),
              meta:{
                 requiresAuth: true,
                 enabled: true,
                 claim: "Classificar"
+            }
+        },
+        {
+            path: '/scanning',
+            component: () => import('./views/Scanning'),
+            meta:{
+                requiresAuth: true,
+                enabled: true,
+                claim: "Digitalizar"
             }
         }
     ]

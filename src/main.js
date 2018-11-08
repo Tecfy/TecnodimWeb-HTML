@@ -70,14 +70,17 @@ router.beforeEach((to, from, next) => {
 function getClaims(){
     let claims = JSON.parse( window.localStorage.claims);
     let claimsOb = {
-        Recortar:false,
-        Classificar:false
+        Recortar: false,
+        Classificar: false,
+        Digitalizar: false
     };
     claims.map( claim => {
         if(claim.ClaimType === "Recortar"){
             claimsOb = {...claimsOb, Recortar: true}
-        }else if(claim.ClaimType === "Classificar"){
+        } else if(claim.ClaimType === "Classificar"){
             claimsOb = {...claimsOb, Classificar: true}
+        } else if(claim.ClaimType === "Digitalizar"){
+            claimsOb = {...claimsOb, Digitalizar: true}
         }
     });
     return claimsOb;
