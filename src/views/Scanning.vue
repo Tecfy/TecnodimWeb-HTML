@@ -1,5 +1,5 @@
 <template>
-    <div class="cut-dossie">
+    <div class="scanning">
         <p class="content-heading">
             <i class="si si-1arrow-left"></i><span class="h3"> Digitalizar documento</span>
         </p>
@@ -57,27 +57,29 @@
                 </div>
             </div>
         </div>
-        <div class="block mt-50" v-if="validate.studentClassification">
-            <div class="block mt-50">
-                <div class="block-content">
-                    <div class="row">
-                        <div class="col-12">
-                            <h5>Selecione abaixo quais tipos de documentos à serem digitalizados.</h5>
-                            <form action="" method="post" onsubmit="return false;" class="col-12">
-                                <div class="form-group row">
-                                    <div class="col-12">
-                                        <v-select multiple class="btn-sm select-multiple" ref="selectCategory" v-model="selected_category" :options="categories" v-on:change="focusInput()" label="name"></v-select>
-                                    </div>
+        <div class="block mt-50 docs-content" v-if="validate.studentClassification">
+            <div class="block-content">
+                <div class="row">
+                    <div class="col-12">
+                        <h5>Selecione abaixo quais tipos de documentos à serem digitalizados.</h5>
+                        <form action="" method="post" onsubmit="return false;">
+                            <div class="form-group row">
+                                <div class="col-12">
+                                    <v-select multiple class="btn-sm select-multiple" ref="selectCategory"
+                                              v-model="selected_category" :options="categories"
+                                              v-on:change="focusInput()" label="name"></v-select>
                                 </div>
-                            </form>
-                        </div>
-                        <div class="col-12 text-center">
-                            <a v-if="validate.allowSendButton" class="btn btn-lg btn-success text-white my-3" @click="getDocumentClassification">
-                                Enviar para scanner <i class="pl-2 fa fa-angle-right"></i>
-                            </a>
-
-                        </div>
+                            </div>
+                        </form>
                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <a v-if="validate.allowSendButton" class="btn btn-lg btn-success text-white my-3"
+                       @click="endClassification">
+                        Enviar para scanner <i class="pl-2 fa fa-angle-right"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -143,6 +145,17 @@
             focusInput() {
                 alert('oopre');
                 // this.$refs.selectCategory.focus();
+            },
+            endClassification() {
+                return swal({
+                    title: 'Sua solicitação foi finalizada, abaixo o código a ser usado no Scanner:',
+                    text: '00088685',
+                    // showCancelButton: true,
+                    // cancelButtonText: 'Cancelar'
+                    //type: "success",
+                }).then(() => window.location.reload());
+
+
             }
         },
         mounted() {
@@ -151,7 +164,9 @@
         watch: {
             selected_category() {
                 if (this.selected_category.length > 0) {
-                    this.validate.allowSendButton = true
+                    return this.validate.allowSendButton = true
+                } else {
+                    return this.validate.allowSendButton = false
                 }
             }
         }

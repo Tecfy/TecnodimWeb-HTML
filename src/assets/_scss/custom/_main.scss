@@ -567,3 +567,11 @@ input:-moz-placeholder { /* Firefox 18- */
 }
 
 /* END Rate Dossie Selected Group */
+
+.scanning {
+  .docs-content {
+    &.block {
+      height: 280px;
+    }
+  }
+}
