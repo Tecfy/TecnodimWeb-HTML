@@ -1,7 +1,7 @@
 <template>
     <div class="scanning">
         <p class="content-heading">
-            <i class="si si-1arrow-left"></i><span class="h3"> Digitalizar documento</span>
+            <i class="si si-arrow-left"></i><span class="h3">Digitalizar documento</span>
         </p>
         <div class="block block-themed block-rounded shadow-lg mb-50">
             <div class="block-header bg-gd-emerald shadow">
@@ -63,18 +63,14 @@
                     <div class="col-12">
                         <h5>Selecione abaixo quais tipos de documentos à serem digitalizados.</h5>
                         <form action="" method="post" onsubmit="return false;">
-                            <div class="form-group row">
-                                <div class="col-12">
-                                    <v-select multiple class="btn-sm select-multiple" ref="selectCategory"
-                                              v-model="selected_category" :options="categories"
-                                              v-on:change="focusInput()" label="name"></v-select>
-                                </div>
-                            </div>
+                            <v-select multiple class="btn-sm select-multiple" ref="selectCategory"
+                                      v-model="selected_category" :options="categories"
+                                      v-on:change="focusInput()" label="name"></v-select>
                         </form>
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-12 text-center">
                     <a v-if="validate.allowSendButton" class="btn btn-lg btn-success text-white my-3"
                        @click="endClassification">
@@ -105,9 +101,9 @@
                 searchRegistration: '',
                 searchResult: [
                     {
-                        studentName: "Nome do Aluno com Sobrenome",
-                        studentReg: "001",
-                        studentUnity: "Unidade de matrícula"
+                        studentName: "Márcio Lima",
+                        studentReg: "45354375",
+                        studentUnity: "Campinas / SP"
                     }
                 ],
                 categories: [],
@@ -129,33 +125,38 @@
                 if (this.searchRegistration === this.searchResult[0].studentReg) {
                     this.validate.studentSearch = true;
                     this.validate.studentFounded = true;
-                    // setTimeout(function() {
-                    //
-                    // }, 500);
                 } else if (this.searchRegistration !== this.searchResult[0].studentReg || this.searchRegistration.length > 1) {
                     this.validate.studentSearch = true;
                     this.validate.studentNotFounded = true;
+                    this.validate.studentClassification = false;
                 }
             },
             getDocumentClassification() {
                 this.validate.studentClassification = true;
-                this.validate.studentSearch = false;
+                this.validate.studentSearch = true;
                 this.validate.studentNotFounded = false;
             },
-            focusInput() {
+            /*focusInput() {
                 alert('oopre');
                 // this.$refs.selectCategory.focus();
-            },
+            },*/
             endClassification() {
                 return swal({
                     title: 'Sua solicitação foi finalizada, abaixo o código a ser usado no Scanner:',
-                    text: '00088685',
+                    text: '088685',
                     // showCancelButton: true,
                     // cancelButtonText: 'Cancelar'
                     //type: "success",
-                }).then(() => window.location.reload());
-
-
+                }).then(() => this.startScanning());
+            },
+            startScanning(){
+                this.searchRegistration = '';
+                this.selected_category = [];
+                this.validate.allowSendButton = false;
+                this.validate.studentClassification = false;
+                this.validate.studentFounded = false;
+                this.validate.studentNotFounded = false;
+                this.validate.studentSearch = false;
             }
         },
         mounted() {

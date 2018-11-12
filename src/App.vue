@@ -80,9 +80,9 @@
                             </router-link>
 
                             <router-link tag="li" to="/scanning" active-class="active" v-if="claims.digitalizar">
-                                <a><span><img src="assets/codebase/media/various/link-label.svg" alt=""></span><i
-                                        class="fa fa-print"></i><span
-                                        class="sidebar-mini-hide">Digitalizar</span></a>
+                                <a><span><img src="assets/codebase/media/various/link-label.svg" alt=""></span>
+                                    <i class="fa fa-clone"></i>
+                                    <span class="sidebar-mini-hide">Digitalizar</span></a>
                             </router-link>
                         </ul>
                     </div>

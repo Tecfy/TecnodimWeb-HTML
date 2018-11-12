@@ -574,4 +574,15 @@ input:-moz-placeholder { /* Firefox 18- */
       height: 280px;
     }
   }
+  .dropdown {
+    &.open {
+      margin-bottom: 300px;
+      .dropdown-menu {
+        position: relative;
+        margin-top: -60px;
+        z-index: 999;
+      }
+    }
+  }
 }
+
