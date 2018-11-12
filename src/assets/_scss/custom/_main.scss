@@ -584,12 +584,19 @@ input:-moz-placeholder { /* Firefox 18- */
       }
     }
   }
-  .swal2-popup {
-    .swal2-title {
-      font-size: 1.2em !important;
-    }
-    .swal2-content {
-      font-size: 1.8em !important;
-    }
+  .swal2-title {
+    font-size: 1.2em;
+  }
+  .swal2-content {
+    font-size: 1.8em;
+  }
+}
+
+.swal2-popup {
+  .swal2-title {
+    font-size: 1.2em !important;
+  }
+  .swal2-content {
+    font-size: 1.8em !important;
   }
 }
