@@ -364,6 +364,7 @@
                                 this.numPages = this.itemsSliced.slicePages.length;
                                 this.loading.pagesPdf = false;
                                 this.imageUrl = this.apiUrl+this.itemsSliced.slicePages[this.countPage].image;
+                                this.$refs.searchCode.focus();
 
                                 if (this.itemsSliced.slicePages.length >= 2) {
                                     this.loading.buttonsPage = true;
@@ -401,7 +402,7 @@
                                 this.numPages = this.itemsSliced.slicePages.length;
                                 this.loading.pagesPdf = false;
                                 this.imageUrl = this.apiUrl+this.itemsSliced.slicePages[this.countPage].image;
-
+                                this.$refs.searchCode.focus();
                                 this.$router.push('/rate-dossie-selected-single/' + this.id);
 
                                 if (this.itemsSliced.slicePages.length >= 2) {
