@@ -1,0 +1,146 @@
+<template>
+    <div class="cut-dossie">
+        <p class="content-heading">
+            <i class="si si-arrow-left"></i> <span class="h3">Dossiês digitalizados</span>
+        </p>
+        <div class="block block-themed block-rounded shadow-lg">
+            <div class="block-header bg-gd-emerald shadow">
+                <h5 class="text-black mb-0">Utilize a busca abaixo para localizar um dossiê por matrícula ou por
+                    nome.</h5>
+            </div>
+            <div class="block-content bg-primary">
+                <form action="" method="post" onsubmit="return false;">
+                    <div class="form-group row">
+                        <div class="col-lg-4 col-md-6">
+                            <label class="col-12 pl-0 text-white h5 mb-2" for="registration-number">Número da matrícula</label>
+                            <input ref="fieldRegistration" v-model="searchRegistration" type="text" class="form-control form-control-lg" id="registration-number" name="registration-number" v-mask="'#####################'">
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <label class="col-12 pl-0 text-white h5 mb-2" for="student-name">Nome do aluno</label>
+                            <input v-model="searchName" type="text" class="form-control form-control-lg" id="student-name" name="student-name">
+                        </div>
+                        <div class="col-lg-2 col-md-6">
+                            <label class="col-12 pl-0 text-white h5 mb-2">Status</label>
+                            <v-select :options="status" v-model="selected" @selected="focusButton"></v-select>
+                        </div>
+                        <div class="col-lg-2 col-md-6 pt-20 mt-5">
+                            <button @click="getDossies(1)" ref="searchButton" class="btn btn-alt-primary btn-lg btn-block mt-1">Buscar <i class="fa fa-search ml-5"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="block mt-50">
+            <div class="block mt-50">
+                <div class="block-content" v-if="!loadingDossies">
+                    <h5 class="pt-1 text-right">
+                        <span class="mr-10"><strong>{{ totalCount }}</strong></span><small>registros encontrados</small>
+                    </h5>
+                    <table class="table table-vcenter">
+                        <thead class="thead-light mb-50">
+                        <tr class="p-50">
+                            <th class="py-20"><b>Matrícula</b></th>
+                            <th class="py-20"><b>Nome</b></th>
+                            <th class="py-20"><b>Status</b></th>
+                            <th class="py-20"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="customer in searchResult" >
+                            <th scope="row">{{ customer.registration }}</th>
+                            <td>{{ customer.name }}</td>
+                            <td>
+                                <span v-if="customer.statusId === 3" class="badge badge-danger">Não iniciado</span>
+                                <span v-if="customer.statusId === 4" class="badge badge-primary">Iniciado</span>
+                            </td>
+                            <td class="text-right">
+                                <div class="btn-group">
+                                    <router-link :to="'/scanned-selected/'+customer.jobId" class="btn btn-lg btn-success mr-2" data-title="Iniciar classificação"><i class="fa fa-arrow-circle-right"></i></router-link>
+                                    <button class="btn btn-lg btn-alt-primary mr-2" data-title="Excluir classificação"><i class="fa fa-trash-o"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else>
+                    <h2 class="text-center">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+  import api from '../lib/api';
+
+  export default {
+    data() {
+      return {
+        searchResult: [],
+        loadingDossies: true,
+        searchName: '',
+        searchRegistration: '',
+        searchStatus: '',
+        status: [
+          { id: 0, label: 'Selecione' },
+          { id: 1, label: 'Não iniciado' },
+          { id: 2, label: 'Iniciado' }
+        ],
+        selected: {id: 0, label: 'Selecione'},
+        currentPage: 1,
+        totalCount: null,
+        totalShow: 10,
+        numPagination: 0,
+        searchActivate: false
+      }
+    },
+    methods: {
+      focusButton() {
+        alert('opre');
+        this.$refs.searchButton.focus();
+      },
+      getDossies(p) {
+        // let unityId = window.localStorage.selectedUnit;
+        this.loadingDossies = true;
+
+        if (p === 'back') {
+          this.currentPage--;
+        } else if (p === 'next') {
+          this.currentPage++;
+        } else {
+          this.currentPage = p;
+        }
+
+        // let newPageUrlApi = '/Documents/GetDocumentClassificateds?unityId=' + unityId;
+        let newUrlApi = '/Jobs/GetJobsByUser';
+
+        this.createPagination(newUrlApi);
+        api.get(newUrlApi).then(({data}) => {
+          this.loadingDossies = false;
+          this.searchResult = data.result;
+        });
+        this.$refs.fieldRegistration.focus();
+      },
+      createPagination(url) {
+        api.get(url).then(({data}) => {
+          this.loadingDossies = false;
+          this.totalCount = data.result.length;
+          this.numPagination = Math.ceil(this.totalCount / this.totalShow);
+        });
+      }
+    },
+    mounted(){
+      this.getDossies(this.currentPage);
+    },
+    watch: {
+      selected: function () {
+        if(this.selected !== 'Selecione') {
+          this.$refs.searchButton.focus();
+        }
+      }
+    }
+  }
+</script>

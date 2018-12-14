@@ -84,6 +84,12 @@
                                     <i class="fa fa-clone"></i>
                                     <span class="sidebar-mini-hide">Digitalizar</span></a>
                             </router-link>
+
+                            <router-link tag="li" to="/scanned" active-class="active" v-if="claims.digitalizar">
+                                <a><span><img src="assets/codebase/media/various/link-label.svg" alt=""></span>
+                                    <i class="fa fa-clipboard"></i>
+                                    <span class="sidebar-mini-hide">Digitalizados</span></a>
+                            </router-link>
                         </ul>
                     </div>
                     <!-- END Side Navigation -->

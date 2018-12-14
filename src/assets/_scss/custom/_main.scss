@@ -195,6 +195,36 @@ input:-moz-placeholder { /* Firefox 18- */
       border-color: #49d2a4;
     }
   }
+
+  .scrumboard {
+    opacity: 1;
+    .scrumboard-items {
+      .scrumboard-item {
+        box-shadow: 0 3px 5px rgba(0,0,0,0.25);
+        min-height: 22px;
+        border-top: 1px solid #34ad84;
+        font-size: 0.8rem;
+        line-height: 0.9rem;
+        margin-bottom: 6px;
+
+        .scrumboard-item-options {
+          top: 2px;
+          .btn {
+            height: 16px;
+            padding: 0px 2px;
+            line-height: 0;
+          }
+        }
+      }
+      .form-group {
+        .select2-container {
+          .select2-selection {
+            height: 34px;
+          }
+        }
+      }
+    }
+  }
 }
 
 .top-menu {
@@ -501,35 +531,7 @@ input:-moz-placeholder { /* Firefox 18- */
       .clear {
         display: none;
       }
-      .scrumboard {
-        opacity: 1;
-        .scrumboard-items {
-          .scrumboard-item {
-            box-shadow: 0 3px 5px rgba(0,0,0,0.25);
-            min-height: 22px;
-            border-top: 1px solid #34ad84;
-            font-size: 0.8rem;
-            line-height: 0.9rem;
-            margin-bottom: 6px;
 
-            .scrumboard-item-options {
-              top: 2px;
-              .btn {
-                height: 16px;
-                padding: 0px 2px;
-                line-height: 0;
-              }
-            }
-          }
-          .form-group {
-            .select2-container {
-              .select2-selection {
-                height: 34px;
-              }
-            }
-          }
-        }
-      }
       .block-header {
         .bg-green-title {
           background-color: #5fc5a3;
@@ -589,6 +591,24 @@ input:-moz-placeholder { /* Firefox 18- */
   }
   .swal2-content {
     font-size: 1.8em;
+  }
+}
+
+.scanning-selected {
+  .v-select {
+    .dropdown-toggle {
+      .selected-tag {
+        display: none;
+      }
+    }
+  }
+  .category-selected {
+      .btn {
+        cursor: default;
+        .close {
+          cursor: pointer;
+        }
+      }
   }
 }
 

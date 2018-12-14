@@ -161,7 +161,7 @@
                                         </div>
                                     </div>
                                     <div class="col-12" v-bind:class="{'mt-20': this.additionalFields !== 0}">
-                                        <v-select ref="selectCategory" v-model="selected_category" :options="categories" label="name" class="btn-sm" :selected="selected_category.categoryId"></v-select>
+                                        <v-select ref="selectCategory" v-model="selected_category" :options="categories" label="name" :selected="selected_category.categoryId"></v-select>
                                     </div>
                                 </div>
                             </form>
