@@ -20,14 +20,16 @@
                             </strong>
                         </h3>
                     </div>
-                    <div class="block-content" v-if="!loading.pagesPdf">
+                    <!--<div class="block-content" v-if="!loading.pagesPdf">-->
+                    <div class="block-content">
                         <div class="row">
                             <div class="col-12 px-0">
                                 <div class="container">
                                     <div class="row">
-                                        <div v-for="(item, i) in pages" :key="i"
+                                        <div v-for="(item, i) in slices[selectedJob].jobCategoryPages" :key="i"
                                              class=" col-sm-6 col-xl-3 mb-30 card-thumb">
-                                            <img width="200" :src="apiUrl+item.thumb" alt="Pdf thumbnail"
+                                            <img width="200" :src="apiUrl+item.thumb"
+                                                 alt="Pdf thumbnail"
                                                  class="selectable img-fluid shadow" draggable="false">
 
                                             <div class="col-12">
@@ -46,12 +48,12 @@
                             </div>
                         </div>
                     </div>
-                    <div v-else>
-                        <h2 class="text-center"><i class="fa fa-spinner fa-spin"></i></h2>
-                    </div>
+                    <!--<div v-else>-->
+                    <!--<h2 class="text-center"><i class="fa fa-spinner fa-spin"></i></h2>-->
+                    <!--</div>-->
                 </div>
 
-                <div class="block block-rounded shadow-sm pb-10 block-group" @mouseover="zoomImg('over')">
+                <div class="block block-rounded shadow-sm pb-10 block-group">
                     <div class="block-header">
                         <h3 class="block-title"><strong>Recortes Realizados
                             <!--<span> ({{ numGroupCreated() }})</span>-->
@@ -64,8 +66,10 @@
                         <div class="row">
                             <div class="col-md-3" v-for="(item,i) in slices" :key="i">
                                 <button type="button" class="btn btn-block btn-outline-primary my-3 text-left"
-                                        v-bind:title="item.category">
-                                    <i class="fa fa-folder mr-5"></i> <span class="text-black">{{ item.category }}</span>
+                                        v-bind:title="item.category" @click="selectJob(i)"
+                                        v-bind:class="{'active': classJob[i].selec}">
+                                    <i class="fa fa-folder mr-5"></i> <span
+                                        class="text-black">{{ item.category }}</span>
                                 </button>
                             </div>
                         </div>
@@ -80,15 +84,15 @@
                     <div class="block-header">
                         <h4 class="block-title text-center text-white">Dados do aluno</h4>
                     </div>
-                    <div class="block-content">
+                    <div class="block-content" v-for="(el, i) in student" :key="i">
                         <p class="text-white"><i class="fa fa-file-text-o mr-10"></i><strong>Número da
-                            Matrícula:</strong> {{student.registration}}</p>
-                        <p class="text-white"><i class="fa fa-user mr-10"></i><strong>Nome:</strong> {{student.name}}
+                            Matrícula:</strong> {{el.registration}}</p>
+                        <p class="text-white"><i class="fa fa-user mr-10"></i><strong>Nome:</strong> {{el.name}}
                         </p>
                         <p class="text-white"><i class="fa fa-building mr-10"></i><strong>Unidade:</strong>
-                            {{student.unity}}</p>
+                            {{el.unity}}</p>
                         <p class="text-white"><i class="fa fa-graduation-cap mr-1"></i><strong>Curso:</strong>
-                            {{student.course}}</p>
+                            {{el.course}}</p>
                     </div>
                 </div>
                 <div class="block block-themed block-rounded shadow actions-content">
@@ -190,7 +194,7 @@
                                     <button type="submit" ref="saveCategoryButton"
                                             class="btn btn-lg btn-dark shadow-sm btn-block text-uppercase"
                                             @click="createNewCategory()">
-                                        <i class="fa fa-plus-square"></i> Adicionar nova categoria
+                                        <i class="fa fa-plus-square"></i> Nova categoria
                                     </button>
                                 </div>
                             </div>
@@ -211,9 +215,8 @@
                                 </button>
                             </div>
                             <div class="col-12 pt-20 mt-5">
-                                <button type="submit" @click="openModal"
-                                        class="btn btn-alt-primary btn-lg btn-block text-uppercase" data-toggle="modal"
-                                        data-target="#modal-del-pages">
+                                <button type="button" class="btn btn-alt-primary btn-lg btn-block text-uppercase"
+                                        @click="deleteJobs">
                                     <i class="fa fa-trash"></i> Deletar categoria
                                 </button>
                             </div>
@@ -313,7 +316,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn-dark btn-lg float-right shadow-sm text-uppercase"
-                                data-dismiss="modal" @click="deletePages"><i class="si si-check mr-10"></i> Apagar
+                                @click="deleteJobs"><i class="si si-check mr-10"></i> Apagar
                             página.
                         </button>
                     </div>
@@ -355,7 +358,7 @@
 </template>
 
 <script>
-  import selectable from 'vue-selectable';
+  // import selectable from 'vue-selectable';
   import api from '../lib/api';
   import config from '../config/index';
   import swal from 'sweetalert2';
@@ -395,25 +398,32 @@
         // selectedNewCategoryId: '',
         newGroupName: '',
         // newGroupId: ''
+        selectedJob: 0,
+        hasCategroy: false,
+        classJob: [],
+        countPage: 0
       }
     },
     methods: {
       // Carrega Dados do Aluno
       getDetails() {
         this.jobId = this.$route.params.id;
-        api.get('/documentDetails/GetDocumentDetailByDocumentId/' + this.jobId)
+        api.get('/documentDetails/GetDocumentDetailsByRegistration?registration=01169866&unityid=1')
           .then(({data}) => {
             this.student = data.result;
           });
       },
       // Carrega Recortes Realizados
-      getSlices() {
+      getJobs() {
         this.loading.slicesCategory = true;
         api.get('/JobCategories/GetJobCategoriesByJobId?jobId=' + this.jobId)
           .then(({data}) => {
             this.slices = data.result;
             this.loading.slicesCategory = false;
+            this.loadButtonJob();
+            this.receivedImages();
           });
+
       },
       getCategories() {
         api.get('/categories/getCategories')
@@ -485,344 +495,208 @@
       //   }
       // },
       zoomImg(e) {
-      //   this.loadImg = true;
-      //   if (e === 'over') {
-      //     this.selectPage = true;
-      //   } else if (e === 'out') {
-      //     this.selectPage = false;
-      //   } else {
-      //     this.linkImg = this.pages[e].image;
-      //     this.linkPos = e;
-      //     this.selectPage = true;
-      //     $('#modalZoomImg').modal({
-      //       backdrop: 'static'
-      //
-      //     });
-      //   }
+        this.loadImg = true;
+        if (this.countPage !== 0) {
+          this.countPage = e;
+        } else {
+          this.countPage = 0;
+        }
+        this.linkImg = this.slices[this.selectedJob].jobCategoryPages[this.countPage].image;
+        // console.log(this.linkImg);
+        this.linkPos = e;
+        // this.loadImg = false;
+        this.selectPage = true;
+        $('#modalZoomImg').modal({
+          backdrop: 'static'
+        });
+      },
+      navPage: function (e) {
+        this.loadImg = true;
+        if (e === "next") {
+          if (this.countPage !== this.numPages - 1) {
+            this.countPage++;
+          } else {
+            this.countPage = 0;
+          }
+        } else {
+          if (this.countPage >= 1) {
+            this.countPage--;
+          } else {
+            this.countPage = this.numPages - 1;
+          }
+        }
+        this.zoom = 1;
+        this.linkImg = this.slices[0].jobCategoryPages[this.countPage].image;
+        this.linkImg = this.apiUrl + this.itemsSliced.slicePages[this.countPage].image;
+        this.stepClass(this.countPage);
+        this.pageRotate();
       },
       imgLoaded() {
-      //   this.loadImg = false;
+          this.loadImg = false;
       },
-      // navPage(nav) {
-      //   let numPages = this.pages.length;
-      //   this.loadImg = true;
-      //
-      //   if (nav === 'prev' && this.linkPos > 0) {
-      //     this.linkPos--;
-      //     this.linkImg = this.pages[this.linkPos].image;
-      //   } else if (nav === 'next' && this.linkPos < numPages - 1) {
-      //     this.linkPos++;
-      //     this.linkImg = this.pages[this.linkPos].image;
-      //   }
-      // },
 
-      // getPdf() {
-      //   let id = this.$route.params.id;
-      //   this.loading.pagesPdf = true;
-      //   api.get('/PDFs/GetPDFs/' + id)
-      //     .then(({data}) => {
-      //       this.pages = data.result;
-      //       this.loading.pagesPdf = false;
-      //     });
-      // },
-
-      // createGroup: function () {
-      //   let itemsR = [];
-      //   let itemsA = [];
-      //   this.pages.map((page, index) => {
-      //     let isSelected = this.selected[index];
-      //     if (isSelected) {
-      //       itemsR.push(this.pages[index]);
-      //     } else {
-      //       itemsA.push(this.pages[index]);
-      //     }
-      //   });
-      //   this.pages = itemsA;
-      //
-      //   let newCut = {
-      //     name: (this.slices.length + 1) + " - " + this.newGroupName,
-      //     items: itemsR
-      //   };
-      //   this.cutGroups.push(newCut);
-      //
-      //   //this.selected = Array(this.pages.length).fill(false);
-      //   this.newGroupName = "";
-      //   this.selectPage = false;
-      //
-      //   return this.postCut(newCut);
-      // },
-      // postCut(newCut) {
-      //   let pages = [];
-      //   newCut.items.map(item => {
-      //     pages.push({page: item.page});
-      //   });
-      //
-      //   // this.getPdf();
-      //   let request = {
-      //     documentId: this.$route.params.id,
-      //     name: newCut.name,
-      //     pages
-      //   };
-      //
-      //   this.loading.pagesPdf = true;
-      //   this.loading.slicesCategory = true;
-      //   api.post('/slices', request)
-      //     .then(() => {
-      //       this.loading.pagesPdf = false;
-      //       this.loading.slicesCategory = false;
-      //       this.getSlices();
-      //       if (this.pages.length === 0) {
-      //         let requestFinish = {
-      //           documentId: this.$route.params.id,
-      //           documentStatusId: 3
-      //         };
-      //         api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
-      //           .then(() => {
-      //
-      //           })
-      //           .catch(() => {
-      //
-      //           });
-      //         return swal({
-      //           title: 'Dossiê finalizado!',
-      //           text: 'Todas as páginas foram classificadas.',
-      //           timer: 3000,
-      //           type: "success",
-      //         })
-      //           .then(() => this.$router.push('/cut-dossie'))
-      //       }
-      //       return swal({
-      //         title: 'Recorte salvo com sucesso!',
-      //         toast: true,
-      //         timer: 3000,
-      //         type: "success",
-      //         showConfirmButton: false,
-      //       });
-      //     })
-      //     .catch(() => {
-      //       this.loading.pagesPdf = false;
-      //       this.loading.slicesCategory = false;
-      //       return swal({
-      //         title: 'Erro ao salvar recorte!',
-      //         toast: true,
-      //         timer: 3000,
-      //         type: "error",
-      //         showConfirmButton: false,
-      //       })
-      //         .then(() => window.location.reload());
-      //     })
-      // },
       allowSelectPages() {
-      //   this.newGroupName = "";
-      //   this.selectPage = false;
+        //   this.newGroupName = "";
+        //   this.selectPage = false;
       },
+      receivedImages() {
+        for (let i = 0; i < this.slices.length; i++) {
+          if (this.categoryName === this.slices[i].category) {
+            this.hasCategroy = true;
+            break;
+          } else {
+            this.hasCategroy = false;
+          }
+        }
+      },
+      deleteJobs: function () {
+
+        if (this.selectedJob !== '') {
+          let request = {
+            jobCategoryId: this.slices[this.selectedJob].jobCategoryId
+          }
+          console.log(request);
+          // Envio requisição criação categoria
+          api.post('/JobCategories/SetJobCategoryDeleted', request)
+            .then(() => {
+              return swal({
+                title: 'Apagar Grupo',
+                text: 'Deseja realmente excluir grupo de Classificação?',
+                type: "success",
+                showConfirmButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar'
+              })
+                .then(result => {
+                  if (result.value) {
+                    this.getJobs();
+                    this.getCategories();
+                  }
+                });
+            })
+            .catch(() => {
+              this.loading.pagesPdf = false;
+              this.loading.slicesCategory = false;
+              return swal({
+                title: 'Erro ao salvar recorte!',
+                toast: true,
+                timer: 3000,
+                type: "error",
+                showConfirmButton: false,
+              })
+            })
+        } else {
+
+          return swal({
+            title: 'Nenhuma categoria selecionada',
+            toast: true,
+            timer: 3000,
+            type: "info",
+            showConfirmButton: false,
+          })
+        }
+        // console.log(request)
 
 
-
-      deletePages: function () {
-      //   // let itemsR = [];
-      //   // let itemsA = [];
-      //   // this.pages.map((page, index) => {
-      //   //     let isSelected = this.selected[index];
-      //   //     if (isSelected) {
-      //   //         itemsR.push(this.pages[index]);
-      //   //     } else {
-      //   //         itemsA.push(this.pages[index]);
-      //   //     }
-      //   // });
-      //   // // Paginas a deletar
-      //   // let pages = [];
-      //   // itemsR.map(item => {
-      //   //     pages.push({page: item.page});
-      //   // });
-      //   //
-      //   // let request = {
-      //   //     documentId: this.$route.params.id,
-      //   //     pages
-      //   // };
-      //   //
-      //   // this.loading.pagesPdf = true;
-      //   // this.loading.slicesCategory = true;
-      //   // api.post('/DeletedPages', request)
-      //   //     .then(() => {
-      //   //         //Só atualiza localmente (this.pages) se a requisição for feita com sucesso
-      //   //         this.pages = itemsA;
-      //   //         this.loading.pagesPdf = false;
-      //   //         this.loading.slicesCategory = false;
-      //   //
-      //   //
-      //   //         this.selected = Array(this.pages.length).fill(false);
-      //   //         this.selectPage = false;
-      //   //
-      //   //         if (this.pages.length === 0) {
-      //   //             return swal({
-      //   //                 title: 'Dossiê finalizado!',
-      //   //                 text: 'Todas as páginas foram classificadas.',
-      //   //                 timer: 3000,
-      //   //                 type: "success",
-      //   //             })
-      //   //                 .then(() => this.$router.push('/cut-dossie'))
-      //   //         }
-      //   //         return swal({
-      //   //             title: 'Página' + this.pluralAditional() +' apagada'+ this.pluralAditional() +' com sucesso!',
-      //   //             toast: true,
-      //   //             timer: 3000,
-      //   //             type: "success",
-      //   //             showConfirmButton: false,
-      //   //         });
-      //   //     })
-      //   //     .catch(() => {
-      //   //         this.loading.pagesPdf = false;
-      //   //         this.loading.slicesCategory = false;
-      //   //         return swal({
-      //   //             title: 'Erro ao apagar página',
-      //   //             toast: true,
-      //   //             timer: 3000,
-      //   //             type: "error",
-      //   //             showConfirmButton: false,
-      //   //         })
-      //   //             .then(() => window.location.reload());
-      //   //     })
       },
       // numGroupCreated() {
       //   return this.slices.length;
       // },
       openModal() {
-      //   setTimeout(function () {
-      //     document.getElementById("newSlice").focus()
-      //   }, 500);
-      //   this.selectPage = true;
+        //   setTimeout(function () {
+        //     document.getElementById("newSlice").focus()
+        //   }, 500);
+        //   this.selectPage = true;
       },
-      // shortCut(e) {
-      //     if (!e.shiftKey || !e.ctrlKey) {
-      //         return
-      //     }
-      //     switch (e.code) {
-      //         // Zoom In
-      //         case "KeyZ":
-      //             this.zoomPage('zoomIn');
-      //             break;
-      //
-      //         // Zoom Out
-      //         case "KeyX":
-      //             this.zoomPage('zoomOut');
-      //             break;
-      //
-      //         // Rotate Left
-      //         case "Comma":
-      //             this.pageRotate('l');
-      //             break;
-      //
-      //         // Rotate Right
-      //         case "Period":
-      //             this.pageRotate('r');
-      //             break;
-      //
-      //         // Navegation Left
-      //         case "ArrowLeft":
-      //             if (this.numPages > 1) {
-      //                 this.navPage('prev');
-      //             }
-      //             break;
-      //
-      //         // Navegation Right
-      //         case "ArrowRight":
-      //             if (this.numPages > 1) {
-      //                 this.navPage('next');
-      //             }
-      //             break;
-      //
-      //         // Navegation Left
-      //         case "Backspace":
-      //             if (this.numPages > 1) {
-      //                 $('#modal-del-page').modal('show');
-      //                 // this.$refs.delModal.modal('show');
-      //             }
-      //             break;
-      //
-      //         // Focus on search code
-      //         case "Space":
-      //             this.$refs.searchCode.focus();
-      //             break;
-      //
-      //         // Save Button Classification
-      //         case "KeyS":
-      //             this.sendClassification();
-      //             break;
-      //     }
-      // }
       createNewCategory() {
-        // this.selectedNewCategory = this.selected_category;
-
         let request = {
           jobId: this.jobId,
           categoryId: this.selected_category.categoryId
         };
 
-        api.post('/JobCategories/SetJobCategoryInclude', request)
-          .then(() => {
-            return swal({
-              title: 'Envio de Novo Grupo',
-              text: 'Deseja realmente enviar a seleção de classificação?',
-              type: "success",
-              showCancelButton: true,
-              confirmButtonText: 'Confirmar',
-              cancelButtonText: 'Cancelar'
-            })
-              .then(result => {
-                if(result.value){
-                  //this.confirmationSend();
-                  console.log('enviado')
-                }
-              });
+        if (this.selected_category === "Selecione") {
+          return swal({
+            title: 'Selecione uma categoria para adicionar',
+            toast: true,
+            timer: 3000,
+            type: "info",
+            showConfirmButton: false,
           })
-          .catch(() => {
-            this.loading.pagesPdf = false;
-            this.loading.slicesCategory = false;
-            return swal({
-              title: 'Erro ao salvar recorte!',
-              toast: true,
-              timer: 3000,
-              type: "error",
-              showConfirmButton: false,
+        }
+        for (let i = 0; i < this.slices.length; i++) {
+          console.log('i', i)
+          if (this.categoryName === this.slices[i].category) {
+            this.hasCategroy = true;
+            break;
+          } else {
+            this.hasCategroy = false;
+          }
+        }
+        if (!this.hasCategroy) {
+          // Envio requisição criação categoria
+          api.post('/JobCategories/SetJobCategoryInclude', request)
+            .then(() => {
+              return swal({
+                title: 'Envio de Novo Grupo',
+                text: 'Deseja realmente incluir nova classificação?',
+                type: "success",
+                showConfirmButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar'
+              })
+                .then(result => {
+                  if (result.value) {
+                    this.getJobs();
+                    this.getCategories();
+                  }
+                });
             })
+            .catch(() => {
+              this.loading.pagesPdf = false;
+              this.loading.slicesCategory = false;
+              return swal({
+                title: 'Erro ao salvar recorte!',
+                toast: true,
+                timer: 3000,
+                type: "error",
+                showConfirmButton: false,
+              })
+            })
+        } else {
+          return swal({
+            text: 'Classificação já existe',
+            toast: true,
+            timer: 3000,
+            type: "error",
+            showConfirmButton: false,
           })
-
-
-        // if (this.selectedNewCategory === "" || this.selectedNewCategory === undefined || this.selectedNewCategory === 'Selecione') {
-        //   return swal({
-        //     title: 'Nenhum tipo de classificação selecionado.',
-        //     toast: true,
-        //     timer: 3000,
-        //     type: "error",
-        //     showConfirmButton: false,
-        //   })
-        // } else {
-        //   // this.selectedNewCategory = this.selected_category;
-        //   // this.newGroupName = this.selected_category.name;
-        //   // this.newGroupId = this.selected_category.categoryId;
-        //
-        //   // console.log(this.newGroupId);
-        //
-        //   let newGroup = {
-        //     category: this.selected_category.name,
-        //     jobCategoryId: this.selected_category.categoryId
-        //   };
-        //   console.log(newGroup);
-          // this.slices.push(newGroup);
-
-          // this.slices.push(this.selectedNewCategory);
-
-            //console.log();
-        // }
+        }
       },
+      loadButtonJob() {
+        for (let num = 0; num < this.slices.length; num++) {
+          this.classJob.push({
+            selec: false
+          });
+        }
+      },
+      selectJob(i) {
+        this.selectedJob = i;
+        for (let num = 0; num < this.slices.length; num++) {
+          this.classJob[num].selec = false;
+        }
+        this.classJob[i].selec = true;
+      }
     },
     mounted() {
       this.getDetails();
-      this.getSlices();
+      this.getJobs();
       this.getCategories();
-      this.getPdf();
-    },
+      // this.loadButtonJob();
+      // this.getPdf();
+    }
+    ,
     watch: {
       selected_category(newVal) {
         if (newVal === 'Selecione' || newVal === null) {
@@ -833,9 +707,9 @@
           this.categoryId = newVal.categoryId;
           this.categoryName = newVal.name;
           // this.updateSubCategories();
-          setTimeout(function () {
-            window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
-          }, 800);
+          // setTimeout(function () {
+          //   window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
+          // }, 800);
         }
         this.searchField = '';
         //console.log('this.additionalFields', this.additionalFields);

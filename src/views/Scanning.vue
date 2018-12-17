@@ -68,7 +68,7 @@
         searchResult: [],
         loadingDossies: false,
         noDossies: true,
-        searchRegistration: '01169866',
+        searchRegistration: '',
         totalShow: 10,
         searchActivate: false
       }

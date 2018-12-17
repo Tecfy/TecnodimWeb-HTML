@@ -12,19 +12,25 @@
                 <form action="" method="post" onsubmit="return false;">
                     <div class="form-group row">
                         <div class="col-lg-4 col-md-6">
-                            <label class="col-12 pl-0 text-white h5 mb-2" for="registration-number">Número da matrícula</label>
-                            <input ref="fieldRegistration" v-model="searchRegistration" type="text" class="form-control form-control-lg" id="registration-number" name="registration-number" v-mask="'#####################'">
+                            <label class="col-12 pl-0 text-white h5 mb-2" for="registration-number">Número da
+                                matrícula</label>
+                            <input ref="fieldRegistration" v-model="searchRegistration" type="text"
+                                   class="form-control form-control-lg" id="registration-number"
+                                   name="registration-number" v-mask="'#####################'">
                         </div>
                         <div class="col-lg-4 col-md-6">
                             <label class="col-12 pl-0 text-white h5 mb-2" for="student-name">Nome do aluno</label>
-                            <input v-model="searchName" type="text" class="form-control form-control-lg" id="student-name" name="student-name">
+                            <input v-model="searchName" type="text" class="form-control form-control-lg"
+                                   id="student-name" name="student-name">
                         </div>
                         <div class="col-lg-2 col-md-6">
                             <label class="col-12 pl-0 text-white h5 mb-2">Status</label>
                             <v-select :options="status" v-model="selected" @selected="focusButton"></v-select>
                         </div>
                         <div class="col-lg-2 col-md-6 pt-20 mt-5">
-                            <button @click="getDossies(1)" ref="searchButton" class="btn btn-alt-primary btn-lg btn-block mt-1">Buscar <i class="fa fa-search ml-5"></i></button>
+                            <button @click="getDossies(1)" ref="searchButton"
+                                    class="btn btn-alt-primary btn-lg btn-block mt-1">Buscar <i
+                                    class="fa fa-search ml-5"></i></button>
                         </div>
                     </div>
                 </form>
@@ -34,29 +40,38 @@
             <div class="block mt-50">
                 <div class="block-content" v-if="!loadingDossies">
                     <h5 class="pt-1 text-right">
-                        <span class="mr-10"><strong>{{ totalCount }}</strong></span><small>registros encontrados</small>
+                        <span class="mr-10"><strong>{{ totalCount }}</strong></span>
+                        <small>registros encontrados</small>
                     </h5>
                     <table class="table table-vcenter">
                         <thead class="thead-light mb-50">
                         <tr class="p-50">
                             <th class="py-20"><b>Matrícula</b></th>
                             <th class="py-20"><b>Nome</b></th>
+                            <th class="py-20"><b>Curso</b></th>
                             <th class="py-20"><b>Status</b></th>
                             <th class="py-20"></th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="customer in searchResult" >
+                        <tr v-for="(customer, i) in searchResult" :key="i">
                             <th scope="row">{{ customer.registration }}</th>
                             <td>{{ customer.name }}</td>
                             <td>
-                                <span v-if="customer.statusId === 3" class="badge badge-danger">Não iniciado</span>
-                                <span v-if="customer.statusId === 4" class="badge badge-primary">Iniciado</span>
+                                {{ customer.course }}
+                            </td>
+                            <td>
+                                <span v-if="customer.status === 'Novo'" class="badge badge-danger">Novo</span>
+                                <span v-if="customer.status === 'Parcialmente Digitalizado'" class="badge badge-primary">Parcialmente Digitalizado</span>
                             </td>
                             <td class="text-right">
                                 <div class="btn-group">
-                                    <router-link :to="'/scanned-selected/'+customer.jobId" class="btn btn-lg btn-success mr-2" data-title="Iniciar classificação"><i class="fa fa-arrow-circle-right"></i></router-link>
-                                    <button class="btn btn-lg btn-alt-primary mr-2" data-title="Excluir classificação"><i class="fa fa-trash-o"></i></button>
+                                    <router-link :to="'/scanned-selected/'+customer.jobId"
+                                                 class="btn btn-lg btn-success mr-2" data-title="Iniciar classificação">
+                                        <i class="fa fa-arrow-circle-right"></i></router-link>
+                                    <button class="btn btn-lg btn-alt-primary mr-2" data-title="Excluir classificação"
+                                            @click="deletePage(i)">
+                                        <i class="fa fa-trash-o"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -75,6 +90,7 @@
 
 <script>
   import api from '../lib/api';
+  import swal from 'sweetalert2';
 
   export default {
     data() {
@@ -85,9 +101,9 @@
         searchRegistration: '',
         searchStatus: '',
         status: [
-          { id: 0, label: 'Selecione' },
-          { id: 1, label: 'Não iniciado' },
-          { id: 2, label: 'Iniciado' }
+          {id: 0, label: 'Selecione'},
+          {id: 1, label: 'Não iniciado'},
+          {id: 2, label: 'Iniciado'}
         ],
         selected: {id: 0, label: 'Selecione'},
         currentPage: 1,
@@ -105,14 +121,7 @@
       getDossies(p) {
         // let unityId = window.localStorage.selectedUnit;
         this.loadingDossies = true;
-
-        if (p === 'back') {
-          this.currentPage--;
-        } else if (p === 'next') {
-          this.currentPage++;
-        } else {
-          this.currentPage = p;
-        }
+        this.currentPage = p;
 
         // let newPageUrlApi = '/Documents/GetDocumentClassificateds?unityId=' + unityId;
         let newUrlApi = '/Jobs/GetJobsByUser';
@@ -130,14 +139,47 @@
           this.totalCount = data.result.length;
           this.numPagination = Math.ceil(this.totalCount / this.totalShow);
         });
+      },
+      deletePage(i) {
+        let pageToDelete = {
+          jobId: this.searchResult[i].jobId
+        };
+        // console.log(pageToDelete.slicePageId);
+
+        this.loadingDossies = true;
+        api.post('/Jobs/SetJobDelete', pageToDelete)
+          .then(() => {
+            this.loadingDossies = false;
+            this.getDossies();
+            // this.getCategories();
+            return swal({
+              title: 'Dossiê apagado com sucesso!',
+              toast: true,
+              timer: 3000,
+              type: "success",
+              showConfirmButton: false,
+            });
+          })
+          .catch(() => {
+            this.loadingDossies = false;
+            this.getDossies();
+            return swal({
+              title: 'Erro ao excluir Dossiê',
+              toast: true,
+              timer: 3000,
+              type: "error",
+              showConfirmButton: false,
+            })
+
+          });
       }
     },
-    mounted(){
+    mounted() {
       this.getDossies(this.currentPage);
     },
     watch: {
       selected: function () {
-        if(this.selected !== 'Selecione') {
+        if (this.selected !== 'Selecione') {
           this.$refs.searchButton.focus();
         }
       }

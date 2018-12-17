@@ -97,25 +97,7 @@
                         <h4 class="block-title text-center text-white">Ações</h4>
                     </div>
                     <div class="block-content bg-primary pt-30 pb-10">
-                        <!--<div class="form-group row actions-selected">-->
-                            <!--<div class="col-md-6">-->
-                                <!--<button type="button" class="btn btn-sm btn-block btn-gray-300 mr-5 mb-5 shadow">-->
-                                    <!--<b>Selecionados: </b>-->
-                                    <!--&lt;!&ndash;<span>{{ numSelected() }}</span>&ndash;&gt;-->
-                                <!--</button>-->
-                            <!--</div>-->
-                            <!--<div class="col-md-6">-->
-                                <!--<button type="button"-->
-                                        <!--class="btn btn-sm btn-block btn-gray-500 text-black mr-5 mb-5 shadow">-->
-                                    <!--<b>Recortados: </b>-->
-                                    <!--&lt;!&ndash;<span>{{ numGroupCreated() }}</span>&ndash;&gt;-->
-                                <!--</button>-->
-                            <!--</div>-->
-                        <!--</div>-->
                         <div class="form-group row">
-                            <!--<div class="col-12 mt-5">-->
-                                <!--<hr>-->
-                            <!--</div>-->
                             <div class="col-12">
                                 <button type="button" @click="sendClassification" class="btn btn-alt-primary btn-lg btn-block text-uppercase" data-toggle="modal" data-target="#modalGroup">
                                     <i class="fa fa-send"></i> Enviar
@@ -132,7 +114,7 @@
 <script>
 
   import api from '../lib/api';
-  import config from '../config/index';
+  // import config from '../config/index';
   import swal from 'sweetalert2';
 
   export default {
@@ -198,18 +180,18 @@
             registration: this.student[0].registration,
             name: this.student[0].name,
             unityId: localStorage.getItem("selectedUnit"),
+            course: this.student[0].course,
             jobCategories
           };
-
           api.post('/scannings', request)
             .then(() => {
               return swal({
                 title: 'Envio de Seleção de classificação',
                 text: 'Deseja realmente enviar a seleção de classificação?',
-                type: "success",
+                type: "question",
                 showCancelButton: true,
                 confirmButtonText: 'Confirmar',
-                cancelButtonText: 'Cancelar'
+                cancelButtonText: 'Cancelar',
               })
               .then(result => {
                 if(result.value){
@@ -238,7 +220,7 @@
           type: "success",
           showConfirmButton: false
         })
-          .then(() => this.$router.push('/home'));
+          .then(() => this.$router.push('/scanned'));
       }
     },
     mounted() {
