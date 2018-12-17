@@ -15,13 +15,10 @@
                 <div class="block block-rounded shadow-sm pb-10 block-thumbails">
                     <div class="block-header">
                         <h3 class="block-title">
-                            <strong>Recortes Pendentes
-                                <!--<span>({{ numPendingPages() }})</span>-->
-                            </strong>
+                            <strong>Recortes Pendentes</strong>
                         </h3>
                     </div>
-                    <!--<div class="block-content" v-if="!loading.pagesPdf">-->
-                    <div class="block-content">
+                    <div class="block-content" v-if="!loading.pagesPdf && slices[selectedJob].jobCategoryPages.length > 0">
                         <div class="row">
                             <div class="col-12 px-0">
                                 <div class="container">
@@ -48,16 +45,16 @@
                             </div>
                         </div>
                     </div>
-                    <!--<div v-else>-->
-                    <!--<h2 class="text-center"><i class="fa fa-spinner fa-spin"></i></h2>-->
-                    <!--</div>-->
+                    <div v-else-if="!loading.pagesPdf && slices[selectedJob].jobCategoryPages.length === 0">
+                        <h5 class="text-center">Nenhum dossiê digitalizado.</h5>
+                    </div>
+                    <div v-else>
+                        <h2 class="text-center"><i class="fa fa-spinner fa-spin"></i></h2>
+                    </div>
                 </div>
-
                 <div class="block block-rounded shadow-sm pb-10 block-group">
                     <div class="block-header">
-                        <h3 class="block-title"><strong>Recortes Realizados
-                            <!--<span> ({{ numGroupCreated() }})</span>-->
-                        </strong></h3>
+                        <h3 class="block-title"><strong>Classificações Realizadas</strong></h3>
                     </div>
                     <div class="block-content pt-0 pb-20" data-toggle="slimscroll" data-height="160px"
                          data-color="#37b78c" data-opacity="1" data-size="8px" data-always-visible="true"
@@ -65,11 +62,11 @@
                          v-if="!loading.slicesCategory">
                         <div class="row">
                             <div class="col-md-3" v-for="(item,i) in slices" :key="i">
-                                <button type="button" class="btn btn-block btn-outline-primary my-3 text-left"
+                                <button type="button" class="btn btn-block y-3 text-left btn-outline-primary"
                                         v-bind:title="item.category" @click="selectJob(i)"
-                                        v-bind:class="{'active': classJob[i].selec}">
-                                    <i class="fa fa-folder mr-5"></i> <span
-                                        class="text-black">{{ item.category }}</span>
+                                        v-bind:class="{'btn-outline-success': slices[i].send, 'btn-outline-warning': slices[i].received, 'btn-outline-danger': !slices[i].received , 'active': classJob[i].selec}">
+                                    <i class="fa mr-5" v-bind:class="{'fa-check-circle' : slices[i].send, 'fa-upload': slices[i].received, 'fa-times-circle': !slices[i].received}"></i>
+                                    <span class="text-black">{{ item.category }}</span>
                                 </button>
                             </div>
                         </div>
@@ -80,24 +77,99 @@
                 </div>
             </div>
             <div class="col-md-4 right-content">
-                <div class="block block-rounded shadow bg-primary student-data ">
+                <div class="block block-rounded shadow bg-primary student-data">
                     <div class="block-header">
                         <h4 class="block-title text-center text-white">Dados do aluno</h4>
                     </div>
-                    <div class="block-content" v-for="(el, i) in student" :key="i">
-                        <p class="text-white"><i class="fa fa-file-text-o mr-10"></i><strong>Número da
-                            Matrícula:</strong> {{el.registration}}</p>
-                        <p class="text-white"><i class="fa fa-user mr-10"></i><strong>Nome:</strong> {{el.name}}
-                        </p>
-                        <p class="text-white"><i class="fa fa-building mr-10"></i><strong>Unidade:</strong>
-                            {{el.unity}}</p>
-                        <p class="text-white"><i class="fa fa-graduation-cap mr-1"></i><strong>Curso:</strong>
-                            {{el.course}}</p>
+                    <div v-if="!loading.studentDetail">
+                        <div class="block-content" v-for="(el, i) in student" :key="i">
+                            <p class="text-white"><i class="fa fa-file-text-o mr-10"></i><strong>Número da
+                                Matrícula:</strong> {{el.registration}}</p>
+                            <p class="text-white"><i class="fa fa-user mr-10"></i><strong>Nome:</strong> {{el.name}}
+                            </p>
+                            <p class="text-white"><i class="fa fa-building mr-10"></i><strong>Unidade:</strong>
+                                {{el.unity}}</p>
+                            <p class="text-white"><i class="fa fa-graduation-cap mr-1"></i><strong>Curso:</strong>
+                                {{el.course}}</p>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <h2 class="text-center text-white"><i class="fa fa-spinner fa-spin"></i></h2>
+                    </div>
+                </div>
+                <div class="block block-themed block-rounded shadow actions-content">
+                    <div class="block-header bg-gd-emerald shadow">
+                        <h4 class="block-title text-center text-white">Ações / Classificação</h4>
+                    </div>
+                    <div class="aditionalFields bg-primary" v-if="loading.additionalFields">
+                        <div class="block-header rounded-0 px-0">
+                            <h4 class="block-title bg-green-title py-5 px-15 text-dark text-center">Campos adicionais</h4>
+                        </div>
+                        <div class="block-content bg-primary pt-0">
+                            <div v-for="(e, i) in slices[selectedJob].additionalFields" :key="i">
+                                <div class="form-group row">
+                                    <label class="col-12 col-form-label text-white" :for="'field'+i">
+                                        <b>{{ e.name }}</b>
+                                    </label>
+                                    <div class="col-12">
+                                        <input :ref="'identificador'+i" v-if="e.type==='string'" type="text"
+                                               :data-vv-as="e.name" :name="e.name.toString()"
+                                               class="form-control" :id="'field'+i"
+                                               v-model="slices[selectedJob].additionalFields[i].value"
+                                               v-validate="{required:e.required}">
+                                        <input :ref="'identificador'+i" v-if="e.type==='datetime'" type="text"
+                                               :data-vv-as="e.name" :name="e.name.toString()"
+                                               class="form-control u-full-width" :id="'field'+i"
+                                               placeholder="dd/mm/aaaa" v-mask="'##/##/####'"
+                                               v-model="slices[selectedJob].additionalFields[i].value"
+                                               v-validate="{required:e.required,date_format:'DD/MM/YYYY'}"/>
+                                        <div v-if="e.type==='bool'">
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input type="radio" :id="'yes_field'+i" :data-vv-as="e.name"
+                                                       :name="e.name.toString()"
+                                                       class="custom-control-input" value="SIM"
+                                                       v-model="slices[selectedJob].additionalFields[i].value"
+                                                       v-validate="{required:e.required,included: ['SIM','NÃO']}">
+                                                <label class="custom-control-label text-white" :for="'yes_field'+i"><strong>Sim</strong></label>
+                                            </div>
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input type="radio" :id="'no_field'+i" :data-vv-as="e.name"
+                                                       :name="e.name.toString()"
+                                                       class="custom-control-input" value="NÃO"
+                                                       v-model="slices[selectedJob].additionalFields[i].value">
+                                                <label class="custom-control-label text-white"
+                                                       :for="'no_field'+i"><strong>Não</strong></label>
+                                            </div>
+                                        </div>
+                                        <span class="text-danger-light">{{ errors.first(e.name.toString()) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="block-content bg-primary pt-30 pb-10">
+                        <div class="form-group row">
+                            <div class="col-xs-12 col-md-6">
+                                <button type="submit" class="btn btn-alt-primary btn-lg btn-block text-uppercase" :disabled="!loading.pagesPdf && slices[selectedJob].jobCategoryPages.length === 0" @click="disapproveJobs">
+                                    <i class="fa fa-ban"></i> Recusar
+                                </button>
+                            </div>
+                            <div class="col-xs-12 col-md-6">
+                                <button type="button" class="btn btn-alt-primary btn-lg btn-block text-uppercase" @click="deleteJobs">
+                                    <i class="fa fa-trash"></i> Deletar
+                                </button>
+                            </div>
+                            <div class="col-12 pt-20">
+                                <button type="button" class="btn btn-alt-primary btn-lg btn-block text-uppercase" :disabled="!loading.pagesPdf && slices[selectedJob].jobCategoryPages.length === 0">
+                                    <i class="fa fa-save"></i> Aprovar
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="block block-themed block-rounded shadow actions-content">
                     <div class="block-header bg-gd-emerald">
-                        <h4 class="block-title text-center text-white">Campos para classificação</h4>
+                        <h4 class="block-title text-center text-white">Nova classificação</h4>
                     </div>
                     <div class="block-content bg-primary pt-10 pb-10">
                         <form action="" method="post" onsubmit="return false;">
@@ -121,17 +193,6 @@
                             </div>
                             <form action="" method="post" onsubmit="return false;" class="col-12">
                                 <div class="form-group row">
-                                    <div class="scrumboard js-scrumboard col-12 p-0"
-                                         v-for="(subCategory, index) in subCategories" :key="index"
-                                         v-if="subCategory.length > 0">
-                                        <div class="scrumboard-items block-content pt-0">
-                                            <div class="scrumboard-item badge-pill bg-primary text-black py-0 px-15">
-                                                <div class="scrumboard-item-content pt-5">
-                                                    {{subCategory}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="col-12">
                                         <v-select ref="selectCategory" v-model="selected_category" :options="categories"
                                                   label="name" :selected="selected_category.categoryId"></v-select>
@@ -141,215 +202,47 @@
                         </div>
                     </div>
                     <form action="" method="post" onsubmit="return false;">
-                        <div class="aditionalFields bg-primary" v-if="additionalFields.length > 0">
-                            <div class="block-header rounded-0 px-0">
-                                <h4 class="block-title bg-green-title py-5 px-15 text-dark text-center">Campos
-                                    adicionais</h4>
-                            </div>
 
-                            <div class="block-content bg-primary pt-0">
-                                <div v-for="(e, i) in additionalFields" :key="i">
-                                    <div class="form-group row">
-                                        <label class="col-12 col-form-label text-white" :for="'field'+i"><b>{{ e.name
-                                            }}</b></label>
-                                        <div class="col-12">
-                                            <input :ref="'identificador'+i" v-if="e.type==='string'" type="text"
-                                                   :data-vv-as="e.name" :name="e.categoryAdditionalFieldId.toString()"
-                                                   class="form-control" :id="'field'+i"
-                                                   v-model="additionalFields[i].value"
-                                                   v-validate="{required:e.required}">
-                                            <input :ref="'identificador'+i" v-if="e.type==='datetime'" type="text"
-                                                   :data-vv-as="e.name" :name="e.categoryAdditionalFieldId.toString()"
-                                                   class="form-control u-full-width" :id="'field'+i"
-                                                   placeholder="dd/mm/aaaa" v-mask="'##/##/####'"
-                                                   v-model="additionalFields[i].value"
-                                                   v-validate="{required:e.required,date_format:'DD/MM/YYYY'}"/>
-                                            <div v-if="e.type==='bool'">
-                                                <div class="custom-control custom-radio custom-control-inline">
-                                                    <input type="radio" :id="'yes_field'+i" :data-vv-as="e.name"
-                                                           :name="e.categoryAdditionalFieldId.toString()"
-                                                           class="custom-control-input" value="SIM"
-                                                           v-model="additionalFields[i].value"
-                                                           v-validate="{required:e.required,included: ['SIM','NÃO']}">
-                                                    <label class="custom-control-label text-white" :for="'yes_field'+i"><strong>Sim</strong></label>
-                                                </div>
-                                                <div class="custom-control custom-radio custom-control-inline">
-                                                    <input type="radio" :id="'no_field'+i" :data-vv-as="e.name"
-                                                           :name="e.categoryAdditionalFieldId.toString()"
-                                                           class="custom-control-input" value="NÃO"
-                                                           v-model="additionalFields[i].value">
-                                                    <label class="custom-control-label text-white"
-                                                           :for="'no_field'+i"><strong>Não</strong></label>
-                                                </div>
-                                            </div>
-                                            <span class="text-danger-light">{{ errors.first(e.categoryAdditionalFieldId.toString()) }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="block-content bg-primary pt-0 pb-10">
                             <div class="form-group row">
                                 <div class="col-12">
                                     <button type="submit" ref="saveCategoryButton"
                                             class="btn btn-lg btn-dark shadow-sm btn-block text-uppercase"
                                             @click="createNewCategory()">
-                                        <i class="fa fa-plus-square"></i> Nova categoria
+                                        <i class="fa fa-plus-square"></i> Nova classificação
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
-                <div class="block block-themed block-rounded shadow actions-content">
-                    <div class="block-header bg-gd-emerald shadow">
-                        <h4 class="block-title text-center text-white">Ações</h4>
-                    </div>
-                    <div class="block-content bg-primary pt-30 pb-10">
-                        <div class="form-group row">
-                            <div class="col-12">
-                                <button type="submit" @click="openModal"
-                                        class="btn btn-alt-primary btn-lg btn-block text-uppercase" data-toggle="modal"
-                                        data-target="#modal-del-pages">
-                                    <i class="fa fa-ban"></i> Recusar categoria
-                                </button>
-                            </div>
-                            <div class="col-12 pt-20 mt-5">
-                                <button type="button" class="btn btn-alt-primary btn-lg btn-block text-uppercase"
-                                        @click="deleteJobs">
-                                    <i class="fa fa-trash"></i> Deletar categoria
-                                </button>
-                            </div>
-                            <div class="col-12 pt-20">
-                                <button type="button" @click="openModal"
-                                        class="btn btn-alt-primary btn-lg btn-block text-uppercase" data-toggle="modal"
-                                        data-target="#modalGroup">
-                                    <i class="fa fa-save"></i> Salvar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-        <!-- END Page Content -->
 
-        <!-- Modal Agrupar -->
-        <div class="modal fade" id="modalGroup" tabindex="-1" role="dialog" aria-labelledby="modalGroup"
-             aria-hidden="true" ref="modalTeste">
-            <div class="modal-dialog modal-dialog-slideup" role="document">
-                <div class="modal-content">
-                    <form>
-                        <div class="block block-themed block-transparent mb-0 ">
-                            <div class="block-header p-0 pt-10 mb-30">
-                                <h4 class="text-white mx-auto pt-10 pl-50"><b>Identificar novo recorte</b></h4>
-                                <div class="block-options mr-15">
-                                    <button type="button" class="btn-block-option text-dark" data-dismiss="modal"
-                                            aria-label="Close">
-                                        <h5><i class="si si-close"></i></h5>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="block-content pt-0">
-                                <div class="block block-themed block-rounded shadow actions-content">
-                                    <div class="block-header bg-white shadow">
-                                        <h4 class="block-title text-center text-dark">Você tem
-                                            <!--<strong>{{ numSelected() }}</strong> -->
-                                            página selecionada.</h4>
-                                    </div>
-                                </div>
-                                <h6 class="mb-10 mt-50">
-                                    <small><i class="fa fa-chevron-right"></i></small>
-                                    Digite o <b>nome </b>para identificação do novo recorte.
-                                </h6>
-                                <div class="form-group mb-3">
-                                    <label class="mr-2 font-weight-bold" for="newSlice">{{ slices.length + 1 }}
-                                        - </label>
-                                    <input type="text" class="form-control" v-model="newGroupName"
-                                           placeholder="Digite aqui..." ref="identificationField" tabindex="1"
-                                           id="newSlice">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer text-center">
-                            <button type="submit" class="btn-dark btn-lg shadow-sm text-uppercase" data-dismiss="modal"
-                                    @click="createGroup()"><i class="si si-check mr-10"></i> Salvar Grupo
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- END Modal Agrupar -->
-
-        <!-- Modal Delete Pages -->
-        <div class="modal fade" id="modal-del-pages" tabindex="-1" role="dialog" aria-labelledby="modal-del-pages"
-             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-slideup" role="document">
-                <div class="modal-content">
-                    <div class="block block-themed block-transparent mb-0 ">
-                        <div class="block-header p-0 pt-10 mb-30">
-                            <h4 class="text-white mx-auto pt-10 pl-50"><b>Deletar seleção?</b></h4>
-                            <div class="block-options mr-15">
-                                <button type="button" class="btn-block-option text-dark" data-dismiss="modal"
-                                        aria-label="Close" @click="allowSelectPages">
-                                    <h5><i class="si si-close"></i></h5>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="block-content pt-0">
-                            <div class="block block-themed block-rounded shadow actions-content">
-                                <div class="block-header bg-white shadow">
-                                    <h4 class="block-title text-center text-dark">Você tem
-                                        <!--<strong>{{ numSelected() }}</strong> -->
-                                        página selecionada.</h4>
-                                </div>
-                            </div>
-
-                            <h6 class="mb-20 mt-50">
-                                <small><i class="fa fa-chevron-right"></i></small>
-                                Você tem <b>certeza</b> que deseja exluir a página?
-                            </h6>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn-dark btn-lg float-right shadow-sm text-uppercase"
-                                @click="deleteJobs"><i class="si si-check mr-10"></i> Apagar
-                            página.
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- END Modal Delete Pages -->
-
-        <!-- Modal Zoom Image -->
+         <!--Modal Zoom Image -->
         <div class="modal fade" ref="modalZoomImg" id="modalZoomImg" tabindex="-1" role="dialog"
-             aria-labelledby="modalZoomImg" aria-hidden="true">
-            <div class="col-1 loadImg vertical-align mx-auto" v-if="loadImg">
+             aria-labelledby="modalZoomImg" aria-hidden="true" v-if="!loading.pagesPdf">
+            <div class="col-1 loadImg vertical-align mx-auto" v-if="loading.loadImg">
                 <i class="fa fa-spinner fa-spin fa-4x text-white"></i>
             </div>
             <a @click="navPage('prev')" class="btn btn-lg btn-alt-primary pt-3 nav prev vertical-align pl-20 mb-50"
                data-nav="prev" data-toggle="cropper" data-method="prevPage" title="Voltar página"
-               v-show="linkPos !== 0">
+               v-show="countPage !== 0">
                 <i class="fa fa-angle-double-left"></i>
             </a>
             <a @click="navPage('next')" class="btn btn-lg btn-alt-primary pt-3 nav next vertical-align pl-20 mb-50"
                data-nav="next" data-toggle="cropper" data-method="nextPage" title="Avançar página"
-               v-show="linkPos !== pages.length - 1">
+               v-show="countPage !== slices[selectedJob].jobCategoryPages.length - 1">
                 <i class="fa fa-angle-double-right"></i>
             </a>
             <div class="block-options mr-15 pull-right">
-                <button type="button" class="btn-block-option btn-close" data-dismiss="modal" aria-label="Close"
-                        @click="allowSelectPages">
+                <button type="button" class="btn-block-option btn-close" data-dismiss="modal" aria-label="Close">
                     <i class="si si-close fa-3x text-white"></i>
                 </button>
             </div>
             <div class="modal-dialog modal-dialog-slideup modal-lg" role="document">
                 <div class="text-center">
-                    <img v-bind:src="apiUrl+linkImg" class="img-fluid" @load="imgLoaded" v-show="!loadImg">
+                    <img v-bind:src="apiUrl+linkImg" class="img-fluid" @load="imgLoaded" v-show="!loading.loadImg">
                 </div>
             </div>
         </div>
@@ -368,150 +261,114 @@
       return {
         jobId: '',
         loading: {
+          studentDetail: true,
           pagesPdf: true,
-          slicesCategory: true
+          slicesCategory: true,
+          hasCategory: false,
+          loadImg: false,
+          additionalFields: false
         },
-        pages: [],
         student: {
           name: '-',
           unity: '-',
           course: '-',
           registration: '-'
         },
-        // cutGroups: [],
-        // newGroupName: "",
-        // selectPage: false,
-        apiUrl: config.apiUrl,
         slices: [],
+        apiUrl: '',
+        selectedJob: 0,
+        classJob: [],
         linkImg: '',
-        linkPos: null,
-        loadImg: false,
+        // linkPos: null,
+        pages: [],
+        countPage: 0,
+        itemsSliced: [],
         searchField: '',
+        categories: [],
         subCategories: [],
         selected_category: 'Selecione',
         additionalFields: [],
-        categoryId: '',
-        categoryName: '',
-        // itemsSliced: [],
-        categories: [],
-        // selectedNewCategory: '',
-        // selectedNewCategoryId: '',
-        newGroupName: '',
-        // newGroupId: ''
-        selectedJob: 0,
-        hasCategroy: false,
-        classJob: [],
-        countPage: 0
-      }
+      //   // cutGroups: [],
+      //   // newGroupName: "",
+      //   // selectPage: false
+      //   categoryId: '',
+      //   categoryName: '',
+      //   // selectedNewCategory: '',
+      //   // selectedNewCategoryId: '',
+      //   newGroupName: '',
+      //   // newGroupId: ''
+       }
     },
     methods: {
       // Carrega Dados do Aluno
       getDetails() {
+        this.apiUrl = config.apiUrl
+        this.loading.studentDetail = true;
         this.jobId = this.$route.params.id;
         api.get('/documentDetails/GetDocumentDetailsByRegistration?registration=01169866&unityid=1')
           .then(({data}) => {
             this.student = data.result;
+            this.loading.studentDetail = false;
+            this.selectJob(this.selectedJob);
           });
       },
-      // Carrega Recortes Realizados
+
+      // // Carrega Recortes Realizados (PDF'S)
       getJobs() {
+        this.loading.pagesPdf = true;
         this.loading.slicesCategory = true;
         api.get('/JobCategories/GetJobCategoriesByJobId?jobId=' + this.jobId)
           .then(({data}) => {
             this.slices = data.result;
+            this.loading.pagesPdf = false;
             this.loading.slicesCategory = false;
             this.loadButtonJob();
-            this.receivedImages();
           });
-
       },
+
+      // Carrega Select Tipos de Classificação
       getCategories() {
         api.get('/categories/getCategories')
           .then(({data}) => {
             this.categories = data.result;
           });
       },
-      // Busca por código Campo de classificação
-      searchByCode() {
-        api.get('/categories/GetCategoryBySearch?code=' + this.searchField)
-          .then(({data}) => {
 
-            this.selected_category = {
-              categoryId: data.result.categoryId,
-              name: data.result.name
-            };
-
-            this.$refs.saveCategoryButton.focus();
-            setTimeout(function () {
-              window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
-            }, 800);
+      // Validação qual botão categoria selecionado
+      loadButtonJob() {
+        for (let num = 0; num < this.slices.length; num++) {
+          this.classJob.push({
+            selec: false
           })
-          .catch(() => {
-            this.loading.pagesPdf = false;
-            this.selected_category = 'Selecione';
-            return swal({
-              title: 'Erro ao localizar Código da Categoria.',
-              toast: true,
-              timer: 3000,
-              type: "error",
-              showConfirmButton: false,
-            })
-          });
-      },
-      // updateSubCategories() {
-      //   if (this.categoryId === null || this.categoryId === undefined) {
-      //     this.categoryId = this.itemsSliced.categoryId;
-      //   } else {
-      //     api.get('/Categories/GetCategoryById/' + this.categoryId)
-      //       .then(({data}) => {
-      //
-      //         this.subCategories = data.result.parents;
-      //         this.additionalFields = data.result.additionalFields;
-      //
-      //         // let i;
-      //         //let numCat;
-      //         if (this.additionalFields === null || this.additionalFields.length === 0) {
-      //           console.log('opre');
-      //           this.$refs.saveCategoryButton.focus();
-      //         }
-      //
-      //         else if (this.additionalFields.length >= 1) {
-      //           for (var i = 0; i < 3; i++) {
-      //             console.log('this.additionalFields', this.additionalFields);
-      //             //this.additionalFields[i].value = this.additionalFields[i].value;
-      //             this.$refs.identificador.focus();
-      //             //console.log('aqui');
-      //           }
-      //           for (i = 0; i < this.additionalFields.length; i++) {
-      //             if (this.categories[i].categoryId === this.itemsSliced.categoryId) {
-      //               this.selected_category = this.categories[i].name;
-      //               //console.log(this.selected_category)
-      //               // this.$refs.Identificador0.focus();
-      //             }
-      //           }
-      //         }
-      //
-      //       });
-      //   }
-      // },
-      zoomImg(e) {
-        this.loadImg = true;
-        if (this.countPage !== 0) {
-          this.countPage = e;
-        } else {
-          this.countPage = 0;
         }
-        this.linkImg = this.slices[this.selectedJob].jobCategoryPages[this.countPage].image;
-        // console.log(this.linkImg);
-        this.linkPos = e;
-        // this.loadImg = false;
-        this.selectPage = true;
-        $('#modalZoomImg').modal({
-          backdrop: 'static'
-        });
       },
+      // Seleciona recorte realizado
+      selectJob(i) {
+        this.selectedJob = i;
+        for (let num = 0; num < this.slices.length; num++) {
+          this.classJob[num].selec = false;
+        }
+        this.classJob[i].selec = true;
+        this.updateSubCategories(i);
+      },
+
+      // Zoom image PDF
+      zoomImg(e) {
+        this.loading.loadImg = true;
+        this.countPage = e;
+        this.linkImg = this.slices[this.selectedJob].jobCategoryPages[this.countPage].image;
+        this.countPage = e;
+        this.selectPage = true;
+      },
+
+      // Loader imagens Zoom
+      imgLoaded() {
+        this.loading.loadImg = false;
+      },
+
+      // Setas navegação modal Zoom  image
       navPage: function (e) {
-        this.loadImg = true;
+        this.loading.loadImg = true;
         if (e === "next") {
           if (this.countPage !== this.numPages - 1) {
             this.countPage++;
@@ -527,40 +384,77 @@
         }
         this.zoom = 1;
         this.linkImg = this.slices[0].jobCategoryPages[this.countPage].image;
-        this.linkImg = this.apiUrl + this.itemsSliced.slicePages[this.countPage].image;
-        this.stepClass(this.countPage);
-        this.pageRotate();
       },
-      imgLoaded() {
-          this.loadImg = false;
-      },
+      // receivedImages() {
+      //   for (let i = 0; i < this.slices.length; i++) {
+      //     if (this.categoryName === this.slices[i].category) {
+      //       this.loading.hasCategory = true;
+      //       break;
+      //     } else {
+      //       this.loading.hasCategory = false;
+      //     }
+      //   }
+      // },
 
-      allowSelectPages() {
-        //   this.newGroupName = "";
-        //   this.selectPage = false;
+      // Busca por código tipo de classificação
+      searchByCode() {
+        api.get('/categories/GetCategoryBySearch?code=' + this.searchField)
+          .then(({data}) => {
+            this.selected_category = {
+              categoryId: data.result.categoryId,
+              name: data.result.name
+            };
+            // setTimeout(function () {
+            //   window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
+            // }, 800);
+          })
+          .catch(() => {
+            this.loading.pagesPdf = false;
+            this.selected_category = 'Selecione';
+            return swal({
+              title: 'Erro ao localizar Código da Categoria.',
+              toast: true,
+              timer: 3000,
+              type: "error",
+              showConfirmButton: false,
+            })
+          });
       },
-      receivedImages() {
-        for (let i = 0; i < this.slices.length; i++) {
-          if (this.categoryName === this.slices[i].category) {
-            this.hasCategroy = true;
-            break;
-          } else {
-            this.hasCategroy = false;
+      updateSubCategories(i) {
+        console.log(i)
+        if (this.slices[i].additionalFields === null || this.slices[i].additionalFields.length === 0) {
+          this.loading.additionalFields = false;
+          this.$refs.saveCategoryButton.focus();
+        }
+        else if (this.slices[this.selectedJob].additionalFields.length >= 1) {
+          this.loading.additionalFields = true;
+          for (let i = 0; i < 3; i++) {
+            // console.log('this.additionalFields', this.additionalFields);
+            // this.additionalFields[i].value = this.additionalFields[i].value;
+            // this.$refs.identificador.focus();
+          }
+          for (let i = 0; i < this.slices[this.selectedJob].additionalFields.length; i++) {
+            // console.log('opre');
+            // if (this.categories[i].categoryId === this.itemsSliced.categoryId) {
+            //   this.selected_category = this.categories[i].name;
+            //   console.log(this.selected_category)
+            // this.$refs.identificador0.focus();
+            // }
           }
         }
+        // });
+        // }
       },
       deleteJobs: function () {
-
         if (this.selectedJob !== '') {
           let request = {
             jobCategoryId: this.slices[this.selectedJob].jobCategoryId
           }
-          console.log(request);
           // Envio requisição criação categoria
           api.post('/JobCategories/SetJobCategoryDeleted', request)
             .then(() => {
               return swal({
-                title: 'Apagar Grupo',
+                title: 'Apagar Classificação',
                 text: 'Deseja realmente excluir grupo de Classificação?',
                 type: "success",
                 showConfirmButton: true,
@@ -587,7 +481,6 @@
               })
             })
         } else {
-
           return swal({
             title: 'Nenhuma categoria selecionada',
             toast: true,
@@ -596,18 +489,64 @@
             showConfirmButton: false,
           })
         }
-        // console.log(request)
-
-
       },
-      // numGroupCreated() {
-      //   return this.slices.length;
-      // },
-      openModal() {
-        //   setTimeout(function () {
-        //     document.getElementById("newSlice").focus()
-        //   }, 500);
-        //   this.selectPage = true;
+      disapproveJobs: function () {
+        if (this.additionalFields) {
+          for (let i = 0; i < this.slices[this.selectJob].additionalFields.length; i++) {
+            if (this.slices[this.selectJob].additionalFields[i].value === null) {
+              return swal({
+                title: 'Todos os campos adicionais precisam ser preenchidos',
+                toast: true,
+                timer: 3000,
+                type: "error",
+                showConfirmButton: false,
+              })
+            }
+          }
+        }
+        if (this.selectedJob !== '') {
+          let request = {
+            jobCategoryId: this.slices[this.selectedJob].jobCategoryId
+          }
+          // Envio requisição criação categoria
+          api.post('/JobCategories/SetJobCategoryDeleted', request)
+            .then(() => {
+              return swal({
+                title: 'Apagar Classificação',
+                text: 'Deseja realmente excluir grupo de Classificação?',
+                type: "success",
+                showConfirmButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar'
+              })
+                .then(result => {
+                  if (result.value) {
+                    this.getJobs();
+                    this.getCategories();
+                  }
+                });
+            })
+            .catch(() => {
+              this.loading.pagesPdf = false;
+              this.loading.slicesCategory = false;
+              return swal({
+                title: 'Erro ao salvar recorte!',
+                toast: true,
+                timer: 3000,
+                type: "error",
+                showConfirmButton: false,
+              })
+            })
+        } else {
+          return swal({
+            title: 'Nenhuma categoria selecionada',
+            toast: true,
+            timer: 3000,
+            type: "info",
+            showConfirmButton: false,
+          })
+        }
       },
       createNewCategory() {
         let request = {
@@ -625,15 +564,14 @@
           })
         }
         for (let i = 0; i < this.slices.length; i++) {
-          console.log('i', i)
           if (this.categoryName === this.slices[i].category) {
-            this.hasCategroy = true;
+            this.loading.hasCategory = true;
             break;
           } else {
-            this.hasCategroy = false;
+            this.loading.hasCategory = false;
           }
         }
-        if (!this.hasCategroy) {
+        if (!this.loading.hasCategory) {
           // Envio requisição criação categoria
           api.post('/JobCategories/SetJobCategoryInclude', request)
             .then(() => {
@@ -674,29 +612,12 @@
           })
         }
       },
-      loadButtonJob() {
-        for (let num = 0; num < this.slices.length; num++) {
-          this.classJob.push({
-            selec: false
-          });
-        }
-      },
-      selectJob(i) {
-        this.selectedJob = i;
-        for (let num = 0; num < this.slices.length; num++) {
-          this.classJob[num].selec = false;
-        }
-        this.classJob[i].selec = true;
-      }
     },
     mounted() {
       this.getDetails();
       this.getJobs();
       this.getCategories();
-      // this.loadButtonJob();
-      // this.getPdf();
-    }
-    ,
+    },
     watch: {
       selected_category(newVal) {
         if (newVal === 'Selecione' || newVal === null) {
@@ -712,7 +633,6 @@
           // }, 800);
         }
         this.searchField = '';
-        //console.log('this.additionalFields', this.additionalFields);
       }
     }
   }

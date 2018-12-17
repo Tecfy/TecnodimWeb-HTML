@@ -66,12 +66,8 @@
                             </td>
                             <td class="text-right">
                                 <div class="btn-group">
-                                    <router-link :to="'/scanned-selected/'+customer.jobId"
-                                                 class="btn btn-lg btn-success mr-2" data-title="Iniciar classificação">
-                                        <i class="fa fa-arrow-circle-right"></i></router-link>
-                                    <button class="btn btn-lg btn-alt-primary mr-2" data-title="Excluir classificação"
-                                            @click="deletePage(i)">
-                                        <i class="fa fa-trash-o"></i></button>
+                                    <router-link :to="'/scanned-selected/'+customer.jobId" class="btn btn-lg btn-success mr-2" data-title="Iniciar classificação"> <i class="fa fa-arrow-circle-right"></i></router-link>
+                                    <button class="btn btn-lg btn-alt-primary mr-2" data-title="Excluir classificação" @click="deletePage(i)"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -141,37 +137,45 @@
         });
       },
       deletePage(i) {
+        this.loadingDossies = true;
+
         let pageToDelete = {
           jobId: this.searchResult[i].jobId
-        };
-        // console.log(pageToDelete.slicePageId);
-
-        this.loadingDossies = true;
+        }
+        // Envio requisição criação categoria
         api.post('/Jobs/SetJobDelete', pageToDelete)
           .then(() => {
-            this.loadingDossies = false;
-            this.getDossies();
-            // this.getCategories();
             return swal({
-              title: 'Dossiê apagado com sucesso!',
-              toast: true,
-              timer: 3000,
+              title: 'Apagar Dossiê',
+              text: 'Deseja realmente excluir grupo de Dossiê?',
               type: "success",
-              showConfirmButton: false,
-            });
+              showConfirmButton: true,
+              showCancelButton: true,
+              confirmButtonText: 'Confirmar',
+              cancelButtonText: 'Cancelar'
+            })
+              .then(result => {
+                if (result.value) {
+                      this.loadingDossies = false;
+                      this.getDossies();
+                }
+              });
           })
           .catch(() => {
-            this.loadingDossies = false;
-            this.getDossies();
+            this.loading.pagesPdf = false;
+            this.loading.slicesCategory = false;
             return swal({
-              title: 'Erro ao excluir Dossiê',
+              title: 'Erro ao salvar recorte!',
               toast: true,
               timer: 3000,
               type: "error",
               showConfirmButton: false,
             })
+          })
 
-          });
+
+
+        
       }
     },
     mounted() {
