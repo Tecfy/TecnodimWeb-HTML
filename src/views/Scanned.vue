@@ -62,8 +62,8 @@
                             </td>
                             <td>
                                 <span v-if="customer.status === 'Novo'" class="badge badge-danger">Novo</span>
-                                <span v-if="customer.status === 'Parcialmente Digitalizado'"
-                                      class="badge badge-primary">Parcialmente Digitalizado</span>
+                                <span v-if="customer.status === 'Parcialmente Digitalizado'" class="badge badge-primary">Parcialmente Digitalizado</span>
+								<span v-if="customer.status === 'Digitalizado'" class="badge badge-primary">Digitalizado</span>
                             </td>
                             <td class="text-right">
                                 <div class="btn-group">

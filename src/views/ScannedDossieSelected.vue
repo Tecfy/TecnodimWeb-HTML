@@ -4,7 +4,7 @@
             <div class="col-8">
                 <p class="content-heading pt-0">
                     <i class="si si-arrow-left"></i> <span class="h3">Dossiês Digitalizados</span>
-                    <router-link :to="'/cut-dossie/'" class="btn btn-dark btn-lg float-right shadow-sm text-uppercase">
+                    <router-link :to="'/scanned/'" class="btn btn-dark btn-lg float-right shadow-sm text-uppercase">
                         <i class="fa fa-arrow-left mr-10"></i> Voltar
                     </router-link>
                 </p>
@@ -300,7 +300,8 @@
         categories: [],
         subCategories: [],
         selected_category: 'Selecione',
-        additionalFields: []
+        additionalFields: [],
+		catFinished: ''
       }
     },
     methods: {
@@ -326,6 +327,7 @@
             this.loading.pagesPdf = false;
             this.loading.slicesCategory = false;
             this.loadButtonJob();
+			this.finishDossieClassificated();
           });
       },
 
@@ -645,6 +647,49 @@
           })
         }
       },
+	  finishDossieClassificated() {
+		let numCategories = this.slices.length;		
+		for (let i = 0; i < numCategories; i++) {
+			if (this.slices[i].received && this.slices[i].send) {
+				this.catFinished++;
+			}
+		}
+		
+		if (this.catFinished === numCategories) {		
+			let request = {
+			  jobId: this.jobId,
+			  jobStatusId: 4
+			};
+			api.post('/Jobs/SetJobStatus', request)
+                  .then(() => {
+                    return swal({
+                      title: 'Classificação de Dossiê finalizado com sucesso',
+                      toast: true,
+                      timer: 3000,
+                      type: "success",
+                      showConfirmButton: false
+                    })
+
+                      .then(() => {
+                        this.getJobs();
+                        this.selectedJob = 0;
+                        this.getCategories();
+						this.$router.push('/scanned');						
+                      })
+                  })
+                  .catch(() => {
+                    this.loading.pagesPdf = false;
+                    this.loading.slicesCategory = false;
+                    return swal({
+                      title: 'Erro ao finalizar Dossiê',
+                      toast: true,
+                      timer: 3000,
+                      type: "error",
+                      showConfirmButton: false,
+                    })
+                  })
+		}
+	  }
     },
     mounted() {
       this.getDetails();
