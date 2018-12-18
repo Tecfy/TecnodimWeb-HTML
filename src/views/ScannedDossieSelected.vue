@@ -61,11 +61,12 @@
                          data-rail-visible="true" data-rail-color="#eee" data-rail-opacity="1"
                          v-if="!loading.slicesCategory">
                         <div class="row">
-                            <div class="col-md-3" v-for="(item,i) in slices" :key="i">
+                            <div class="col-md-3 mt-4" v-for="(item,i) in slices" :key="i">
                                 <button type="button" class="btn btn-block y-3 text-left btn-outline-primary"
                                         v-bind:title="item.category" @click="selectJob(i)"
-                                        v-bind:class="{'btn-outline-success': slices[i].send, 'btn-outline-warning': slices[i].received, 'btn-outline-danger': !slices[i].received , 'active': classJob[i].selec}">
-                                    <i class="fa mr-5" v-bind:class="{'fa-check-circle' : slices[i].send, 'fa-upload': slices[i].received, 'fa-times-circle': !slices[i].received}"></i>
+                                        v-bind:class="{'btn-outline-success': slices[i].send && slices[i].received, 'btn-outline-warning': !slices[i].send && slices[i].received, 'btn-outline-danger': !slices[i].received , 'active': classJob[i].selec}">
+                                    <i class="fa mr-5"
+                                       v-bind:class="{'fa-check-circle' : slices[i].send && slices[i].received, 'fa-upload': !slices[i].send && slices[i].received, 'fa-times-circle': !slices[i].received}"></i>
                                     <span class="text-black">{{ item.category }}</span>
                                 </button>
                             </div>
@@ -101,7 +102,7 @@
                     <div class="block-header bg-gd-emerald shadow">
                         <h4 class="block-title text-center text-white">Ações / Classificação</h4>
                     </div>
-                    <div class="aditionalFields bg-primary" v-if="loading.additionalFields">
+                    <div class="aditionalFields bg-primary" v-if="loading.additionalFields && slices[selectedJob].additionalFields.length > 0">
                         <div class="block-header rounded-0 px-0">
                             <h4 class="block-title bg-green-title py-5 px-15 text-dark text-center">Campos adicionais</h4>
                         </div>
@@ -130,7 +131,8 @@
                                                        class="custom-control-input" value="SIM"
                                                        v-model="slices[selectedJob].additionalFields[i].value"
                                                        v-validate="{required:e.required,included: ['SIM','NÃO']}">
-                                                <label class="custom-control-label text-white" :for="'yes_field'+i"><strong>Sim</strong></label>
+                                                <label class="custom-control-label text-white"
+                                                       :for="'yes_field'+i"><strong>Sim</strong></label>
                                             </div>
                                             <div class="custom-control custom-radio custom-control-inline">
                                                 <input type="radio" :id="'no_field'+i" :data-vv-as="e.name"
@@ -148,30 +150,38 @@
                         </div>
                     </div>
                     <div class="block-content bg-primary pt-30 pb-10">
-                        <div class="form-group row">
+                        <div class="form-group row" v-if="!loading.slicesCategory">
                             <div class="col-xs-12 col-md-6">
-                                <button type="submit" class="btn btn-alt-primary btn-lg btn-block text-uppercase" :disabled="!loading.pagesPdf && slices[selectedJob].jobCategoryPages.length === 0" @click="disapproveJobs">
+                                <button type="submit" class="btn btn-alt-primary btn-lg btn-block text-uppercase"
+                                        :disabled="!loading.pagesPdf && slices[selectedJob].jobCategoryPages.length === 0"
+                                        @click="disapproveJobs">
                                     <i class="fa fa-ban"></i> Recusar
                                 </button>
                             </div>
                             <div class="col-xs-12 col-md-6">
-                                <button type="button" class="btn btn-alt-primary btn-lg btn-block text-uppercase" @click="deleteJobs">
+                                <button type="button" class="btn btn-alt-primary btn-lg btn-block text-uppercase"
+                                        @click="deleteJobs">
                                     <i class="fa fa-trash"></i> Deletar
                                 </button>
                             </div>
                             <div class="col-12 pt-20">
-                                <button type="button" class="btn btn-alt-primary btn-lg btn-block text-uppercase" :disabled="!loading.pagesPdf && slices[selectedJob].jobCategoryPages.length === 0">
+                                <button type="button" class="btn btn-alt-primary btn-lg btn-block text-uppercase"
+                                        :disabled="!loading.pagesPdf && slices[selectedJob].jobCategoryPages.length === 0 || slices[selectedJob].send && slices[selectedJob].received"
+                                        @click="approveJobs">
                                     <i class="fa fa-save"></i> Aprovar
                                 </button>
                             </div>
                         </div>
+                        <div v-else>
+                            <h2 class="text-center text-white"><i class="fa fa-spinner fa-spin"></i></h2>
+                        </div>
                     </div>
                 </div>
-                <div class="block block-themed block-rounded shadow actions-content">
+                <div class="block block-themed block-rounded shadow actions-content mb-200">
                     <div class="block-header bg-gd-emerald">
                         <h4 class="block-title text-center text-white">Nova classificação</h4>
                     </div>
-                    <div class="block-content bg-primary pt-10 pb-10">
+                    <div class="block-content bg-primary pt-10 pb-10" v-if="!loading.slicesCategory">
                         <form action="" method="post" onsubmit="return false;">
                             <div class="form-group row">
                                 <label class="col-12 col-form-label text-white" for="classification-code"><b>Código</b></label>
@@ -201,6 +211,9 @@
                             </form>
                         </div>
                     </div>
+                    <div class="block-content bg-primary pt-10 pb-10" v-else>
+                        <h2 class="text-center text-white"><i class="fa fa-spinner fa-spin"></i></h2>
+                    </div>
                     <form action="" method="post" onsubmit="return false;">
 
                         <div class="block-content bg-primary pt-0 pb-10">
@@ -219,7 +232,7 @@
             </div>
         </div>
 
-         <!--Modal Zoom Image -->
+        <!--Modal Zoom Image -->
         <div class="modal fade" ref="modalZoomImg" id="modalZoomImg" tabindex="-1" role="dialog"
              aria-labelledby="modalZoomImg" aria-hidden="true" v-if="!loading.pagesPdf">
             <div class="col-1 loadImg vertical-align mx-auto" v-if="loading.loadImg">
@@ -287,17 +300,8 @@
         categories: [],
         subCategories: [],
         selected_category: 'Selecione',
-        additionalFields: [],
-      //   // cutGroups: [],
-      //   // newGroupName: "",
-      //   // selectPage: false
-      //   categoryId: '',
-      //   categoryName: '',
-      //   // selectedNewCategory: '',
-      //   // selectedNewCategoryId: '',
-      //   newGroupName: '',
-      //   // newGroupId: ''
-       }
+        additionalFields: []
+      }
     },
     methods: {
       // Carrega Dados do Aluno
@@ -312,7 +316,6 @@
             this.selectJob(this.selectedJob);
           });
       },
-
       // // Carrega Recortes Realizados (PDF'S)
       getJobs() {
         this.loading.pagesPdf = true;
@@ -385,17 +388,6 @@
         this.zoom = 1;
         this.linkImg = this.slices[0].jobCategoryPages[this.countPage].image;
       },
-      // receivedImages() {
-      //   for (let i = 0; i < this.slices.length; i++) {
-      //     if (this.categoryName === this.slices[i].category) {
-      //       this.loading.hasCategory = true;
-      //       break;
-      //     } else {
-      //       this.loading.hasCategory = false;
-      //     }
-      //   }
-      // },
-
       // Busca por código tipo de classificação
       searchByCode() {
         api.get('/categories/GetCategoryBySearch?code=' + this.searchField)
@@ -404,9 +396,6 @@
               categoryId: data.result.categoryId,
               name: data.result.name
             };
-            // setTimeout(function () {
-            //   window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
-            // }, 800);
           })
           .catch(() => {
             this.loading.pagesPdf = false;
@@ -421,29 +410,58 @@
           });
       },
       updateSubCategories(i) {
-        console.log(i)
         if (this.slices[i].additionalFields === null || this.slices[i].additionalFields.length === 0) {
           this.loading.additionalFields = false;
-          this.$refs.saveCategoryButton.focus();
         }
         else if (this.slices[this.selectedJob].additionalFields.length >= 1) {
           this.loading.additionalFields = true;
-          for (let i = 0; i < 3; i++) {
-            // console.log('this.additionalFields', this.additionalFields);
-            // this.additionalFields[i].value = this.additionalFields[i].value;
-            // this.$refs.identificador.focus();
-          }
-          for (let i = 0; i < this.slices[this.selectedJob].additionalFields.length; i++) {
-            // console.log('opre');
-            // if (this.categories[i].categoryId === this.itemsSliced.categoryId) {
-            //   this.selected_category = this.categories[i].name;
-            //   console.log(this.selected_category)
-            // this.$refs.identificador0.focus();
-            // }
-          }
         }
-        // });
-        // }
+      },
+      approveJobs() {
+        this.$validator.validate().then((result) => {
+          if (result) {
+            let request = {
+              jobCategoryId: this.slices[this.selectedJob].jobCategoryId,
+              additionalFields: this.slices[this.selectedJob].additionalFields
+            }
+            return swal({
+              title: 'Aprovar Classificação',
+              text: 'Aprovar classificação do dossiê?',
+              type: "info",
+              showConfirmButton: true,
+              showCancelButton: true,
+              confirmButtonText: 'Confirmar',
+              cancelButtonText: 'Cancelar'
+            })
+              .then(result => {
+                if (result.value) {
+                  api.post('/JobCategories/SetJobCategoryApprove', request)
+                    .then(() => {
+                      this.getJobs();
+                      this.getCategories();
+                    })
+                    .catch(() => {
+                      this.loading.pagesPdf = false;
+                      this.loading.slicesCategory = false;
+                      return swal({
+                        title: 'Erro ao aprovar classificação!',
+                        toast: true,
+                        timer: 3000,
+                        type: "error",
+                        showConfirmButton: false,
+                      })
+                    })
+                }
+              })
+          } else {
+            return swal({
+              title: 'Dossiê não classificado',
+              text: 'Preencha todos os campos obrigatórios',
+              timer: 3000,
+              type: "error",
+            });
+          }
+        })
       },
       deleteJobs: function () {
         if (this.selectedJob !== '') {
@@ -451,34 +469,44 @@
             jobCategoryId: this.slices[this.selectedJob].jobCategoryId
           }
           // Envio requisição criação categoria
-          api.post('/JobCategories/SetJobCategoryDeleted', request)
-            .then(() => {
-              return swal({
-                title: 'Apagar Classificação',
-                text: 'Deseja realmente excluir grupo de Classificação?',
-                type: "success",
-                showConfirmButton: true,
-                showCancelButton: true,
-                confirmButtonText: 'Confirmar',
-                cancelButtonText: 'Cancelar'
-              })
-                .then(result => {
-                  if (result.value) {
-                    this.getJobs();
-                    this.getCategories();
-                  }
-                });
-            })
-            .catch(() => {
-              this.loading.pagesPdf = false;
-              this.loading.slicesCategory = false;
-              return swal({
-                title: 'Erro ao salvar recorte!',
-                toast: true,
-                timer: 3000,
-                type: "error",
-                showConfirmButton: false,
-              })
+          return swal({
+            title: 'Apagar Classificação',
+            text: 'Deseja realmente excluir grupo de Classificação?',
+            type: "info",
+            showConfirmButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Confirmar',
+            cancelButtonText: 'Cancelar'
+          })
+            .then(result => {
+              if (result.value) {
+                api.post('/JobCategories/SetJobCategoryDeleted', request)
+                  .then(() => {
+                    return swal({
+                      title: 'Exclusão de grupo de classificação realizado com sucesso',
+                      toast: true,
+                      timer: 3000,
+                      type: "success",
+                      showConfirmButton: false
+                    })
+                      .then(() => {
+                        this.getJobs();
+                        this.selectedJob = 0;
+                        this.getCategories();
+                      })
+                  })
+                  .catch(() => {
+                    this.loading.pagesPdf = false;
+                    this.loading.slicesCategory = false;
+                    return swal({
+                      title: 'Erro ao salvar recorte!',
+                      toast: true,
+                      timer: 3000,
+                      type: "error",
+                      showConfirmButton: false,
+                    })
+                  })
+              }
             })
         } else {
           return swal({
@@ -491,53 +519,49 @@
         }
       },
       disapproveJobs: function () {
-        if (this.additionalFields) {
-          for (let i = 0; i < this.slices[this.selectJob].additionalFields.length; i++) {
-            if (this.slices[this.selectJob].additionalFields[i].value === null) {
-              return swal({
-                title: 'Todos os campos adicionais precisam ser preenchidos',
-                toast: true,
-                timer: 3000,
-                type: "error",
-                showConfirmButton: false,
-              })
-            }
-          }
-        }
         if (this.selectedJob !== '') {
           let request = {
             jobCategoryId: this.slices[this.selectedJob].jobCategoryId
           }
           // Envio requisição criação categoria
-          api.post('/JobCategories/SetJobCategoryDeleted', request)
-            .then(() => {
-              return swal({
-                title: 'Apagar Classificação',
-                text: 'Deseja realmente excluir grupo de Classificação?',
-                type: "success",
-                showConfirmButton: true,
-                showCancelButton: true,
-                confirmButtonText: 'Confirmar',
-                cancelButtonText: 'Cancelar'
-              })
-                .then(result => {
-                  if (result.value) {
-                    this.getJobs();
-                    this.getCategories();
-                  }
-                });
-            })
-            .catch(() => {
-              this.loading.pagesPdf = false;
-              this.loading.slicesCategory = false;
-              return swal({
-                title: 'Erro ao salvar recorte!',
-                toast: true,
-                timer: 3000,
-                type: "error",
-                showConfirmButton: false,
-              })
-            })
+          return swal({
+            title: 'Desaprovar Dossiê?',
+            text: 'Deseja realmente desaprovar grupo de Dossiê?',
+            type: "info",
+            showConfirmButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Confirmar',
+            cancelButtonText: 'Cancelar'
+          })
+            .then(result => {
+              if (result.value) {
+                api.post('/JobCategories/SetJobCategoryDisapprove', request)
+                  .then(() => {
+                    return swal({
+                      title: 'Grupo de Dossiê desaprovado com sucesso',
+                      toast: true,
+                      timer: 3000,
+                      type: "success",
+                      showConfirmButton: false
+                    })
+                      .then(() => {
+                        this.getJobs();
+                        this.getCategories();
+                      })
+                  })
+                  .catch(() => {
+                    this.loading.pagesPdf = false;
+                    this.loading.slicesCategory = false;
+                    return swal({
+                      title: 'Erro excluir Dossiê!',
+                      toast: true,
+                      timer: 3000,
+                      type: "error",
+                      showConfirmButton: false,
+                    })
+                  })
+              }
+            });
         } else {
           return swal({
             title: 'Nenhuma categoria selecionada',
@@ -573,34 +597,43 @@
         }
         if (!this.loading.hasCategory) {
           // Envio requisição criação categoria
-          api.post('/JobCategories/SetJobCategoryInclude', request)
-            .then(() => {
-              return swal({
-                title: 'Envio de Novo Grupo',
-                text: 'Deseja realmente incluir nova classificação?',
-                type: "success",
-                showConfirmButton: true,
-                showCancelButton: true,
-                confirmButtonText: 'Confirmar',
-                cancelButtonText: 'Cancelar'
-              })
-                .then(result => {
-                  if (result.value) {
-                    this.getJobs();
-                    this.getCategories();
-                  }
-                });
-            })
-            .catch(() => {
-              this.loading.pagesPdf = false;
-              this.loading.slicesCategory = false;
-              return swal({
-                title: 'Erro ao salvar recorte!',
-                toast: true,
-                timer: 3000,
-                type: "error",
-                showConfirmButton: false,
-              })
+          return swal({
+            title: 'Envio de Novo Grupo',
+            text: 'Deseja realmente incluir nova classificação?',
+            type: "question",
+            showConfirmButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Confirmar',
+            cancelButtonText: 'Cancelar'
+          })
+            .then(result => {
+              if (result.value) {
+                api.post('/JobCategories/SetJobCategoryInclude', request)
+                  .then(() => {
+                    return swal({
+                      title: 'Inclusão de nova classificação realizado com sucesso',
+                      toast: true,
+                      timer: 3000,
+                      type: "success",
+                      showConfirmButton: false
+                    })
+                      .then(() => {
+                        this.getJobs();
+                        this.getCategories();
+                      })
+                  })
+                  .catch(() => {
+                    this.loading.pagesPdf = false;
+                    this.loading.slicesCategory = false;
+                    return swal({
+                      title: 'Erro ao salvar classificação!',
+                      toast: true,
+                      timer: 3000,
+                      type: "error",
+                      showConfirmButton: false,
+                    })
+                  })
+              }
             })
         } else {
           return swal({
@@ -627,10 +660,6 @@
         } else {
           this.categoryId = newVal.categoryId;
           this.categoryName = newVal.name;
-          // this.updateSubCategories();
-          // setTimeout(function () {
-          //   window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
-          // }, 800);
         }
         this.searchField = '';
       }

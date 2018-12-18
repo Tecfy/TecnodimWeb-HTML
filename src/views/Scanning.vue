@@ -104,6 +104,9 @@
         });
         this.$refs.fieldRegistration.focus();
       }
+    },
+    mounted() {
+        this.$refs.fieldRegistration.focus();
     }
   }
 </script>

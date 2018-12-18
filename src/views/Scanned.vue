@@ -62,12 +62,16 @@
                             </td>
                             <td>
                                 <span v-if="customer.status === 'Novo'" class="badge badge-danger">Novo</span>
-                                <span v-if="customer.status === 'Parcialmente Digitalizado'" class="badge badge-primary">Parcialmente Digitalizado</span>
+                                <span v-if="customer.status === 'Parcialmente Digitalizado'"
+                                      class="badge badge-primary">Parcialmente Digitalizado</span>
                             </td>
                             <td class="text-right">
                                 <div class="btn-group">
-                                    <router-link :to="'/scanned-selected/'+customer.jobId" class="btn btn-lg btn-success mr-2" data-title="Iniciar classificação"> <i class="fa fa-arrow-circle-right"></i></router-link>
-                                    <button class="btn btn-lg btn-alt-primary mr-2" data-title="Excluir classificação" @click="deletePage(i)"><i class="fa fa-trash-o"></i></button>
+                                    <router-link :to="'/scanned-selected/'+customer.jobId"
+                                                 class="btn btn-lg btn-success mr-2" data-title="Iniciar classificação">
+                                        <i class="fa fa-arrow-circle-right"></i></router-link>
+                                    <button class="btn btn-lg btn-alt-primary mr-2" data-title="Excluir classificação"
+                                            @click="deletePage(i)"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -102,7 +106,6 @@
           {id: 2, label: 'Iniciado'}
         ],
         selected: {id: 0, label: 'Selecione'},
-        currentPage: 1,
         totalCount: null,
         totalShow: 10,
         numPagination: 0,
@@ -111,75 +114,58 @@
     },
     methods: {
       focusButton() {
-        alert('opre');
         this.$refs.searchButton.focus();
       },
-      getDossies(p) {
-        // let unityId = window.localStorage.selectedUnit;
+      getDossies() {
         this.loadingDossies = true;
-        this.currentPage = p;
 
-        // let newPageUrlApi = '/Documents/GetDocumentClassificateds?unityId=' + unityId;
         let newUrlApi = '/Jobs/GetJobsByUser';
-
-        this.createPagination(newUrlApi);
         api.get(newUrlApi).then(({data}) => {
           this.loadingDossies = false;
           this.searchResult = data.result;
-        });
-        this.$refs.fieldRegistration.focus();
-      },
-      createPagination(url) {
-        api.get(url).then(({data}) => {
-          this.loadingDossies = false;
-          this.totalCount = data.result.length;
-          this.numPagination = Math.ceil(this.totalCount / this.totalShow);
+          this.totalCount = this.searchResult.length;
+          this.$refs.fieldRegistration.focus();
         });
       },
-      deletePage(i) {
-        this.loadingDossies = true;
 
+      // Deletar Dossiê
+      deletePage(i) {
         let pageToDelete = {
           jobId: this.searchResult[i].jobId
-        }
-        // Envio requisição criação categoria
-        api.post('/Jobs/SetJobDelete', pageToDelete)
-          .then(() => {
-            return swal({
-              title: 'Apagar Dossiê',
-              text: 'Deseja realmente excluir grupo de Dossiê?',
-              type: "success",
-              showConfirmButton: true,
-              showCancelButton: true,
-              confirmButtonText: 'Confirmar',
-              cancelButtonText: 'Cancelar'
-            })
-              .then(result => {
-                if (result.value) {
-                      this.loadingDossies = false;
-                      this.getDossies();
-                }
-              });
+        };
+        return swal({
+          title: 'Apagar Classificação',
+          text: 'Deseja realmente excluir grupo de Dossiê?',
+          type: "info",
+          showConfirmButton: true,
+          showCancelButton: true,
+          confirmButtonText: 'Confirmar',
+          cancelButtonText: 'Cancelar'
+        })
+          .then(result => {
+            if (result.value) {
+              api.post('/Jobs/SetJobDelete', pageToDelete)
+                .then(() => {
+                  this.loadingDossies = false;
+                  this.getDossies(0);
+                })
+                .catch(() => {
+                  this.loading.pagesPdf = false;
+                  this.loading.slicesCategory = false;
+                  return swal({
+                    title: 'Erro ao salvar recorte!',
+                    toast: true,
+                    timer: 3000,
+                    type: "error",
+                    showConfirmButton: false,
+                  })
+                })
+            }
           })
-          .catch(() => {
-            this.loading.pagesPdf = false;
-            this.loading.slicesCategory = false;
-            return swal({
-              title: 'Erro ao salvar recorte!',
-              toast: true,
-              timer: 3000,
-              type: "error",
-              showConfirmButton: false,
-            })
-          })
-
-
-
-        
       }
     },
     mounted() {
-      this.getDossies(this.currentPage);
+      this.getDossies();
     },
     watch: {
       selected: function () {
