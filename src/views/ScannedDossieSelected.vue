@@ -83,15 +83,15 @@
                         <h4 class="block-title text-center text-white">Dados do aluno</h4>
                     </div>
                     <div v-if="!loading.studentDetail">
-                        <div class="block-content" v-for="(el, i) in student" :key="i">
+                        <div class="block-content">
                             <p class="text-white"><i class="fa fa-file-text-o mr-10"></i><strong>Número da
-                                Matrícula:</strong> {{el.registration}}</p>
-                            <p class="text-white"><i class="fa fa-user mr-10"></i><strong>Nome:</strong> {{el.name}}
+                                Matrícula:</strong> {{student.registration}}</p>
+                            <p class="text-white"><i class="fa fa-user mr-10"></i><strong>Nome:</strong> {{student.name}}
                             </p>
                             <p class="text-white"><i class="fa fa-building mr-10"></i><strong>Unidade:</strong>
-                                {{el.unity}}</p>
+                                {{student.unity}}</p>
                             <p class="text-white"><i class="fa fa-graduation-cap mr-1"></i><strong>Curso:</strong>
-                                {{el.course}}</p>
+                                {{student.course}}</p>
                         </div>
                     </div>
                     <div v-else>
@@ -310,7 +310,7 @@
         this.apiUrl = config.apiUrl
         this.loading.studentDetail = true;
         this.jobId = this.$route.params.id;
-        api.get('/documentDetails/GetDocumentDetailsByRegistration?registration=01169866&unityid=1')
+        api.get('/documentDetails/GetDocumentDetailByJobId/'+this.jobId)
           .then(({data}) => {
             this.student = data.result;
             this.loading.studentDetail = false;
@@ -647,7 +647,7 @@
           })
         }
       },
-	  finishDossieClassificated() {
+      finishDossieClassificated() {
 		let numCategories = this.slices.length;		
 		for (let i = 0; i < numCategories; i++) {
 			if (this.slices[i].received && this.slices[i].send) {
@@ -658,7 +658,7 @@
 		if (this.catFinished === numCategories) {		
 			let request = {
 			  jobId: this.jobId,
-			  jobStatusId: 4
+              jobStatusId: 4
 			};
 			api.post('/Jobs/SetJobStatus', request)
                   .then(() => {
@@ -689,7 +689,7 @@
                     })
                   })
 		}
-	  }
+      }
     },
     mounted() {
       this.getDetails();

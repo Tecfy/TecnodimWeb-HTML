@@ -144,7 +144,6 @@
       }
     },
     methods: {
-
       getDetails() {
         let id = this.$route.params.id;
         let unityId = window.localStorage.selectedUnit;

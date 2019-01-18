@@ -9,7 +9,7 @@
                 <!-- END Header -->
 
                 <!-- Sign In Form -->
-                <form class="js-validation-signin" @click="onSubmit" method="post" novalidate="novalidate" >
+                <form class="js-validation-signin" method="post" novalidate="novalidate" >
                     <div class="block block-themed block-rounded block-shadow" v-if="loadingLogin">
                         <div class="block-header bg-gd-dusk">
                             <h3 class="block-title"><i class="fa fa-chevron-right mr-5"></i> Faça seu login para
@@ -31,7 +31,7 @@
                             </div>
                             <div class="form-group row">
                                 <div class="col-6 offset-3 text-center">
-                                    <button type="submit" class="btn btn-block btn-alt-primary" @click="loadLogin" :disabled="!numSelected()">
+                                    <button type="submit" class="btn btn-block btn-alt-primary" @click="onSubmit" :disabled="!numSelected()">
                                         <i class="si si-login mr-10"></i> Entrar
                                     </button>
                                 </div>
