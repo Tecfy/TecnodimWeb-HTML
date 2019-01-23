@@ -5,7 +5,7 @@ import config from '../config';
 function getToken() {
     if (typeof window.localStorage.token === "undefined") {
         // return "";
-        window.location.href = '#/login';
+        window.location.href = '/login';
     }
     return window.localStorage.token;
 }
@@ -24,7 +24,7 @@ instance.interceptors.response.use(function (response) {
 }, function (error) {
     if (error.response.status === 401) {
         // localStorage.removeItem('illpy_user');
-        window.location.href = '#/login';
+        window.location.href = '/login';
         return Promise.reject(error);
     }
     let msg = error.response.data.hasOwnProperty('msg') ? error.response.data.msg : error.response.data.message

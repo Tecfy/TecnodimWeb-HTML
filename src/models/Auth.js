@@ -1,16 +1,7 @@
-import api from '../lib/api'
-// import config from '../config';
-
-
 export default {
-    login(UserName, Password) {
-        return api.post('/Account/Login', {
-            UserName,
-            Password
-        });
-    },
     logout() {
         window.localStorage.removeItem("token");
+        window.localStorage.removeItem("tec-token");
         window.localStorage.removeItem("units");
         window.localStorage.removeItem("claims");
         window.localStorage.removeItem("fullName");
@@ -27,6 +18,7 @@ export default {
             .catch(errorHandler);
     },
     profile() {
+        const api = require('../lib/api');
         return api.get('/profile')
     }
 };

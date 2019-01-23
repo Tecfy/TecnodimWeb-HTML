@@ -180,7 +180,7 @@
             }
         },
         methods: {
-            logout() {
+            logout() {                
                 Auth.logout();
                 this.notLogged = true;
                 this.$router.push('/login');

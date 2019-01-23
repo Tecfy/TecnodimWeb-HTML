@@ -9,7 +9,7 @@
                 <!-- END Header -->
 
                 <!-- Sign In Form -->
-                <form class="js-validation-signin" method="post" novalidate="novalidate" >
+                <!-- <form class="js-validation-signin" v-on:submit.prevent="onSubmit" method="post" novalidate="novalidate" > -->
                     <div class="block block-themed block-rounded block-shadow" v-if="loadingLogin">
                         <div class="block-header bg-gd-dusk">
                             <h3 class="block-title"><i class="fa fa-chevron-right mr-5"></i> Faça seu login para
@@ -29,9 +29,14 @@
                                            name="login-password">
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <div class="col-6 offset-3 text-center">
-                                    <button type="submit" class="btn btn-block btn-alt-primary" @click="onSubmit" :disabled="!numSelected()">
+                             <div class="form-group row">
+                                <div class="col-6 text-center">
+                                    <button class="btn btn-block btn-alt-primary" @click="externalLogin">
+                                        <i class="si si-login mr-10"></i> Login Externo
+                                    </button>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <button class="btn btn-block btn-alt-primary" @click="postLogin" :disabled="!numSelected()">
                                         <i class="si si-login mr-10"></i> Entrar
                                     </button>
                                 </div>
@@ -66,7 +71,7 @@
 
                         <!--</div>-->
                     <!--</div>-->
-                </form>
+                <!-- </form> -->
                 <!-- END Sign In Form -->
             </div>
         </div>
@@ -75,12 +80,14 @@
 
 <script>
     import swal from 'sweetalert2';
-    import Auth from '../models/Auth';
-    import api from '../lib/api';
+    // import api from '../lib/api';
+    import uuid from 'uuid/v1';
+    import config from '../config/'
+    import sweetalert2 from 'sweetalert2';
+    import axios from 'axios';
 
     export default {
         name: 'login',
-
         data: function () {
             return {
                 email: "",
@@ -89,20 +96,54 @@
                 validaForm: false
             }
         },
+        mounted: function () {
+            let token = this.$route.query.token;
+            if(token){
+                return this.tryExternalPost(token);
+            }
+        },
         methods: {
-            onSubmit(evt) {
+            tryExternalPost(token){               
+                let url = `${config.apiUrl}/Account/LoginExternal`;
+                let request = {
+                    token
+                }
+                axios.post(url,request)
+                .then(({data}) => {
+                    if(!data.success){
+                        return this.showInvalidToken()
+                    }
+                    return this.handleLogin(data);
+                })
+                .catch(this.showInvalidToken)
+            },
+            showInvalidToken(){
+                return sweetalert2({
+                    type: 'error',
+                    text: 'Token inválido!'
+                })
+            },
+            externalLogin(e){
+                e.preventDefault();
+                let token = uuid();
+                window.localStorage.setItem('tec-token', token);
+                let url = `${config.externalLoginUlr}/Account/ExternalLogin?provider=Saml2&token=${token}&ReturnUrl=${config.externalLoginUlrRedirect}`;
 
-                this.error = null;
-
-                evt.preventDefault();
-                if (!this.email || !this.password) return;
-
-                let login = Auth.login(this.email, this.password);
-
-                login
-                    .then(({ data }) => {
-                        this.loadLogin = false;
-                        let token = data.result.access_token;
+                sweetalert2({
+                    type: 'info',
+                    showCancelButton:true,
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonText: 'Sim',
+                    title: 'Você será redirecionado para uma URL externa. Tem certeza?'
+                })
+                .then((result) => {
+                    if(result.value){
+                        window.location.href = url;
+                    }
+                })
+            },
+            handleLogin(data){
+                let token = data.result.access_token;
                         let name = data.result.name;
                         if(token) {
                             let claims = data.result.claims;
@@ -113,13 +154,34 @@
                             window.localStorage.setItem("units", units);
                             window.localStorage.setItem("fullName", name)
                             // Set authorization of api global instance, to get profile at first time
-                            api.defaults.headers.common["Authorization"] = "Bearer " + token;
+                            // api.defaults.headers.common["Authorization"] = "Bearer " + token;
                             this.$router.push('/select-unity');
                             // return window.location.reload(); // todo: ajustar
                         } else {
 
                             throw new Error()
                         }
+            },
+            postLogin(evt) {
+                this.error = null;
+                evt.preventDefault();
+                if (!this.email || !this.password) return;
+
+                if (this.loadLogin) {
+                    this.loadingLogin = false;
+                } else {
+                    this.loadingLogin = true;
+                }
+
+                let request = {
+                    userName:this.email,
+                    password :this.password
+                }
+
+                axios.post(`${config.apiUrl}/Account/Login`,request)
+                    .then(({ data }) => {
+                        this.loadLogin = false;
+                        return this.handleLogin(data)
                     })
                     .catch(() => {
                         this.loadingLogin = true;
@@ -134,14 +196,6 @@
                             timer: 3000
                         });
                     });
-            },
-            loadLogin () {
-                if (this.loadLogin) {
-                    this.loadingLogin = false;
-                } else {
-                    this.loadingLogin = true;
-                }
-                // return this.loadingLogin
             },
             numSelected() {
                 if (this.email !== '' && this.password !== '') {

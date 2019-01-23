@@ -29,7 +29,7 @@ new Vue({
 }).$mount('#app');
 
 // navigation guards before each
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {    
     if (to.path !== '/login') {
         if (to.meta.enabled) {
             if (to.meta.requiresAuth) {
