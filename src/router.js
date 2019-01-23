@@ -13,6 +13,15 @@ export default new Router({
   mode: 'history',
   routes: [
     {
+      path: '/',
+      name: 'redirect',
+      component: Login,
+      meta: {
+        requiresAuth: false,
+        enabled: true
+      }
+    },
+    {
       path: '/login',
       name: 'login',
       component: Login,
