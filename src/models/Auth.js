@@ -5,6 +5,7 @@ export default {
         window.localStorage.removeItem("units");
         window.localStorage.removeItem("claims");
         window.localStorage.removeItem("fullName");
+        window.localStorage.removeItem("tec-token");
     },
     changeUnity() {
         // window.localStorage.removeItem("token");

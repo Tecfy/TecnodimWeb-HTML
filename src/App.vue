@@ -160,6 +160,7 @@
 
 <script>
     import Auth from './models/Auth';
+    import config from './config/'
     // import swal from 'sweetalert2';
 
     export default {
@@ -180,10 +181,14 @@
             }
         },
         methods: {
-            logout() {                
+            logout(e) {
+                e.preventDefault();
                 Auth.logout();
                 this.notLogged = true;
-                this.$router.push('/login');
+                // let url = `${config.externalLoginUlr}/Account/ExternalLogin?provider=Saml2&token=${token}&ReturnUrl=${config.externalLoginUlrRedirect}`;
+                let url = `${config.externalLoginUlr}/Account/LogOff?returnUrl=${config.externalLoginUlrRedirect}`
+                window.location.href = url;
+                // this.$router.push(url);
                 // this.selectedUnit = 0;
                 //this.classStyle();
             },
