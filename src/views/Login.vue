@@ -98,12 +98,15 @@
         },
         mounted: function () {
             let token = this.$route.query.token;
-            if(token){
+            let type = this.$route.query.type;
+            if(type && type === 'error'){
+                return this.showInvalidToken(this.$route.query.message);
+            } else if (type && type === 'success') {
                 return this.tryExternalPost(token);
             }
         },
         methods: {
-            tryExternalPost(token){               
+            tryExternalPost(token){
                 let url = `${config.apiUrl}/Account/LoginExternal`;
                 let request = {
                     token
@@ -111,16 +114,16 @@
                 axios.post(url,request)
                 .then(({data}) => {
                     if(!data.success){
-                        return this.showInvalidToken()
+                        return this.showInvalidToken('Usuário não localizado!')
                     }
                     return this.handleLogin(data);
                 })
-                .catch(this.showInvalidToken)
+                .catch(this.showInvalidToken('Usuário não localizado!'))
             },
-            showInvalidToken(){
+            showInvalidToken(msg){
                 return sweetalert2({
                     type: 'error',
-                    text: 'Token inválido!'
+                    text: msg
                 })
             },
             externalLogin(e){
