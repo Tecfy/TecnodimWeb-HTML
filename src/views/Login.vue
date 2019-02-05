@@ -32,7 +32,7 @@
                              <div class="form-group row">
                                 <div class="col-6 text-center">
                                     <button class="btn btn-block btn-alt-primary" @click="externalLogin">
-                                        <i class="si si-login mr-10"></i> Login Externo
+                                        <i class="si si-login mr-10"></i> Login Integrado
                                     </button>
                                 </div>
                                 <div class="col-6 text-center">
