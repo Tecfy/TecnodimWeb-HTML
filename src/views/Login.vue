@@ -118,7 +118,9 @@
                     }
                     return this.handleLogin(data);
                 })
-                .catch(this.showInvalidToken('Usuário não localizado!'))
+                .catch(() => {
+                    this.showInvalidToken('Usuário não localizado!')
+                });
             },
             showInvalidToken(msg){
                 return sweetalert2({
@@ -161,7 +163,6 @@
                             this.$router.push('/select-unity');
                             // return window.location.reload(); // todo: ajustar
                         } else {
-
                             throw new Error()
                         }
             },
