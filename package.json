@@ -5,7 +5,18 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "serve-dev": "run-s change-to-dev serve",
+    "change-to-dev": "copy \"src\\config\\index.dev.js\" \"src\\config\\index.js\"",
+    "change-to-homolog": "copy \"src\\config\\index.homolog.js\" \"src\\config\\index.js\"",
+    "change-to-prod": "copy \"src\\config\\index.prod.js\" \"src\\config\\index.js\"",
+    "build-dev-folder": "vue-cli-service build --dest dist_dev",
+    "build-homolog-folder": "vue-cli-service build --dest dist_homolog",
+    "build-prod-folder": "vue-cli-service build --dest dist_prod",
+    "build-dev": "run-s change-to-dev build-dev-folder",
+    "build-homolog": "run-s change-to-homolog build-homolog-folder",
+    "build-prod": "run-s change-to-prod build-prod-folder",
+    "build-all": "run-s build-dev build-homolog build-prod"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -25,6 +36,7 @@
     "@vue/cli-plugin-eslint": "^3.0.0-rc.10",
     "@vue/cli-service": "^3.0.0-rc.10",
     "node-sass": "^4.9.2",
+    "npm-run-all": "^4.1.5",
     "sass-loader": "^7.0.3",
     "vue-template-compiler": "^2.5.16"
   },
