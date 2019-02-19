@@ -5,7 +5,7 @@ export default {
     externalLoginUlr: 'https://adm.tecnodimweb.tecfy.com.br',
     //externalLoginUlr: 'https://gedadminhomol.sereduc.com',
 	//externalLoginUlr: 'https://gedadmin.sereduc.com',
-    externalLoginUlrRedirect: 'http://tecnodimweb.tecfy.com.br/login',
+    externalLoginUlrRedirect: 'https://tecnodimweb.tecfy.com.br/login',
     //externalLoginUlrRedirect: 'http://gedhomol.sereduc.com/login',
     //externalLoginUlrRedirect: 'http://ged.sereduc.com/login',
 }

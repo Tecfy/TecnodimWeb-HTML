@@ -243,6 +243,13 @@ input:-moz-placeholder { /* Firefox 18- */
     .dropdown-toggle {
       background-color: #fff;
       border: 0;
+      .form-control {
+        color: #000;
+        position: initial;
+      }
+      &:after {
+        display: none;
+      }
     }
     &.select-multiple {
       .dropdown-toggle {
@@ -600,6 +607,19 @@ input:-moz-placeholder { /* Firefox 18- */
       .selected-tag {
         display: none;
       }
+      .form-control {
+        width: 100%;
+        position: initial;
+        color: #000;
+      }
+      &:after {
+        display: none;
+      }
+    }
+    .dropdown-menu {
+      width: 97%;
+      left: 10px;
+      margin-top: 6px;
     }
   }
   .category-selected {
