@@ -380,6 +380,17 @@
         api.get('/PDFs/GetPDFs/' + id)
           .then(({data}) => {
             if (!data.success) {
+              let requestFinish = {
+                documentId: this.$route.params.id,
+                documentStatusId: 8
+              };
+              api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
+                .then(() => {
+
+                })
+                .catch(() => {
+
+                });
               let errorMessage = data.messages;
               return swal({
                 text: errorMessage,
