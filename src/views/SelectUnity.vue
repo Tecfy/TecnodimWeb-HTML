@@ -64,10 +64,10 @@
                     let selUnitStorage = window.localStorage.selectedUnit;
                     this.units = JSON.parse( window.localStorage.units);
 
-                    if (this.selectedUnit === 0) {
-                        this.units.push("Selecione");
+                    if (this.selectedUnit !== 0) {
+                        // this.units.push("Selecione");
                         //this.selectedUnit = "Selecione";
-                    } else {
+                    // } else {
                         this.selectedUnit = this.units[window.localStorage.selectedUnit - 1].unityId;
                         this.$router.push('/home');
                         this.notLogged = false

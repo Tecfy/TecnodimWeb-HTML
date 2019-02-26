@@ -362,9 +362,18 @@
                 this.loading.pagesPdf = true;
                 api.get('/PDFs/GetPDFs/' + id)
                     .then(({data}) => {
+                        if (!data.success) {
+                          let errorMessage = data.messages;
+                          return swal({
+                            text: errorMessage,
+                            timer: 3000,
+                            type: "error",
+                          })
+                          .then(() => this.$router.push('/cut-dossie'))
+                        }
                         this.pages = data.result;
                         this.loading.pagesPdf = false;
-                    });
+                    })
             },
             getSlices() {
                 let id = this.$route.params.id;

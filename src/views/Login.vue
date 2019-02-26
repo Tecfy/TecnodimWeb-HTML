@@ -31,7 +31,7 @@
                             </div>
                              <div class="form-group row">
                                 <div class="col-6 text-center">
-                                    <button class="btn btn-block btn-alt-primary" @click="externalLogin">
+                                    <button class="btn btn-block btn-alt-primary" @click="externalLogin" :disabled="!numSelected()">
                                         <i class="si si-login mr-10"></i> Login Integrado
                                     </button>
                                 </div>
@@ -104,6 +104,7 @@
             } else if (type && type === 'success') {
                 return this.tryExternalPost(token);
             }
+            this.numSelected();
         },
         methods: {
             tryExternalPost(token){
@@ -202,11 +203,12 @@
                     });
             },
             numSelected() {
-                if (this.email !== '' && this.password !== '') {
-                    return true;
-                } else {
-                    return false;
-                }
+              return this.email !== '' && this.password !== '';
+                // if (this.email !== '' && this.password !== '') {
+                //     return true;
+                // } else {
+                //     return false;
+                // }
             },
         }
     }
