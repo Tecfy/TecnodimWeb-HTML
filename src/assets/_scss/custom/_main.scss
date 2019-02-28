@@ -251,6 +251,11 @@ input:-moz-placeholder { /* Firefox 18- */
         display: none;
       }
     }
+    .dropdown-menu {
+      width: 550px;
+      position: relative;
+      left: -90px;
+    }
     &.select-multiple {
       .dropdown-toggle {
         border: 1px solid #ccc;

@@ -4,12 +4,14 @@ import router from './router'
 import store from './store'
 import swal from 'sweetalert2'
 
-import pt_BR from 'vee-validate/dist/locale/pt_BR';
 import VeeValidate, { Validator } from 'vee-validate';
+import pt_BR from 'vee-validate/dist/locale/pt_BR';
 
 // Localize takes the locale object as the second argument (optional) and merges it.
 Validator.localize('pt_BR', pt_BR);
-Vue.use(VeeValidate);
+Vue.use(VeeValidate, {
+  locale: 'pt_BR'
+});
 
 Vue.config.productionTip = false
 
