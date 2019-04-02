@@ -622,9 +622,10 @@ input:-moz-placeholder { /* Firefox 18- */
       }
     }
     .dropdown-menu {
-      width: 97%;
-      left: 10px;
-      margin-top: 6px;
+      width: 100%;
+      // left: 10px;
+      margin-top: -18px;
+      position: relative;
     }
   }
   .category-selected {

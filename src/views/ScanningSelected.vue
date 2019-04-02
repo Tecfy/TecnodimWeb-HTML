@@ -67,9 +67,9 @@
                                         </div>
                                         <div class="col-12 mb-20">
                                             <v-select placeholder="Selecione uma catergoria" multiple
-                                                      ref="selectCategory" v-model="selected_category"
+                                                      v-model="selected_category"
                                                       :options="categories" label="name" class="btn-sm"
-                                                      :selected="selected_category.categoryId"></v-select>
+                                                      ></v-select>
                                         </div>
                                     </div>
                                 </form>
@@ -77,7 +77,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="col-md-4 right-content">
                 <div class="block block-rounded shadow bg-primary student-data" v-if="loading.studentDetail">
