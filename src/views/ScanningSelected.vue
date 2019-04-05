@@ -12,7 +12,7 @@
         </div>
         <div class="row">
             <div class="col-md-8 left-content">
-                <div class="block block-rounded shadow-sm pb-10 block-thumbails">
+                <div class="block block-rounded shadow-sm pb-10 block-thumbails" v-if="loading.loadClassification">
                     <div class="block-header">
                         <h3 class="block-title">
                             <strong>
@@ -23,7 +23,7 @@
                     </div>
                     <div class="block-content category-selected">
                         <div class="row">
-                            <div class="mx-3" v-for="(item,i) in selected_category" :key="i">
+                            <div class="mx-3" v-for="(item, i) in selected" :key="i">
                                 <button type="button" class="btn btn-block btn-outline-primary my-2 text-left"
                                         v-bind:title="item.name">
                                     <i class="fa fa-folder mr-5"></i> <span class="text-black">{{ item.name }}</span>
@@ -39,8 +39,10 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="block block-rounded shadow-sm pb-10 block-group">
+                <div v-else>
+                    <h2 class="text-center"><i class="fa fa-spinner fa-spin"></i></h2>
+                </div>
+                <div class="block block-rounded shadow-sm pb-10 block-group" v-if="loading.loadClassification">
                     <div class="block-header">
                         <h3 class="block-title">
                             <strong>
@@ -66,16 +68,22 @@
                                             </div>
                                         </div>
                                         <div class="col-12 mb-20">
-                                            <v-select placeholder="Selecione uma catergoria" multiple
-                                                      v-model="selected_category"
-                                                      :options="categories" label="name" class="btn-sm"
-                                                      ></v-select>
+                                            <v-select placeholder="Selecione uma catergoria" multiple ref="optionsCategories"
+                                                      v-model="selected" :options="options" :onChange="selecOptions" label="name" class="btn-sm" :disabled="disabledInput"
+                                            ></v-select>
+                                            <!--<v-select placeholder="Selecione uma catergoria" multiple-->
+                                                      <!--v-model="selected_category"-->
+                                                      <!--:options="categories" label="name" class="btn-sm"-->
+                                                      <!--&gt;</v-select>-->
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
+                </div>
+                <div v-else>
+                    <h2 class="text-center"><i class="fa fa-spinner fa-spin"></i></h2>
                 </div>
             </div>
             <div class="col-md-4 right-content">
@@ -127,8 +135,10 @@
   export default {
     data() {
       return {
+        disabledInput: false,
         loading: {
-          studentDetail: false
+          studentDetail: false,
+          loadClassification: false
         },
         student: {
           name: '-',
@@ -138,11 +148,51 @@
         },
         subCategories: [],
         additionalFields: [],
-        categories: [],
-        selected_category: [],
+        options: [],
+        selected: [],
+        selectedIndex: '',
+        selecVal: '',
       }
     },
     methods: {
+      removeCategory(i) {
+        const element = this.selected[i];
+        this.options.push(element);
+        this.options.sort(this.orderList('categoryId'));
+        this.selected.splice(i, 1);
+      },
+      selecOptions() {
+        let controller = 0;
+        let numSelected = this.selected.length;
+        let numOptions = this.options.length;
+        if (numSelected > 0) {
+          this.selecVal = this.selected[numSelected - 1];
+          for (let i = 0; i < numOptions; i++) {
+            if (this.options[i].name === this.selecVal.name) {
+              controller = i;
+            }
+          }
+          this.options.splice(controller, 1);
+        }
+      },
+      orderList(key, order='asc') {
+        return function(a, b) {
+          const varA = (typeof a[key] === 'string') ?
+            a[key].toUpperCase() : a[key];
+          const varB = (typeof b[key] === 'string') ?
+            b[key].toUpperCase() : b[key];
+
+          let comparison = 0;
+          if (varA > varB) {
+            comparison = 1;
+          } else if (varA < varB) {
+            comparison = -1;
+          }
+          return (
+            (order === 'desc') ? (comparison * -1) : comparison
+          );
+        };
+      },
       getDetails() {
         let id = this.$route.params.id;
         let unityId = window.localStorage.selectedUnit;
@@ -155,11 +205,9 @@
       getCategories() {
         api.get('/categories/getCategories')
           .then(({data}) => {
-            this.categories = data.result;
+            this.options = data.result;
+            this.loading.loadClassification = true;
           });
-      },
-      removeCategory(i) {
-        this.selected_category.splice(i, 1);
       },
       openModal() {
         setTimeout(function () {
@@ -167,7 +215,7 @@
         }, 500);
       },
       sendClassification() {
-        if (this.selected_category.length === 0) {
+        if (this.selected.length === 0) {
           return swal({
             title: 'Erro ao enviar',
             text: 'Selecione ao menos uma categoria para salvar.',
@@ -176,7 +224,7 @@
           });
         } else {
           let jobCategories = [];
-          this.selected_category.map(item => {
+          this.selected.map(item => {
             jobCategories.push({categoryId: item.categoryId});
           });
 
