@@ -380,18 +380,19 @@
         api.get('/PDFs/GetPDFs/' + id)
           .then(({data}) => {
             if (!data.success) {
-              let requestFinish = {
-                documentId: this.$route.params.id,
-                documentStatusId: 8
-              };
-              api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
-                .then(() => {
-
-                })
-                .catch(() => {
-
-                });
-              let errorMessage = data.messages;
+              // let requestFinish = {
+              //   documentId: this.$route.params.id,
+              //   documentStatusId: 8
+              // };
+              // api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
+              //   .then(() => {
+              //
+              //   })
+              //   .catch(() => {
+              //
+              //   });
+              // let errorMessage = data.messages;
+              let errorMessage = "Erro ao localizar o arquivo. Por favor tente novamente mais tarde.";
               return swal({
                 text: errorMessage,
                 timer: 3000,
