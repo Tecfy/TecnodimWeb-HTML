@@ -69,8 +69,10 @@
                                         </div>
                                         <div class="col-12 mb-20">
                                             <v-select placeholder="Selecione uma catergoria" multiple ref="optionsCategories"
-                                                      v-model="selected" :options="options" :onChange="selecOptions" label="name" class="btn-sm" :disabled="disabledInput"
-                                            ></v-select>
+                                                      v-model="selected" :options="availableOptions" label="name" class="btn-sm" :disabled="disabledInput"
+                                            >
+                                              <span slot="no-options">Sem registros no momento.</span>
+                                            </v-select>
                                             <!--<v-select placeholder="Selecione uma catergoria" multiple-->
                                                       <!--v-model="selected_category"-->
                                                       <!--:options="categories" label="name" class="btn-sm"-->
@@ -156,42 +158,7 @@
     },
     methods: {
       removeCategory(i) {
-        const element = this.selected[i];
-        this.options.push(element);
-        this.options.sort(this.orderList('categoryId'));
         this.selected.splice(i, 1);
-      },
-      selecOptions() {
-        let controller = 0;
-        let numSelected = this.selected.length;
-        let numOptions = this.options.length;
-        if (numSelected > 0) {
-          this.selecVal = this.selected[numSelected - 1];
-          for (let i = 0; i < numOptions; i++) {
-            if (this.options[i].name === this.selecVal.name) {
-              controller = i;
-            }
-          }
-          this.options.splice(controller, 1);
-        }
-      },
-      orderList(key, order='asc') {
-        return function(a, b) {
-          const varA = (typeof a[key] === 'string') ?
-            a[key].toUpperCase() : a[key];
-          const varB = (typeof b[key] === 'string') ?
-            b[key].toUpperCase() : b[key];
-
-          let comparison = 0;
-          if (varA > varB) {
-            comparison = 1;
-          } else if (varA < varB) {
-            comparison = -1;
-          }
-          return (
-            (order === 'desc') ? (comparison * -1) : comparison
-          );
-        };
       },
       getDetails() {
         let id = this.$route.params.id;
@@ -271,6 +238,15 @@
               }
             })
         }
+      }
+    },
+    computed: {
+      availableOptions() {
+        // exibe somente as opções que não estão selecionadas
+        return this.options.filter(item => {
+          const exists = this.selected.find(selected => selected.categoryId === item.categoryId);
+          return typeof exists === 'undefined';
+        });
       }
     },
     mounted() {
