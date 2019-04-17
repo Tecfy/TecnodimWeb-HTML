@@ -182,7 +182,7 @@
                     </div>
                     <div class="col-12" v-bind:class="{'mt-20': this.additionalFields !== 0}">
                       <v-select ref="selectCategory" v-model="selected_category" :options="categories" label="name"
-                                :selected="selected_category.categoryId">
+                                :selected="selected_category.name">
                         <span slot="no-options">Nenhum resultado encontrado</span>
                       </v-select>
                     </div>
@@ -201,29 +201,58 @@
                     <div class="form-group row">
                       <label class="col-12 col-form-label text-white" :for="'field'+i"><b>{{ e.name }}</b></label>
                       <div class="col-12">
-                        <input :ref="'identificador'+i" v-if="e.type==='string'" type="text" :data-vv-as="e.name"
-                               :name="e.categoryAdditionalFieldId.toString()" class="form-control" :id="'field'+i"
-                               v-model="additionalFields[i].value" v-validate="{required:e.required}">
-                        <input :ref="'identificador'+i" v-if="e.type==='datetime'" type="text" :data-vv-as="e.name"
-                               :name="e.categoryAdditionalFieldId.toString()" class="form-control u-full-width"
-                               :id="'field'+i" placeholder="dd/mm/aaaa" v-mask="'##/##/####'"
-                               v-model="additionalFields[i].value"
-                               v-validate="{required:e.required,date_format:'DD/MM/YYYY'}"/>
-                        <div v-if="e.type==='bool'">
-                          <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" :id="'yes_field'+i" :data-vv-as="e.name"
-                                   :name="e.categoryAdditionalFieldId.toString()" class="custom-control-input"
-                                   value="SIM" v-model="additionalFields[i].value"
-                                   v-validate="{required:e.required,included: ['SIM','NÃO']}">
-                            <label class="custom-control-label text-white"
-                                   :for="'yes_field'+i"><strong>Sim</strong></label>
+                        <div v-if="itemsSliced.additionalFields.length === 0">
+                          <input :ref="'identificador'+i" v-if="e.type==='string'" type="text" :data-vv-as="e.name"
+                                 :name="e.categoryAdditionalFieldId.toString()" class="form-control" :id="'field'+i"
+                                 v-model="additionalFields[i].value" v-validate="{required:e.required}">
+                          <input :ref="'identificador'+i" v-if="e.type==='datetime'" type="text" :data-vv-as="e.name"
+                                 :name="e.categoryAdditionalFieldId.toString()" class="form-control u-full-width"
+                                 :id="'field'+i" placeholder="dd/mm/aaaa" v-mask="'##/##/####'"
+                                 v-model="additionalFields[i].value"
+                                 v-validate="{required:e.required,date_format:'DD/MM/YYYY'}"/>
+                          <div v-if="e.type==='bool'">
+                            <div class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" :id="'yes_field'+i" :data-vv-as="e.name"
+                                     :name="e.categoryAdditionalFieldId.toString()" class="custom-control-input"
+                                     value="SIM" v-model="additionalFields[i].value"
+                                     v-validate="{required:e.required,included: ['SIM','NÃO']}">
+                              <label class="custom-control-label text-white"
+                                     :for="'yes_field'+i"><strong>Sim</strong></label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" :id="'no_field'+i" :data-vv-as="e.name"
+                                     :name="e.categoryAdditionalFieldId.toString()" class="custom-control-input"
+                                     value="NÃO" v-model="additionalFields[i].value">
+                              <label class="custom-control-label text-white"
+                                     :for="'no_field'+i"><strong>Não</strong></label>
+                            </div>
                           </div>
-                          <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" :id="'no_field'+i" :data-vv-as="e.name"
-                                   :name="e.categoryAdditionalFieldId.toString()" class="custom-control-input"
-                                   value="NÃO" v-model="additionalFields[i].value">
-                            <label class="custom-control-label text-white"
-                                   :for="'no_field'+i"><strong>Não</strong></label>
+                        </div>
+                        <div v-else>
+                          <input :ref="'identificador'+i" v-if="e.type==='string'" type="text" :data-vv-as="e.name"
+                                 :name="e.categoryAdditionalFieldId.toString()" class="form-control" :id="'field'+i"
+                                 v-model="itemsSliced.additionalFields[i].value" v-validate="{required:e.required}">
+                          <input :ref="'identificador'+i" v-if="e.type==='datetime'" type="text" :data-vv-as="e.name"
+                                 :name="e.categoryAdditionalFieldId.toString()" class="form-control u-full-width"
+                                 :id="'field'+i" placeholder="dd/mm/aaaa" v-mask="'##/##/####'"
+                                 v-model="itemsSliced.additionalFields[i].value"
+                                 v-validate="{required:e.required,date_format:'DD/MM/YYYY'}"/>
+                          <div v-if="e.type==='bool'">
+                            <div class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" :id="'yes_field'+i" :data-vv-as="e.name"
+                                     :name="e.categoryAdditionalFieldId.toString()" class="custom-control-input"
+                                     value="SIM" v-model="itemsSliced.additionalFields[i].value"
+                                     v-validate="{required:e.required,included: ['SIM','NÃO']}">
+                              <label class="custom-control-label text-white"
+                                     :for="'yes_field'+i"><strong>Sim</strong></label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" :id="'no_field'+i" :data-vv-as="e.name"
+                                     :name="e.categoryAdditionalFieldId.toString()" class="custom-control-input"
+                                     value="NÃO" v-model="itemsSliced.additionalFields[i].value">
+                              <label class="custom-control-label text-white"
+                                     :for="'no_field'+i"><strong>Não</strong></label>
+                            </div>
                           </div>
                         </div>
                         <span
@@ -478,10 +507,11 @@
         } else {
           api.get('/Categories/GetCategoryById/' + this.categoryId)
             .then(({data}) => {
+              console.log('data', data.result)
               this.subCategories = data.result.parents;
               this.additionalFields = data.result.additionalFields;
               this.validateSubCategories = true;
-
+              this.selected_category = data.result.name;
               let i;
               let numCat;
               if (this.additionalFields === null || this.additionalFields.length === 0) {
@@ -499,11 +529,13 @@
                   }
                 }
               }
+              // else {
+              //   this.selected_category =
+              // }
             });
         }
       },
       thumbNav(stepElement) {
-        // console.log(stepElement)
         this.loadImg = true;
         this.countPage = stepElement;
         this.imageUrl = this.apiUrl + this.itemsSliced.slicePages[this.countPage].image;
@@ -760,8 +792,6 @@
       },
       showSvg1() {
         const wrapper = this.$refs.contentSidebar;
-        // console.log(window.scrollY);
-        console.log(wrapper.getBoundingClientRect().top);
 
         if (window.scrollY > 145) {
           wrapper.setAttribute('class', 'content-sidebar onScreen');
@@ -791,6 +821,7 @@
         this.getDetails();
         this.getCategories();
         this.getPdf();
+        this.updateSubCategories();
         this.$refs.searchCode.focus();
       }
     },
