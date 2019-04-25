@@ -76,7 +76,7 @@
                   <div class="row gutters-tiny js-gallery">
                     <div v-for="(item, i) in pages" :key="i" class=" col-sm-6 col-xl-3 mb-30 card-thumb"
                          :class="{ selected: !!selected[i], selecting: !!selecting[i] }">
-                      <img width="200" :src="apiUrl+item.thumb" @mouseover="zoomImg('out')" alt="Pdf thumbnail"
+                      <img width="200" :src="pathThumb.replace('{0}', item)" @mouseover="zoomImg('out')" alt="Pdf thumbnail"
                            class="selectable img-fluid shadow" draggable="false">
                       <div class="form-group">
                         <div class="custom-control custom-checkbox custom-control-inline">
@@ -294,7 +294,7 @@
       </div>
       <div class="modal-dialog modal-dialog-slideup modal-lg" role="document">
         <div class="text-center">
-          <img v-bind:src="apiUrl+linkImg" class="img-fluid" @load="imgLoaded" v-show="!loadImg">
+          <img v-bind:src="linkImg" class="img-fluid" @load="imgLoaded" v-show="!loadImg">
         </div>
       </div>
     </div>
@@ -319,6 +319,8 @@
           slicesCategory: true
         },
         pages: [],
+        path: '',
+        pathThum: '',
         student: {
           name: '-',
           unity: '-',
@@ -343,12 +345,11 @@
         } else if (e === 'out') {
           this.selectPage = false;
         } else {
-          this.linkImg = this.pages[e].image;
+          this.linkImg = this.path.replace("{0}", e+1);
           this.linkPos = e;
           this.selectPage = true;
           $('#modalZoomImg').modal({
             backdrop: 'static'
-
           });
         }
       },
@@ -357,14 +358,17 @@
       },
       navPage(nav) {
         let numPages = this.pages.length;
+        // alert(numPages)
         this.loadImg = true;
 
         if (nav === 'prev' && this.linkPos > 0) {
           this.linkPos--;
-          this.linkImg = this.pages[this.linkPos].image;
-        } else if (nav === 'next' && this.linkPos < numPages - 1) {
+          this.linkImg = this.path.replace("{0}", this.linkPos);
+          // alert(this.linkImg);
+        } else if (nav === 'next' && this.linkPos < numPages) {
           this.linkPos++;
-          this.linkImg = this.pages[this.linkPos].image;
+          this.linkImg = this.path.replace("{0}", this.linkPos);
+          // alert(this.linkImg);
         }
       },
       getDetails() {
@@ -400,7 +404,9 @@
               })
                 .then(() => this.$router.push('/cut-dossie'))
             }
-            this.pages = data.result;
+            this.pages = data.result.pages;
+            this.path = data.result.path;
+            this.pathThumb = data.result.pathThumb;
             this.loading.pagesPdf = false;
           })
       },
@@ -454,7 +460,7 @@
       postCut(newCut) {
         let pages = [];
         newCut.items.map(item => {
-          pages.push({page: item.page});
+          pages.push({page: item});
         });
 
         // this.getPdf();

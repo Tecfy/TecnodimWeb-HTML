@@ -16,7 +16,7 @@
       <div class="col-md-8 left-content">
         <div class="block block-rounded shadow-sm pb-0 block-group">
           <div class="block-header" v-if="!loading.pagesPdf">
-            <img class="mx-10" width="80" v-for="(item, i) in itemsSliced.slicePages" :key="i" :src="apiUrl+item.thumb"
+            <img class="mx-10" width="80" v-for="(item, i) in itemsSliced.slicePages" :key="i" :src="item.thumb"
                  alt="Pdf thumbnail" v-bind:class="stepClass(i)" @click="thumbNav(i)">
           </div>
           <div v-else>
@@ -434,7 +434,7 @@
                 this.slice_id = this.itemsSliced.sliceId;
                 this.numPages = this.itemsSliced.slicePages.length;
                 this.loading.pagesPdf = false;
-                this.imageUrl = this.apiUrl + this.itemsSliced.slicePages[this.countPage].image;
+                this.imageUrl = this.itemsSliced.slicePages[this.countPage].image;
                 this.$refs.searchCode.focus();
 
                 if (this.itemsSliced.slicePages.length >= 2) {
@@ -472,7 +472,7 @@
                 this.slice_id = this.itemsSliced.sliceId;
                 this.numPages = this.itemsSliced.slicePages.length;
                 this.loading.pagesPdf = false;
-                this.imageUrl = this.apiUrl + this.itemsSliced.slicePages[this.countPage].image;
+                this.imageUrl = this.itemsSliced.slicePages[this.countPage].image;
                 this.$refs.searchCode.focus();
                 this.$router.push('/rate-dossie-selected-single/' + this.id);
 
@@ -538,7 +538,7 @@
       thumbNav(stepElement) {
         this.loadImg = true;
         this.countPage = stepElement;
-        this.imageUrl = this.apiUrl + this.itemsSliced.slicePages[this.countPage].image;
+        this.imageUrl = this.itemsSliced.slicePages[this.countPage].image;
         this.stepClass(stepElement);
         this.pageRotate();
       },
@@ -558,7 +558,7 @@
           }
         }
         this.zoom = 1;
-        this.imageUrl = this.apiUrl + this.itemsSliced.slicePages[this.countPage].image;
+        this.imageUrl = this.itemsSliced.slicePages[this.countPage].image;
         this.stepClass(this.countPage);
         this.pageRotate();
       },
