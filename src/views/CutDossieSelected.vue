@@ -86,7 +86,7 @@
                       </div>
                       <div class="col-12">
                         <div class="zoom-content text-center">
-                          <button @click="zoomImg(i)" @mouseover="zoomImg('over')" data-toggle="modal"
+                          <button @click="zoomImg(item)" @mouseover="zoomImg('over')" data-toggle="modal"
                                   data-target="#modalZoomImg"
                                   class="btn btn-alt-primary btn-md px-4 text-uppercase my-5">
                             <i class="fa fa-search-plus"></i>
@@ -278,12 +278,12 @@
         <i class="fa fa-spinner fa-spin fa-4x text-white"></i>
       </div>
       <a @click="navPage('prev')" class="btn btn-lg btn-alt-primary pt-3 nav prev vertical-align pl-20 mb-50"
-         data-nav="prev" data-toggle="cropper" data-method="prevPage" title="Voltar página" v-show="linkPos !== 0">
+         data-nav="prev" data-toggle="cropper" data-method="prevPage" title="Voltar página" v-show="activePrevArrow">
         <i class="fa fa-angle-double-left"></i>
       </a>
       <a @click="navPage('next')" class="btn btn-lg btn-alt-primary pt-3 nav next vertical-align pl-20 mb-50"
          data-nav="next" data-toggle="cropper" data-method="nextPage" title="Avançar página"
-         v-show="linkPos !== pages.length - 1">
+         v-show="activeNextArrow">
         <i class="fa fa-angle-double-right"></i>
       </a>
       <div class="block-options mr-15 pull-right">
@@ -334,7 +334,9 @@
         slices: [],
         linkImg: '',
         linkPos: null,
-        loadImg: false
+        loadImg: false,
+        activeNextArrow: true,
+        activePrevArrow: true,
       }
     },
     methods: {
@@ -345,13 +347,16 @@
         } else if (e === 'out') {
           this.selectPage = false;
         } else {
-          this.linkImg = this.path.replace("{0}", e+1);
+          this.linkImg = this.path.replace("{0}", e);
+          console.log(this.linkImg);
           this.linkPos = e;
           this.selectPage = true;
           $('#modalZoomImg').modal({
             backdrop: 'static'
           });
         }
+        this.showNextArrow();
+        this.showPrevArrow();
       },
       imgLoaded() {
         this.loadImg = false;
@@ -370,6 +375,33 @@
           this.linkImg = this.path.replace("{0}", this.linkPos);
           // alert(this.linkImg);
         }
+        this.showNextArrow();
+        this.showPrevArrow();
+      },
+      showNextArrow() {
+        this.pages.map((e, i) => {
+          let numPages = this.pages.length;
+          if (this.linkPos === e) {
+            // console.log(this.linkPos)
+            if (i <= numPages) {
+              this.activeNextArrow = true;
+            } else {
+              this.activeNextArrow = false;
+            }
+          }
+        });
+        // return false
+      },
+      showPrevArrow() {
+        this.pages.map((e, i) => {
+          if (this.linkPos === e) {
+            if (i === 0) {
+              this.activePrevArrow = false;
+            } else {
+              this.activePrevArrow = true;
+            }
+          }
+        });
       },
       getDetails() {
         let id = this.$route.params.id;
