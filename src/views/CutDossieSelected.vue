@@ -342,57 +342,22 @@
     methods: {
       zoomImg(e) {
         this.loadImg = true;
+        let numPages = this.pages.length - 1;
+
         if (e === 'over') {
           this.selectPage = true;
         } else if (e === 'out') {
           this.selectPage = false;
         } else {
           this.linkImg = this.path.replace("{0}", e);
-          console.log(this.linkImg);
+          // console.log(this.linkImg);
           this.linkPos = e;
           this.selectPage = true;
           $('#modalZoomImg').modal({
             backdrop: 'static'
           });
         }
-        this.showNextArrow();
-        this.showPrevArrow();
-      },
-      imgLoaded() {
-        this.loadImg = false;
-      },
-      navPage(nav) {
-        let numPages = this.pages.length;
-        // alert(numPages)
-        this.loadImg = true;
 
-        if (nav === 'prev' && this.linkPos > 0) {
-          this.linkPos--;
-          this.linkImg = this.path.replace("{0}", this.linkPos);
-          // alert(this.linkImg);
-        } else if (nav === 'next' && this.linkPos < numPages) {
-          this.linkPos++;
-          this.linkImg = this.path.replace("{0}", this.linkPos);
-          // alert(this.linkImg);
-        }
-        this.showNextArrow();
-        this.showPrevArrow();
-      },
-      showNextArrow() {
-        this.pages.map((e, i) => {
-          let numPages = this.pages.length;
-          if (this.linkPos === e) {
-            // console.log(this.linkPos)
-            if (i <= numPages) {
-              this.activeNextArrow = true;
-            } else {
-              this.activeNextArrow = false;
-            }
-          }
-        });
-        // return false
-      },
-      showPrevArrow() {
         this.pages.map((e, i) => {
           if (this.linkPos === e) {
             if (i === 0) {
@@ -400,9 +365,70 @@
             } else {
               this.activePrevArrow = true;
             }
+            if (i === numPages) {
+              this.activeNextArrow = false;
+            } else {
+              this.activeNextArrow = true;
+            }
           }
+
+        });
+
+        // if (this.linkPos > 0) {
+        //   this.linkPos--;
+        //   this.linkImg = this.path.replace("{0}", this.linkPos);
+        //   this.activePrevArrow = true;
+        //   this.activeNextArrow = true;
+        // } else {
+        //   this.activePrevArrow = false;
+        //   this.activeNextArrow = true;
+        // }
+        // if (this.linkPos < numPages) {
+        //   this.linkPos++;
+        //   this.linkImg = this.path.replace("{0}", this.linkPos);
+        //   this.activePrevArrow = true;
+        //   this.activeNextArrow = true;
+        // } else {
+        //   this.activePrevArrow = true;
+        //   this.activeNextArrow = false;
+        // }
+        // // this.showNextArrow();
+        // this.showPrevArrow();
+      },
+      imgLoaded() {
+        this.loadImg = false;
+      },
+      navPage(nav) {
+        let numPages = this.pages.length;
+        this.loadImg = true;
+
+        if (nav === 'prev' && this.linkPos > 0) {
+          this.linkPos--;
+          this.linkImg = this.path.replace("{0}", this.linkPos);
+        }
+
+        if (nav === 'next' && this.linkPos < numPages) {
+          this.linkPos++;
+          this.linkImg = this.path.replace("{0}", this.linkPos);
+        }
+
+        this.pages.map((e, i) => {
+          if (this.linkPos === e) {
+            if (i === 0) {
+              this.activePrevArrow = false;
+            } else {
+              this.activePrevArrow = true;
+            }
+            if (i === numPages - 1) {
+              this.activeNextArrow = false;
+            } else {
+              this.activeNextArrow = true;
+            }
+          }
+
         });
       },
+
       getDetails() {
         let id = this.$route.params.id;
         api.get('/documentDetails/GetDocumentDetailByDocumentId/' + id)
