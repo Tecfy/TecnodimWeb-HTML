@@ -413,35 +413,43 @@
         if (!this.slice_id) {
           api.get('/slices/GetSlicePending/' + this.id)
             .then(({data}) => {
-              if (data.result == null) {
-                let requestFinish = {
-                  documentId: this.id,
-                  documentStatusId: 6
-                };
-                api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
-                  .then(() => {
+              if(data.success === true) {
+                if (data.result === null) {
+                  let requestFinish = {
+                    documentId: this.id,
+                    documentStatusId: 6
+                  };
+                  api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
+                    .then(() => {
+                    })
+                    .catch(() => {
+                    });
+                  return swal({
+                    title: 'Classificação de Dossiê finalizado!',
+                    text: 'Todas os recortes foram classificadas com sucesso.',
+                    type: "success",
                   })
-                  .catch(() => {
-                  });
-                return swal({
-                  title: 'Classificação de Dossiê finalizado!',
-                  text: 'Todas os recortes foram classificadas com sucesso.',
-                  type: "success",
-                })
-                  .then(() => this.$router.push('/rate-dossie'))
-              } else {
-                this.itemsSliced = data.result;
-                this.slice_id = this.itemsSliced.sliceId;
-                this.numPages = this.itemsSliced.slicePages.length;
-                this.loading.pagesPdf = false;
-                this.imageUrl = this.itemsSliced.slicePages[this.countPage].image;
-                this.$refs.searchCode.focus();
-
-                if (this.itemsSliced.slicePages.length >= 2) {
-                  this.loading.buttonsPage = true;
+                    .then(() => this.$router.push('/rate-dossie'))
                 } else {
-                  this.loading.buttonsPage = false;
+                  this.itemsSliced = data.result;
+                  this.slice_id = this.itemsSliced.sliceId;
+                  this.numPages = this.itemsSliced.slicePages.length;
+                  this.loading.pagesPdf = false;
+                  this.imageUrl = this.itemsSliced.slicePages[this.countPage].image;
+                  this.$refs.searchCode.focus();
+
+                  if (this.itemsSliced.slicePages.length >= 2) {
+                    this.loading.buttonsPage = true;
+                  } else {
+                    this.loading.buttonsPage = false;
+                  }
                 }
+              } else {
+                return swal({
+                  title: 'Erro desconhecido!',
+                  text: 'Tente novamente mais tarde.',
+                  type: "error",
+                })
               }
             });
         } else {

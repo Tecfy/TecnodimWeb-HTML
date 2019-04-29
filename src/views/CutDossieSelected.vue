@@ -351,6 +351,7 @@
         } else {
           this.linkImg = this.path.replace("{0}", e);
           // console.log(this.linkImg);
+          this.loadImg = false;
           this.linkPos = e;
           this.selectPage = true;
           $('#modalZoomImg').modal({
