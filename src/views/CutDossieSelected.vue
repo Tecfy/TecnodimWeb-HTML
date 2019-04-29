@@ -350,7 +350,6 @@
           this.selectPage = false;
         } else {
           this.linkImg = this.path.replace("{0}", e);
-          // console.log(this.linkImg);
           this.loadImg = false;
           this.linkPos = e;
           this.selectPage = true;
@@ -358,7 +357,6 @@
             backdrop: 'static'
           });
         }
-
         this.pages.map((e, i) => {
           if (this.linkPos === e) {
             if (i === 0) {
@@ -372,29 +370,7 @@
               this.activeNextArrow = true;
             }
           }
-
         });
-
-        // if (this.linkPos > 0) {
-        //   this.linkPos--;
-        //   this.linkImg = this.path.replace("{0}", this.linkPos);
-        //   this.activePrevArrow = true;
-        //   this.activeNextArrow = true;
-        // } else {
-        //   this.activePrevArrow = false;
-        //   this.activeNextArrow = true;
-        // }
-        // if (this.linkPos < numPages) {
-        //   this.linkPos++;
-        //   this.linkImg = this.path.replace("{0}", this.linkPos);
-        //   this.activePrevArrow = true;
-        //   this.activeNextArrow = true;
-        // } else {
-        //   this.activePrevArrow = true;
-        //   this.activeNextArrow = false;
-        // }
-        // // this.showNextArrow();
-        // this.showPrevArrow();
       },
       imgLoaded() {
         this.loadImg = false;
@@ -434,7 +410,9 @@
         let id = this.$route.params.id;
         api.get('/documentDetails/GetDocumentDetailByDocumentId/' + id)
           .then(({data}) => {
-            this.student = data.result;
+            if(data.success === true) {
+              this.student = data.result;
+            }
           });
       },
       getPdf() {
@@ -443,18 +421,6 @@
         api.get('/PDFs/GetPDFs/' + id)
           .then(({data}) => {
             if (!data.success) {
-              // let requestFinish = {
-              //   documentId: this.$route.params.id,
-              //   documentStatusId: 8
-              // };
-              // api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
-              //   .then(() => {
-              //
-              //   })
-              //   .catch(() => {
-              //
-              //   });
-              // let errorMessage = data.messages;
               let errorMessage = "Erro ao localizar o arquivo. Por favor tente novamente mais tarde.";
               return swal({
                 text: errorMessage,

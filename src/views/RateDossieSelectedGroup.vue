@@ -500,7 +500,9 @@
         this.id = this.$route.params.id;
         api.get('/documentDetails/GetDocumentDetailByDocumentId/' + this.id)
           .then(({data}) => {
-            this.student = data.result;
+            if(data.success === true) {
+              this.student = data.result;
+            }
           });
       },
       getCategories() {

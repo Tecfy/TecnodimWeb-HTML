@@ -78,27 +78,36 @@
         let unityId = window.localStorage.selectedUnit;
         this.loadingDossies = true;
         let newUrlApi  = '/documentDetails/GetDocumentDetailsByRegistration?registration=' + this.searchRegistration + '&unityId=' + unityId;
-        // let newUrlApi = '/Documents/getDocumentSlices?unityId=' + unityId + '&currentPage=' + this.currentPage + '&qtdEntries=' + this.totalShow;
 
         if (this.searchRegistration.length !== 0) {
           newUrlApi += '&registration=' + this.searchRegistration;
         }
 
         api.get(newUrlApi).then(({data}) => {
-          if (data.result == null) {
+          if(data.success === true) {
+            if (data.result == null) {
+              this.loadingDossies = false;
+              this.noDossies = true;
+              return swal({
+                title: 'Matrícula não encontrada',
+                text: 'Verifique o número da matrícula e tente novamente.',
+                timer: 3000,
+                type: "error",
+              });
+
+            } else {
+              this.loadingDossies = false;
+              this.noDossies = false;
+              this.searchResult = data.result;
+            }
+          } else {
             this.loadingDossies = false;
             this.noDossies = true;
             return swal({
-              title: 'Matrícula não encontrada',
-              text: 'Verifique o número da matrícula e tente novamente.',
-              timer: 3000,
+              title: 'Erro desconhecido!',
+              text: 'Tente novamente mais tarde.',
               type: "error",
-            });
-
-          } else {
-            this.loadingDossies = false;
-            this.noDossies = false;
-            this.searchResult = data.result;
+            })
           }
 
         });

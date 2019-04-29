@@ -15,8 +15,9 @@ const instance = axios.create({
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + getToken()
-    }
+        'Authorization': 'Bearer ' + getToken(),
+    },
+    timeout: 100*36,
 });
 
 instance.interceptors.response.use(function (response) {
