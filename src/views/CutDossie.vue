@@ -157,7 +157,7 @@
             createPagination(url) {
                 api.get(url).then(({data}) => {
                     this.loadingDossies = false;
-                    this.totalCount = data.result.length;
+                    this.totalCount = data.totalCount;
                     this.numPagination = Math.ceil(this.totalCount / this.totalShow);
                 });
             }
