@@ -690,3 +690,13 @@ input:-moz-placeholder { /* Firefox 18- */
 footer {
   display: none;
 }
+
+.page-total {
+  background-color: #fff;
+  border: 0;
+  &:hover {
+    cursor: default !important;
+    border: 0;
+    background-color: #fff;
+  }
+}

@@ -69,13 +69,16 @@
 
                                 </li>
                                 <li class="page-item" :class="{'disabled': currentPage === 1}">
-                                    <a class="page-link" @click="getDossies('back')">Anterior</a>
+                                    <a class="page-link mr-1" @click="getDossies('back')">Anterior</a>
                                 </li>
-                                <li v-for="n in numPagination" class="page-item" :class="{'disabled': currentPage === n}">
+                                <li v-for="n in numPagination" v-show="showPagination(n)" class="page-item" :class="{'disabled': currentPage === n}">
                                     <a class="page-link" href="#" @click="getDossies(n)">{{ n }}</a>
                                 </li>
+                                <li class="page-item">
+                                    <a class="page-link page-total">de {{numPagination}} </a>
+                                </li>
                                 <li class="page-item" :class="{'disabled': currentPage === numPagination}">
-                                    <a class="page-link" @click="getDossies('next')">Próximo</a>
+                                    <a class="page-link ml-1" @click="getDossies('next')">Próximo</a>
                                 </li>
                             </ul>
                         </nav>
@@ -160,8 +163,14 @@
                     this.totalCount = data.totalCount;
                     this.numPagination = Math.ceil(this.totalCount / this.totalShow);
                 });
+
+            },
+            showPagination (n) {
+              if (this.currentPage === n || n === this.currentPage - 1 || n === this.currentPage - 2 || n === this.currentPage + 1 || n === this.currentPage + 2) {
+                return true;
+              }
             }
-        },
+    },
         mounted(){
             this.getDossies(this.currentPage);
         },
