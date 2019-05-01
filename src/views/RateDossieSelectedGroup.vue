@@ -462,7 +462,7 @@
                 };
                 api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
                   .then(() => {
-
+                    this.updateSubCategories(this.categoryId);
                   })
                   .catch(() => {
 
@@ -492,7 +492,7 @@
                 this.categoryId = this.itemsSliced.categoryId;
                 this.updateSubCategories(this.categoryId);
               }
-              this.updateSubCategories(this.categoryId);
+              // this.updateSubCategories(this.categoryId);
             });
         }
       },
@@ -517,7 +517,6 @@
         } else {
           api.get('/Categories/GetCategoryById/' + this.categoryId)
             .then(({data}) => {
-              console.log('data', data.result)
               this.subCategories = data.result.parents;
               this.additionalFields = data.result.additionalFields;
               this.validateSubCategories = true;
@@ -663,27 +662,39 @@
         this.loading.pagesThumb = true;
 
         api.post('/classifications', request)
-          .then(() => {
-            this.loading.pagesPdf = false;
-            this.countPage = 0;
-            this.itemsSliced = [];
-            this.subCategories = [];
-            this.selected_category = 'Selecione';
-            this.additionalFields = 0;
-            this.validateSubCategories = false;
+          .then(({data}) => {
+            if (data.success) {
+              this.loading.pagesPdf = false;
+              this.countPage = 0;
+              this.itemsSliced = [];
+              this.subCategories = [];
+              this.selected_category = 'Selecione';
+              this.additionalFields = 0;
+              this.validateSubCategories = false;
 
-            this.getDetails();
-            this.getCategories();
-            this.getPdf();
-            return swal({
-              title: 'Classificação do Dossiê salvo com sucesso!',
-              toast: true,
-              timer: 3000,
-              type: "success",
-              showConfirmButton: false,
-            }).then(() => {
-
-            })
+              this.getDetails();
+              this.getCategories();
+              this.getPdf();
+              return swal({
+                title: 'Classificação do Dossiê salvo com sucesso!',
+                toast: true,
+                timer: 3000,
+                type: "success",
+                showConfirmButton: false,
+              }).then(() => {
+              })
+            } else {
+              // this.getDetails();
+              // this.getCategories();
+              this.getPdf();
+              return swal({
+                title: 'Erro ao salvar classificação!',
+                toast: true,
+                timer: 3000,
+                type: "error",
+                showConfirmButton: false,
+              });
+            }
           })
           .catch(() => {
             this.loading.pagesPdf = false;
@@ -694,7 +705,7 @@
               type: "error",
               showConfirmButton: false,
             })
-              .then(() => window.location.reload());
+            .then(() => window.location.reload());
           })
       },
       deletePage() {
@@ -820,8 +831,13 @@
           this.additionalFields = 0;
           this.validateSubCategories = false;
         } else {
-          this.categoryId = newVal.categoryId;
-          this.updateSubCategories();
+          if (((this.categoryId === null || this.categoryId === undefined ) &&
+            (newVal !== undefined || newVal.categoryId > 0)) ||
+            (newVal !== undefined && newVal.categoryId > 0 && newVal.categoryId !== this.categoryId)
+          ) {
+            this.categoryId = newVal.categoryId;
+            this.updateSubCategories();
+          }
         }
         this.searchField = '';
       }
