@@ -32,7 +32,7 @@
                             <!-- Logo -->
                             <div class="logo-content">
                                 <router-link to="/home">
-                                    <img src="assets/codebase/media/logo_tecfy.png" alt="Tecfy - Business Solutions"
+                                    <img src="/assets/codebase/media/logo_tecfy.png" alt="Tecfy - Business Solutions"
                                          class="img-fluid">
                                 </router-link>
                             </div>
