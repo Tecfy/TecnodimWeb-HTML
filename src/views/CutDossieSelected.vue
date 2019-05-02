@@ -421,7 +421,7 @@
         api.get('/PDFs/GetPDFs/' + id)
           .then(({data}) => {
             if (!data.success) {
-              let errorMessage = "Erro ao localizar o arquivo. Por favor tente novamente mais tarde.";
+              let errorMessage = data.messages[0];
               return swal({
                 text: errorMessage,
                 timer: 3000,
@@ -429,10 +429,12 @@
               })
                 .then(() => this.$router.push('/cut-dossie'))
             }
-            this.pages = data.result.pages;
-            this.path = data.result.path;
-            this.pathThumb = data.result.pathThumb;
-            this.loading.pagesPdf = false;
+            else{
+              this.pages = data.result.pages;
+              this.path = data.result.path;
+              this.pathThumb = data.result.pathThumb;
+              this.loading.pagesPdf = false;
+            }
           })
       },
       getSlices() {
