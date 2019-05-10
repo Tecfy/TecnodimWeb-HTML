@@ -11,24 +11,38 @@
             <div class="block-content bg-primary">
                 <form action="" method="post" onsubmit="return false;">
                     <div class="form-group row">
-                        <div class="col-lg-4 col-md-6">
-                            <label class="col-12 pl-0 text-white h5 mb-2" for="registration-number">Número da matrícula</label>
-                            <input ref="fieldRegistration" v-model="searchRegistration" type="text" class="form-control form-control-lg" id="registration-number" name="registration-number" v-mask="'#####################'">
+                        <div class="col-md-4">
+                        <!-- <label class="col-12 pl-0 text-white h5 mb-2" for="student-name">ID</label> -->
+                        <input v-model="searchId" type="text" class="form-control form-control-lg" id="student-name"
+                                name="student-name" placeholder="ID">
                         </div>
-                        <div class="col-lg-4 col-md-6">
-                            <label class="col-12 pl-0 text-white h5 mb-2" for="student-name">Nome do aluno</label>
-                            <input v-model="searchName" type="text" class="form-control form-control-lg" id="student-name" name="student-name">
+                        <div class="col-md-4">
+                        <!-- <label class="col-12 pl-0 text-white h5 mb-2" for="registration-number">Nº. da matrícula</label> -->
+                        <input ref="fieldRegistration" v-model="searchRegistration" type="text"
+                                class="form-control form-control-lg" id="registration-number" name="registration-number"
+                                v-mask="'#####################'" placeholder="Nº. da matrícula">
                         </div>
-                        <div class="col-lg-2 col-md-6">
-                            <label class="col-12 pl-0 text-white h5 mb-2">Status</label>
+                        <div class="col-md-4">
+                        <!-- <label class="col-12 pl-0 text-white h5 mb-2" for="external-id">Identificador SE</label> -->
+                        <input v-model="searchExternalId" type="text" class="form-control form-control-lg" id="external-id"
+                                name="external-id" placeholder="Identificador SE">
+                        </div>
+                        <div class="col-md-4 mt-3">
+                        <!-- <label class="col-12 pl-0 text-white h5 mb-2" for="student-name">Nome do aluno</label> -->
+                        <input v-model="searchName" type="text" class="form-control form-control-lg" id="student-name"
+                                name="student-name" placeholder="Nome do aluno">
+                        </div>
+
+                        <div class="col-md-4 mt-3">
+                        <!-- <label class="col-12 pl-0 text-white h5 mb-2">Status</label> -->
                             <v-select :options="status" v-model="selected"></v-select>
-                            <!--<input v-model="searchStatus" type="text" class="form-control form-control-lg" id="dossie-status" name="dossie-status">-->
                         </div>
-                        <div class="col-lg-2 col-md-6 pt-20 mt-5">
-                            <button @click="getDossies(1)" ref="searchButton" class="btn btn-alt-primary btn-lg btn-block mt-1">Buscar <i class="fa fa-search ml-5"></i></button>
+                        <div class="col-md-4 pt-5 mt-5">
+                        <button @click="getDossies(1)" ref="searchButton" class="btn btn-alt-primary btn-lg btn-block mt-1">Buscar
+                            <i class="fa fa-search ml-5"></i></button>
                         </div>
                     </div>
-                </form>
+                    </form>
             </div>
         </div>
         <div class="block mt-50">
@@ -39,20 +53,26 @@
                 <table class="table table-vcenter" >
                     <thead class="thead-light mb-50">
                     <tr class="p-50">
+                        <th class="py-20"><b>ID</b></th>
                         <th class="py-20"><b>Matrícula</b></th>
+                        <th class="py-20"><b>Identificador SE</b></th>
                         <th class="py-20"><b>Nome</b></th>
                         <th class="py-20"><b>Status</b></th>
+                        <th class="py-20"><b>Criado</b></th>
                         <th class="py-20"></th>
                     </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="customer in searchResult" >
-                            <th scope="row">{{ customer.registration }}</th>
+                        <tr v-for="(customer, index) in searchResult" >
+                            <th scope="row">{{ customer.documentId }}</th>
+                            <td>{{ customer.registration }}</td>
+                            <td>{{ customer.externalId }}</td>
                             <td>{{ customer.name }}</td>
                             <td>
                                 <span v-if="customer.statusId === 1" class="badge badge-danger">Não iniciado</span>
                                 <span v-if="customer.statusId === 2" class="badge badge-primary">Iniciado</span>
                             </td>
+                            <td>{{ convertingDate(index) }}</td>             
                             <td class="text-right">
                                 <div class="btn-group">
                                     <router-link :to="'/cut-selected/'+customer.documentId" class="btn btn-lg btn-success js-tooltip-enabled" data-title="Iniciar recorte"><i class="fa fa-crop"></i></router-link>
@@ -102,15 +122,17 @@
             return {
                 searchResult: [],
                 loadingDossies: true,
+                searchId: '',
+                searchExternalId: '',
                 searchName: '',
                 searchRegistration: '',
                 searchStatus: '',
                 status: [
-                    { id: 0, label: 'Selecione' },
+                    { id: 0, label: 'Selecione Status' },
                     { id: 1, label: 'Não iniciado' },
                     { id: 2, label: 'Iniciado' }
                 ],
-                selected: {id: 0, label: 'Selecione'},
+                selected: {id: 0, label: 'Selecione Status'},
                 currentPage: 1,
                 totalCount: null,
                 totalShow: 10,
@@ -150,6 +172,14 @@
                     newPageUrlApi += '&documentStatusId=' + 2;
                     newUrlApi += '&documentStatusId=' + 2;
                 }
+                if (this.searchExternalId.length !== 0) {
+                    newPageUrlApi += '&externalId=' + this.searchExternalId;
+                    newUrlApi += '&externalId=' + this.searchExternalId;
+                }
+                if (this.searchId.length !== 0) {
+                    newPageUrlApi += '&documentId=' + this.searchId;
+                    newUrlApi += '&documentId=' + this.searchId;
+                }
                 this.createPagination(newPageUrlApi);
                 api.get(newUrlApi).then(({data}) => {
                     this.loadingDossies = false;
@@ -169,6 +199,14 @@
               if (this.currentPage === n || n === this.currentPage - 1 || n === this.currentPage - 2 || n === this.currentPage + 1 || n === this.currentPage + 2) {
                 return true;
               }
+            },
+            convertingDate(index) {
+                let fullDate = this.searchResult[index].createdDate;
+                let getYear = fullDate.substr(0, 4);
+                let getMonth = fullDate.substr(5, 2);
+                let getDay = fullDate.substr(8, 2);
+                let getNewDate = getDay + "/" + getMonth + "/" + getYear;
+                return getNewDate;
             }
     },
         mounted(){
@@ -176,7 +214,7 @@
         },
         watch: {
             selected: function () {
-                if(this.selected !== 'Selecione') {
+                if(this.selected !== 'Selecione Status') {
                     this.$refs.searchButton.focus();
                 }
             }
