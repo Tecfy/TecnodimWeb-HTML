@@ -131,7 +131,6 @@
         });
       },
 
-      // Deletar Dossiê
       deletePage(i) {
         let pageToDelete = {
           jobId: this.searchResult[i].jobId

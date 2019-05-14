@@ -4,7 +4,6 @@
     }
     .selected .custom-checkbox label:before {
         background-color: #37b78c;
-        /* box-shadow: 0 0 0 1px #f0f2f5, 0 0 0 3px #37b78c; */
     }
     .selected .custom-checkbox label:after {
         background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3E%3C/svg%3E");
@@ -91,21 +90,11 @@
                                     </a>
                                 </div>
                             </div>
-                            <!--<div class="form-group row">-->
-                                <!--<div class="col-12">-->
-                                    <!--<hr>-->
-                                <!--</div>-->
-                                <!--<div class="col-12 pt-20">-->
-                                    <!--<button type="button" @click="openModalEndGroupRate" class="btn btn-dark btn-lg btn-block text-uppercase" data-toggle="modal" data-target="#modal-group" :disabled="!allowEndButton"><i class="si si-check mr-10"></i> Finalizar</button>-->
-                                <!--</div>-->
-                            <!--</div>-->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- END Page Content -->
-        <!-- Modal Agrupar -->
         <div class="modal fade" id="modal-group" tabindex="-1" role="dialog" aria-labelledby="modal-group" aria-hidden="true">
             <div class="modal-dialog modal-dialog-slideup" role="document">
                 <div class="modal-content">
@@ -129,7 +118,6 @@
                 </div>
             </div>
         </div>
-        <!-- END Modal Agrupar -->
     </div>
 </template>
 

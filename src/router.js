@@ -4,9 +4,6 @@ import Login from './views/Login'
 import Home from './views/Home.vue'
 import SelectUnity from './views/SelectUnity.vue'
 
-//import CutDossieSelected from './views/CutDossieSelected'
-// const CutDossieSelected = () => import('./views/CutDossieSelected')
-
 Vue.use(Router)
 
 export default new Router({

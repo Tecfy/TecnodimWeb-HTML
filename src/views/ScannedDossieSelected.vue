@@ -25,7 +25,7 @@
                   <div class="row">
                     <div v-for="(item, i) in slices[selectedJob].jobCategoryPages" :key="i"
                          class=" col-sm-6 col-xl-3 mb-30 card-thumb">
-                      <img width="200" :src="apiUrl+item.thumb"
+                      <img width="200" :src="item.thumb"
                            alt="Pdf thumbnail"
                            class="selectable img-fluid shadow" draggable="false">
 
@@ -232,8 +232,6 @@
         </div>
       </div>
     </div>
-
-    <!--Modal Zoom Image -->
     <div class="modal fade" ref="modalZoomImg" id="modalZoomImg" tabindex="-1" role="dialog"
          aria-labelledby="modalZoomImg" aria-hidden="true" v-if="!loading.pagesPdf">
       <div class="col-1 loadImg vertical-align mx-auto" v-if="loading.loadImg">
@@ -256,16 +254,14 @@
       </div>
       <div class="modal-dialog modal-dialog-slideup modal-lg" role="document">
         <div class="text-center">
-          <img v-bind:src="apiUrl+linkImg" class="img-fluid" @load="imgLoaded" v-show="!loading.loadImg">
+          <img v-bind:src="linkImg" class="img-fluid" @load="imgLoaded" v-show="!loading.loadImg">
         </div>
       </div>
     </div>
-    <!-- END Modal Zoom Image -->
   </div>
 </template>
 
 <script>
-  // import selectable from 'vue-selectable';
   import api from '../lib/api';
   import config from '../config/index';
   import swal from 'sweetalert2';
@@ -289,7 +285,6 @@
           registration: '-'
         },
         slices: [],
-        apiUrl: '',
         selectedJob: 0,
         classJob: [],
         linkImg: '',
@@ -306,9 +301,7 @@
       }
     },
     methods: {
-      // Carrega Dados do Aluno
       getDetails() {
-        this.apiUrl = config.apiUrl
         this.loading.studentDetail = true;
         this.jobId = this.$route.params.id;
         api.get('/documentDetails/GetDocumentDetailByJobId/' + this.jobId)
@@ -320,7 +313,6 @@
             }
           });
       },
-      // // Carrega Recortes Realizados (PDF'S)
       getJobs() {
         this.loading.pagesPdf = true;
         this.loading.slicesCategory = true;
@@ -333,16 +325,12 @@
             this.finishDossieClassificated();
           });
       },
-
-      // Carrega Select Tipos de Classificação
       getCategories() {
         api.get('/categories/getCategories')
           .then(({data}) => {
             this.categories = data.result;
           });
       },
-
-      // Validação qual botão categoria selecionado
       loadButtonJob() {
         for (let num = 0; num < this.slices.length; num++) {
           this.classJob.push({
@@ -350,7 +338,6 @@
           })
         }
       },
-      // Seleciona recorte realizado
       selectJob(i) {
         this.selectedJob = i;
         for (let num = 0; num < this.slices.length; num++) {
@@ -359,8 +346,6 @@
         this.classJob[i].selec = true;
         this.updateSubCategories(i);
       },
-
-      // Zoom image PDF
       zoomImg(e) {
         this.loading.loadImg = true;
         this.countPage = e;
@@ -368,13 +353,9 @@
         this.countPage = e;
         this.selectPage = true;
       },
-
-      // Loader imagens Zoom
       imgLoaded() {
         this.loading.loadImg = false;
       },
-
-      // Setas navegação modal Zoom  image
       navPage: function (e) {
         this.loading.loadImg = true;
         if (e === "next") {
@@ -391,9 +372,8 @@
           }
         }
         this.zoom = 1;
-        this.linkImg = this.slices[0].jobCategoryPages[this.countPage].image;
+        this.linkImg = this.slices[this.selectedJob].jobCategoryPages[this.countPage].image;
       },
-      // Busca por código tipo de classificação
       searchByCode() {
         api.get('/categories/GetCategoryBySearch?code=' + this.searchField)
           .then(({data}) => {
@@ -473,7 +453,6 @@
           let request = {
             jobCategoryId: this.slices[this.selectedJob].jobCategoryId
           }
-          // Envio requisição criação categoria
           return swal({
             title: 'Apagar Classificação',
             text: 'Deseja realmente excluir grupo de Classificação?',
@@ -528,7 +507,6 @@
           let request = {
             jobCategoryId: this.slices[this.selectedJob].jobCategoryId
           }
-          // Envio requisição criação categoria
           return swal({
             title: 'Desaprovar Dossiê?',
             text: 'Deseja realmente desaprovar grupo de Dossiê?',
@@ -601,7 +579,6 @@
           }
         }
         if (!this.loading.hasCategory) {
-          // Envio requisição criação categoria
           return swal({
             title: 'Envio de Novo Grupo',
             text: 'Deseja realmente incluir nova classificação?',

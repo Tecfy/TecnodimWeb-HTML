@@ -8,71 +8,51 @@
                 </div>
                 <!-- END Header -->
 
-                <!-- Sign In Form -->
-                <!-- <form class="js-validation-signin" v-on:submit.prevent="onSubmit" method="post" novalidate="novalidate" > -->
-                    <div class="block block-themed block-rounded block-shadow" v-if="loadingLogin">
-                        <div class="block-header bg-gd-dusk">
-                            <h3 class="block-title"><i class="fa fa-chevron-right mr-5"></i> Faça seu login para
-                                prosseguir</h3>
-                        </div>
-                        <div class="block-content">
-                            <div class="form-group row">
-                                <div class="col-12">
-                                    <label for="login-username">Usuário</label>
-                                    <input type="text" class="form-control" id="login-username" v-model="email" name="login-username">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-12">
-                                    <label for="login-password">Senha</label>
-                                    <input type="password" class="form-control" id="login-password" v-model="password"
-                                           name="login-password">
-                                </div>
-                            </div>
-                             <div class="form-group row">
-                                <div class="col-6 text-center">
-                                    <button class="btn btn-block btn-alt-primary" @click="externalLogin" :disabled="!numSelected()">
-                                        <i class="si si-login mr-10"></i> Login Integrado
-                                    </button>
-                                </div>
-                                <div class="col-6 text-center">
-                                    <button class="btn btn-block btn-alt-primary" @click="postLogin" :disabled="!numSelected()">
-                                        <i class="si si-login mr-10"></i> Entrar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <!--<div class="block-content bg-body-light">-->
-                            <!--<div class="form-group text-center">-->
-                                <!--<a class="link-effect text-muted mr-10 mb-5 d-inline-block"-->
-                                   <!--href="op_auth_reminder3.html">-->
-                                    <!--<i class="fa fa-warning mr-5"></i> Esqueci minha senha-->
-                                <!--</a>-->
-                            <!--</div>-->
-                        <!--</div>-->
+                <div class="block block-themed block-rounded block-shadow" v-if="loadingLogin">
+                    <div class="block-header bg-gd-dusk">
+                        <h3 class="block-title"><i class="fa fa-chevron-right mr-5"></i> Faça seu login para
+                            prosseguir</h3>
                     </div>
-                    <div class="block block-themed block-rounded block-shadow" v-else>
-                        <div class="block-header bg-gd-dusk">
-                            <h3 class="block-title"><i class="fa fa-chevron-right mr-5"></i> Carregando usuário</h3>
+                    <div class="block-content">
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <label for="login-username">Usuário</label>
+                                <input type="text" class="form-control" id="login-username" v-model="email" name="login-username">
+                            </div>
                         </div>
-                        <div class="block-content bg-white">
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <label for="login-password">Senha</label>
+                                <input type="password" class="form-control" id="login-password" v-model="password"
+                                        name="login-password">
+                            </div>
+                        </div>
                             <div class="form-group row">
-                                <h2 class="text-center mx-auto">
-                                    <i class="fa fa-spinner fa-spin"></i>
-                                </h2>
+                            <div class="col-6 text-center">
+                                <button class="btn btn-block btn-alt-primary" @click="externalLogin" :disabled="!numSelected()">
+                                    <i class="si si-login mr-10"></i> Login Integrado
+                                </button>
+                            </div>
+                            <div class="col-6 text-center">
+                                <button class="btn btn-block btn-alt-primary" @click="postLogin" :disabled="!numSelected()">
+                                    <i class="si si-login mr-10"></i> Entrar
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <!--<div class="load-login" v-else>-->
-                        <!--<div class="block-header bg-gd-dusk">-->
-                            <!--<h3 class="block-title"><i class="fa fa-chevron-right mr-5"></i> Carregando usuário</h3>-->
-                        <!--</div>-->
-                        <!--<div class="block-content">-->
-
-                        <!--</div>-->
-                    <!--</div>-->
-                <!-- </form> -->
-                <!-- END Sign In Form -->
+                </div>
+                <div class="block block-themed block-rounded block-shadow" v-else>
+                    <div class="block-header bg-gd-dusk">
+                        <h3 class="block-title"><i class="fa fa-chevron-right mr-5"></i> Carregando usuário</h3>
+                    </div>
+                    <div class="block-content bg-white">
+                        <div class="form-group row">
+                            <h2 class="text-center mx-auto">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -80,7 +60,6 @@
 
 <script>
     import swal from 'sweetalert2';
-    // import api from '../lib/api';
     import uuid from 'uuid/v1';
     import config from '../config/'
     import sweetalert2 from 'sweetalert2';
@@ -204,11 +183,6 @@
             },
             numSelected() {
               return this.email !== '' && this.password !== '';
-                // if (this.email !== '' && this.password !== '') {
-                //     return true;
-                // } else {
-                //     return false;
-                // }
             },
         }
     }

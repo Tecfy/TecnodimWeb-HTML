@@ -1,65 +1,29 @@
 <template>
-    <!-- Page Container -->
     <div id="page-container" v-bind:class="{notLogged}"
          class="sidebar-o enable-page-overlay side-scroll page-header-modern main-content-boxed">
-        <!-- Sidebar -->
         <nav id="sidebar">
-            <!-- Sidebar Scroll Container -->
             <div id="sidebar-scroll">
-                <!-- Sidebar Content -->
                 <div class="sidebar-content">
-                    <!-- Side Header -->
                     <div class="shadow content-header-fullrow px-15 pt-50 pb-50 bg-black-op-90">
-                        <!-- Mini Mode -->
                         <div class="content-header-section sidebar-mini-visible-b">
-                            <!-- Logo -->
                             <span class="content-header-item font-w700 font-size-xl float-left animated fadeIn">
                                 <span class="text-dual-primary-dark">c</span>
                                 <span class="text-primary">b</span>
                             </span>
-                            <!-- END Logo -->
                         </div>
-                        <!-- END Mini Mode -->
 
-                        <!-- Normal Mode -->
                         <div class="content-header-section text-center align-parent sidebar-mini-hidden">
-                            <!-- Close Sidebar, Visible only on mobile screens -->
-                            <!-- Layout API, functionality initialized in Codebase() -> uiApiLayout() -->
                             <button type="button" class="btn btn-circle btn-dual-secondary d-lg-none align-v-r"
                                     data-toggle="layout" data-action="sidebar_close"><i
                                     class="fa fa-times text-danger"></i></button>
-                            <!-- END Close Sidebar -->
-                            <!-- Logo -->
                             <div class="logo-content">
                                 <router-link to="/home">
                                     <img src="/assets/codebase/media/logo_tecfy.png" alt="Tecfy - Business Solutions"
                                          class="img-fluid">
                                 </router-link>
                             </div>
-                            <!--<div class="top-navegation py-30">-->
-                            <!--<div class="row">-->
-                            <!--<div class="col-12">-->
-                            <!--<div class="form-group text-center">-->
-                            <!--<select class="form-control" id="exampleFormControlSelect1" v-model="selectedUnit" >-->
-                            <!--<option selected value="Selecione">Selecione</option>-->
-                            <!--<option :value="unit.unityId" v-for="(unit, index) in units" :key="index">{{ unit.name }}</option>-->
-                            <!--</select>-->
-                            <!--</div>-->
-                            <!--</div>-->
-                            <!--<div class="col-12 text-center">-->
-                            <!--<a @click="logout" href="#" class="link-effect text-uppercase">-->
-                            <!--Sair <i class="fa fa-sign-out"></i>-->
-                            <!--</a>-->
-                            <!--</div>-->
-                            <!--</div>-->
-                            <!--</div>-->
-                            <!-- END Logo -->
                         </div>
-                        <!-- END Normal Mode -->
                     </div>
-                    <!-- END Side Header -->
-
-                    <!-- Side Navigation -->
                     <div class="content-side content-side-full bg-primary">
                         <ul class="nav-main">
                             <router-link tag="li" to="/home" active-class="active" exact>
@@ -92,14 +56,9 @@
                             </router-link>
                         </ul>
                     </div>
-                    <!-- END Side Navigation -->
                 </div>
-                <!-- Sidebar Content -->
             </div>
-            <!-- END Sidebar Scroll Container -->
         </nav>
-        <!-- END Sidebar -->
-        <!-- Main Container -->
         <main id="main-container">
             <div class="row py-10 px-20 bg-white top-menu" v-if="!notLogged">
                 <div class="col-11 pl-20 pt-5 text-white text-right">
@@ -130,28 +89,15 @@
 
                 </div>
             </div>
-            <!-- Page Content -->
             <div class="content">
-                <!-- Header
-                <div id="nav">
-                  <router-link to="/">Home</router-link> |
-                  <router-link to="/about">About</router-link>
-                </div>-->
                 <router-view/>
-                <!-- END Header -->
             </div>
-            <!-- END Page Content -->
         </main>
-        <!-- END Main Container -->
-
-        <!-- Footer -->
         <footer id="page-footer" class="opacity-0">
             <div class="content py-20 font-size-xs clearfix">
             </div>
         </footer>
-        <!-- END Footer -->
     </div>
-    <!-- END Page Container -->
 </template>
 
 <style lang="scss" scoped>
@@ -161,7 +107,6 @@
 <script>
     import Auth from './models/Auth';
     import config from './config/'
-    // import swal from 'sweetalert2';
 
     export default {
         data() {
@@ -185,12 +130,8 @@
                 e.preventDefault();
                 Auth.logout();
                 this.notLogged = true;
-                // let url = `${config.externalLoginUlr}/Account/ExternalLogin?provider=Saml2&token=${token}&ReturnUrl=${config.externalLoginUlrRedirect}`;
                 let url = `${config.externalLoginUlr}/Account/LogOff?returnUrl=${config.externalLoginUlrRedirect}`
                 window.location.href = url;
-                // this.$router.push(url);
-                // this.selectedUnit = 0;
-                //this.classStyle();
             },
             changeUnity() {
                 Auth.changeUnity();
@@ -232,11 +173,6 @@
                         this.unity = this.units[this.selectedUnit - 1].name;
                     }
                 } catch (e) {
-                    // console.log(e);
-                    // return swal({
-                    //     type: 'error',
-                    //     text: 'Não foi possível carregar as unidades.',
-                    // });
                 }
             }
         },

@@ -4,7 +4,6 @@ import config from '../config';
 
 function getToken() {
   if (typeof window.localStorage.token === "undefined") {
-    // return "";
     window.location.href = '/login';
   }
   return window.localStorage.token;

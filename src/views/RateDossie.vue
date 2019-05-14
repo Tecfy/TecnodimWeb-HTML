@@ -12,29 +12,24 @@
         <form action="" method="post" onsubmit="return false;">
           <div class="form-group row">
             <div class="col-md-4">
-              <!-- <label class="col-12 pl-0 text-white h5 mb-2" for="student-name">ID</label> -->
               <input v-model="searchId" type="text" class="form-control form-control-lg" id="student-name"
                      name="student-name" placeholder="ID">
             </div>
             <div class="col-md-4">
-              <!-- <label class="col-12 pl-0 text-white h5 mb-2" for="registration-number">Nº. da matrícula</label> -->
               <input ref="fieldRegistration" v-model="searchRegistration" type="text"
                      class="form-control form-control-lg" id="registration-number" name="registration-number"
                      v-mask="'#####################'" placeholder="Nº. da matrícula">
             </div>
             <div class="col-md-4">
-              <!-- <label class="col-12 pl-0 text-white h5 mb-2" for="external-id">Identificador SE</label> -->
               <input v-model="searchExternalId" type="text" class="form-control form-control-lg" id="external-id"
                      name="external-id" placeholder="Identificador SE">
             </div>
             <div class="col-md-4 mt-3">
-              <!-- <label class="col-12 pl-0 text-white h5 mb-2" for="student-name">Nome do aluno</label> -->
               <input v-model="searchName" type="text" class="form-control form-control-lg" id="student-name"
                      name="student-name" placeholder="Nome do aluno">
             </div>
 
             <div class="col-md-4 mt-3">
-              <!-- <label class="col-12 pl-0 text-white h5 mb-2">Status</label> -->
               <v-select :options="status" v-model="selected" @selected="focusButton"></v-select>
             </div>
             <div class="col-md-4 pt-5 mt-5">

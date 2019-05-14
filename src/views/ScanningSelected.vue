@@ -17,7 +17,6 @@
                         <h3 class="block-title">
                             <strong>
                                 Classificações selecionadas
-                                <!--<span>({{ numPendingPages() }})</span>-->
                             </strong>
                         </h3>
                     </div>
@@ -47,7 +46,6 @@
                         <h3 class="block-title">
                             <strong>
                                 Tipo de Classificação
-                                <!--<span> ({{ numGroupCreated() }})</span>-->
                             </strong>
                         </h3>
                     </div>
@@ -73,10 +71,6 @@
                                             >
                                               <span slot="no-options">Sem registros no momento.</span>
                                             </v-select>
-                                            <!--<v-select placeholder="Selecione uma catergoria" multiple-->
-                                                      <!--v-model="selected_category"-->
-                                                      <!--:options="categories" label="name" class="btn-sm"-->
-                                                      <!--&gt;</v-select>-->
                                         </div>
                                     </div>
                                 </form>
@@ -131,7 +125,6 @@
 <script>
 
   import api from '../lib/api';
-  // import config from '../config/index';
   import swal from 'sweetalert2';
 
   export default {
@@ -242,7 +235,6 @@
     },
     computed: {
       availableOptions() {
-        // exibe somente as opções que não estão selecionadas
         return this.options.filter(item => {
           const exists = this.selected.find(selected => selected.categoryId === item.categoryId);
           return typeof exists === 'undefined';
@@ -252,7 +244,6 @@
     mounted() {
       this.getDetails();
       this.getCategories();
-      // this.getSlices();
     }
   }
 </script>

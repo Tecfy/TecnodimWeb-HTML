@@ -265,9 +265,6 @@
               <div class="block-content bg-primary pt-0 pb-10">
                 <div class="form-group row">
                   <div class="col-12 pt-20 mt-5">
-                    <!--<button type="submit" class="btn btn-lg btn-dark shadow-sm btn-block text-uppercase" data-toggle="modal" data-target="#modal-save">-->
-                    <!--<i class="fa fa-save"></i> Salvar-->
-                    <!--</button>-->
                     <button type="submit" ref="saveCategoryButton"
                             class="btn btn-lg btn-dark shadow-sm btn-block text-uppercase"
                             @click="sendClassification()">
@@ -281,8 +278,6 @@
         </div>
       </div>
     </div>
-    <!-- END Page Content -->
-    <!-- Modal Agrupar -->
     <div class="modal fade" id="modal-save" tabindex="-1" role="dialog" aria-labelledby="modal-save"
          aria-hidden="true">
       <div class="modal-dialog modal-dialog-slideup" role="document">
@@ -311,9 +306,6 @@
         </div>
       </div>
     </div>
-    <!-- END Modal Agrupar -->
-
-    <!-- Modal Delete Pages -->
     <div class="modal fade" ref="delmodal" id="modal-del-page" tabindex="-1" role="dialog"
          aria-labelledby="modal-del-page" aria-hidden="true">
       <div class="modal-dialog modal-dialog-slideup" role="document">
@@ -344,7 +336,6 @@
         </div>
       </div>
     </div>
-    <!-- END Modal Delete Pages -->
   </div>
 </template>
 
@@ -366,7 +357,6 @@
           pagesPdf: false,
           pagesThumb: false,
           buttonsPage: false
-          // addFields: false
         },
         imageUrl: '',
         countPage: 0,
@@ -492,7 +482,6 @@
                 this.categoryId = this.itemsSliced.categoryId;
                 this.updateSubCategories(this.categoryId);
               }
-              // this.updateSubCategories(this.categoryId);
             });
         }
       },
@@ -538,9 +527,6 @@
                   }
                 }
               }
-              // else {
-              //   this.selected_category =
-              // }
             });
         }
       },
@@ -634,8 +620,6 @@
               text: 'Deseja realmente fazer a classificação?',
               showCancelButton: true,
               cancelButtonText: 'Cancelar'
-              // timer: 3000,
-              //type: "success",
             }).then(result => {
               if (result.value) {
                 return this.postSubmit();
@@ -684,8 +668,6 @@
               }).then(() => {
               })
             } else {
-              // this.getDetails();
-              // this.getCategories();
               this.getPdf();
               return swal({
                 title: 'Erro ao salvar classificação!',
@@ -719,7 +701,6 @@
             this.loading.pagesPdf = false;
             this.countPage = 0;
             this.getPdf();
-            // this.getCategories();
             return swal({
               title: 'Página apagada com sucesso!',
               toast: true,

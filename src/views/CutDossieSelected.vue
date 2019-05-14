@@ -11,10 +11,6 @@
   }
 
   .selectable {
-    /* position: absolute;
-    width: 200px;
-    height: 50px;
-    background-color: purple; */
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -22,22 +18,12 @@
     -ms-user-select: none;
     user-select: none;
   }
-
-  .selectable.selecting {
-    /* background-color: yellow; */
-  }
-
-  .selectable.selected {
-    /* background-color: orange; */
-  }
-
   .selected img {
     outline: 2px solid #00422c;
   }
 
   .selected .custom-checkbox label:before {
     background-color: #37b78c;
-    /* box-shadow: 0 0 0 1px #f0f2f5, 0 0 0 3px #37b78c; */
   }
 
   .selected .custom-checkbox label:after {
@@ -182,9 +168,6 @@
         </div>
       </div>
     </div>
-    <!-- END Page Content -->
-
-    <!-- Modal Agrupar -->
     <div class="modal fade" id="modalGroup" tabindex="-1" role="dialog" aria-labelledby="modalGroup" aria-hidden="true"
          ref="modalTeste">
       <div class="modal-dialog modal-dialog-slideup" role="document">
@@ -218,7 +201,6 @@
                 </div>
               </div>
             </div>
-
             <div class="modal-footer text-center">
               <button type="submit" class="btn-dark btn-lg shadow-sm text-uppercase" data-dismiss="modal"
                       @click="createGroup()"><i class="si si-check mr-10"></i> Salvar Grupo
@@ -228,9 +210,6 @@
         </div>
       </div>
     </div>
-    <!-- END Modal Agrupar -->
-
-    <!-- Modal Delete Pages -->
     <div class="modal fade" id="modal-del-pages" tabindex="-1" role="dialog" aria-labelledby="modal-del-pages"
          aria-hidden="true">
       <div class="modal-dialog modal-dialog-slideup" role="document">
@@ -245,7 +224,6 @@
                 </button>
               </div>
             </div>
-
             <div class="block-content pt-0">
               <div class="block block-themed block-rounded shadow actions-content">
                 <div class="block-header bg-white shadow">
@@ -253,7 +231,6 @@
                     pluralAditional()}} selecionada{{ pluralAditional()}}.</h4>
                 </div>
               </div>
-
               <h6 class="mb-20 mt-50">
                 <small><i class="fa fa-chevron-right"></i></small>
                 Você tem <b>certeza</b> que deseja exluir a{{ pluralAditional()}} página{{ pluralAditional() }}?
@@ -269,9 +246,6 @@
         </div>
       </div>
     </div>
-    <!-- END Modal Delete Pages -->
-
-    <!-- Modal Zoom Image -->
     <div class="modal fade" ref="modalZoomImg" id="modalZoomImg" tabindex="-1" role="dialog"
          aria-labelledby="modalZoomImg" aria-hidden="true">
       <div class="col-1 loadImg vertical-align mx-auto" v-if="loadImg">
@@ -298,7 +272,6 @@
         </div>
       </div>
     </div>
-    <!-- END Modal Zoom Image -->
   </div>
 </template>
 
@@ -556,7 +529,6 @@
             itemsA.push(this.pages[index]);
           }
         });
-        // Paginas a deletar
         let pages = [];
         itemsR.map(item => {
           pages.push({page: item.page});
@@ -571,11 +543,9 @@
         this.loading.slicesCategory = true;
         api.post('/DeletedPages', request)
           .then(() => {
-            //Só atualiza localmente (this.pages) se a requisição for feita com sucesso
             this.pages = itemsA;
             this.loading.pagesPdf = false;
             this.loading.slicesCategory = false;
-
 
             this.selected = Array(this.pages.length).fill(false);
             this.selectPage = false;

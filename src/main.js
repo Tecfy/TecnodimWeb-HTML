@@ -7,7 +7,6 @@ import swal from 'sweetalert2'
 import VeeValidate, { Validator } from 'vee-validate';
 import pt_BR from 'vee-validate/dist/locale/pt_BR';
 
-// Localize takes the locale object as the second argument (optional) and merges it.
 Validator.localize('pt_BR', pt_BR);
 Vue.use(VeeValidate, {
   locale: 'pt_BR'
@@ -30,7 +29,6 @@ new Vue({
     render: h => h(App)
 }).$mount('#app');
 
-// navigation guards before each
 router.beforeEach((to, from, next) => {    
     if (to.path !== '/login') {
         if (to.meta.enabled) {
@@ -41,18 +39,8 @@ router.beforeEach((to, from, next) => {
                     next()
                 } else {
                     next(from.path);
-                    // if (window.localStorage.token) {
-                    //     swal({
-                    //         toast: true,
-                    //         timer: 3000,
-                    //         type: 'error',
-                    //         showConfirmButton: false,
-                    //         title: 'Acesso restrito.'
-                    //     });
-                    // }
                 }
             } else {
-                // Route dont require authentication
                 next()
             }
         } else {
@@ -89,7 +77,6 @@ function getClaims(){
 }
 
 function getAuthorization(route){
-    // Se rota possui permissão de acesso, valida se usuário logado tem os privilégios
     if(route.meta.claim){
         let claims = getClaims();
         if(claims[route.meta.claim]){
@@ -100,6 +87,3 @@ function getAuthorization(route){
     }
     return true;
 }
-
-
-
