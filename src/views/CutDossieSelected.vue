@@ -491,7 +491,7 @@
                 });
               return swal({
                 title: 'Dossiê finalizado!',
-                text: 'Todas as páginas foram classificadas.',
+                text: 'Todas as páginas foram recortadas.',
                 timer: 3000,
                 type: "success",
               })
@@ -561,14 +561,14 @@
                   if (this.slices.length > 0) {
                     return swal({
                       title: 'Dossiê finalizado!',
-                      text: 'Todas as páginas foram classificadas.',
+                      text: 'Todas as páginas foram recortadas.',
                       timer: 3000,
                       type: "success",
                     })
                   } else {
                     return swal({
-                      title: 'Dossiê sem classificação',
-                      text: 'Dossiê não possui páginas para classificação',
+                      title: 'Dossiê sem recorte',
+                      text: 'Dossiê não possui páginas para recorte',
                       timer: 3000,
                       type: "error",
                     })
@@ -678,7 +678,7 @@
             this.$refs.searchCode.focus();
             break;
 
-          // Save Button Classification
+          // Save Button Recorta
           case "KeyS":
             this.sendClassification();
             break;
