@@ -288,7 +288,6 @@
         selectedJob: 0,
         classJob: [],
         linkImg: '',
-        // linkPos: null,
         pages: [],
         countPage: 0,
         itemsSliced: [],
@@ -347,7 +346,7 @@
         this.updateSubCategories(i);
       },
       zoomImg(e) {
-        this.loading.loadImg = true;
+        this.loading.loadImg = false;
         this.countPage = e;
         this.linkImg = this.slices[this.selectedJob].jobCategoryPages[this.countPage].image;
         this.countPage = e;
