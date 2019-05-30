@@ -423,10 +423,7 @@
                 if (result.value) {
                   api.post('/JobCategories/SetJobCategoryApprove', request)
                     .then(() => {
-                      // this.finishDossieClassificated();
-                      this.getJobs(true);
-                      // this.getCategories();
-                      
+                      this.getJobs(true);                      
                     })
                     .catch(() => {
                       this.loading.pagesPdf = false;
@@ -467,6 +464,8 @@
           })
             .then(result => {
               if (result.value) {
+                this.loading.pagesPdf = true;
+                this.loading.slicesCategory = true;
                 api.post('/JobCategories/SetJobCategoryDeleted', request)
                   .then(() => {
                     return swal({
@@ -479,7 +478,6 @@
                       .then(() => {
                         this.getJobs();
                         this.selectedJob = 0;
-                        // this.getCategories();
                       })
                   })
                   .catch(() => {
@@ -534,7 +532,6 @@
                     })
                       .then(() => {
                         this.getJobs();
-                        // this.getCategories();
                       })
                   })
                   .catch(() => {
@@ -595,6 +592,8 @@
           })
             .then(result => {
               if (result.value) {
+                this.loading.pagesPdf = true;
+                this.loading.slicesCategory = true;
                 api.post('/JobCategories/SetJobCategoryInclude', request)
                   .then(() => {
                     return swal({
@@ -606,7 +605,6 @@
                     })
                       .then(() => {
                         this.getJobs();
-                        // this.getCategories();
                       })
                   })
                   .catch(() => {
@@ -657,9 +655,6 @@
               })
 
                 .then(() => {
-                  // this.getJobs();
-                  // this.selectedJob = 0;
-                  // this.getCategories();
                   swal.close();
                   this.$router.push('/scanned');
                 })
