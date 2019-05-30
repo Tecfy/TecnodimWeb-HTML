@@ -123,10 +123,10 @@
         api.get(newUrlApi).then(({data}) => {
           this.loadingDossies = false;
           this.searchResult = data.result;
-          this.totalCount = data.totalCount;
-          if (this.totalCount === '' || this.totalCount === null || this.totalCount === undefined) {
-            this.totalCount = 0;
-          }
+          this.totalCount = this.searchResult.length;
+          // if (this.totalCount === '' || this.totalCount === null || this.totalCount === undefined) {
+          //   this.totalCount = 0;
+          // }
           this.$refs.fieldRegistration.focus();
         });
       },

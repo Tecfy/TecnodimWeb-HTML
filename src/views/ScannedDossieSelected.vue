@@ -308,11 +308,10 @@
             if (data.success === true) {
               this.student = data.result;
               this.loading.studentDetail = false;
-              this.selectJob(this.selectedJob);
             }
           });
       },
-      getJobs(finishDossieClassificated = false) {
+      async getJobs(finishDossieClassificated = false) {
         this.loading.pagesPdf = true;
         this.loading.slicesCategory = true;
         api.get('/JobCategories/GetJobCategoriesByJobId?jobId=' + this.jobId)
@@ -321,6 +320,7 @@
             this.loading.pagesPdf = false;
             this.loading.slicesCategory = false;
             this.loadButtonJob();
+            this.selectJob(this.selectedJob);
             if(finishDossieClassificated) this.finishDossieClassificated();
           });
       },
@@ -396,11 +396,16 @@
           });
       },
       updateSubCategories(i) {
-        if (this.slices[i].additionalFields === null || this.slices[i].additionalFields.length === 0) {
-          this.loading.additionalFields = false;
-        }
-        else if (this.slices[this.selectedJob].additionalFields.length >= 1) {
-          this.loading.additionalFields = true;
+        console.log(i);
+        try {
+          if (this.slices[i].additionalFields === null || this.slices[i].additionalFields.length === 0) {
+            this.loading.additionalFields = false;
+          }
+          else if (this.slices[this.selectedJob].additionalFields.length >= 1) {
+            this.loading.additionalFields = true;
+          }
+        } catch(e) {
+          console.log(i, e, this.slices);
         }
       },
       approveJobs() {
@@ -423,7 +428,7 @@
                 if (result.value) {
                   api.post('/JobCategories/SetJobCategoryApprove', request)
                     .then(() => {
-                      this.getJobs(true);                      
+                      this.getJobs(true);
                     })
                     .catch(() => {
                       this.loading.pagesPdf = false;
@@ -468,6 +473,8 @@
                 this.loading.slicesCategory = true;
                 api.post('/JobCategories/SetJobCategoryDeleted', request)
                   .then(() => {
+                    this.getJobs(true);
+                    this.selectedJob = 0;
                     return swal({
                       title: 'Exclusão de grupo de classificação realizado com sucesso',
                       toast: true,
@@ -475,10 +482,6 @@
                       type: "success",
                       showConfirmButton: false
                     })
-                      .then(() => {
-                        this.getJobs();
-                        this.selectedJob = 0;
-                      })
                   })
                   .catch(() => {
                     this.loading.pagesPdf = false;
@@ -531,7 +534,7 @@
                       showConfirmButton: false
                     })
                       .then(() => {
-                        this.getJobs();
+                        this.getJobs(true);
                       })
                   })
                   .catch(() => {
