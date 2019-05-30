@@ -312,7 +312,7 @@
             }
           });
       },
-      getJobs() {
+      getJobs(finishDossieClassificated = false) {
         this.loading.pagesPdf = true;
         this.loading.slicesCategory = true;
         api.get('/JobCategories/GetJobCategoriesByJobId?jobId=' + this.jobId)
@@ -321,7 +321,7 @@
             this.loading.pagesPdf = false;
             this.loading.slicesCategory = false;
             this.loadButtonJob();
-            this.finishDossieClassificated();
+            if(finishDossieClassificated) this.finishDossieClassificated();
           });
       },
       getCategories() {
@@ -342,7 +342,9 @@
         for (let num = 0; num < this.slices.length; num++) {
           this.classJob[num].selec = false;
         }
-        this.classJob[i].selec = true;
+        if(this.classJob.length !== 0) {
+          this.classJob[i].selec = true;
+        }
         this.updateSubCategories(i);
       },
       zoomImg(e) {
@@ -421,8 +423,10 @@
                 if (result.value) {
                   api.post('/JobCategories/SetJobCategoryApprove', request)
                     .then(() => {
-                      this.getJobs();
-                      this.getCategories();
+                      // this.finishDossieClassificated();
+                      this.getJobs(true);
+                      // this.getCategories();
+                      
                     })
                     .catch(() => {
                       this.loading.pagesPdf = false;
@@ -475,7 +479,7 @@
                       .then(() => {
                         this.getJobs();
                         this.selectedJob = 0;
-                        this.getCategories();
+                        // this.getCategories();
                       })
                   })
                   .catch(() => {
@@ -517,6 +521,8 @@
           })
             .then(result => {
               if (result.value) {
+                this.loading.pagesPdf = true;
+                this.loading.slicesCategory = true;
                 api.post('/JobCategories/SetJobCategoryDisapprove', request)
                   .then(() => {
                     return swal({
@@ -528,7 +534,7 @@
                     })
                       .then(() => {
                         this.getJobs();
-                        this.getCategories();
+                        // this.getCategories();
                       })
                   })
                   .catch(() => {
@@ -600,7 +606,7 @@
                     })
                       .then(() => {
                         this.getJobs();
-                        this.getCategories();
+                        // this.getCategories();
                       })
                   })
                   .catch(() => {
@@ -628,6 +634,7 @@
       },
       finishDossieClassificated() {
         let numCategories = this.slices.length;
+        this.catFinished = 0;
         for (let i = 0; i < numCategories; i++) {
           if (this.slices[i].received && this.slices[i].send) {
             this.catFinished++;
@@ -650,9 +657,10 @@
               })
 
                 .then(() => {
-                  this.getJobs();
-                  this.selectedJob = 0;
-                  this.getCategories();
+                  // this.getJobs();
+                  // this.selectedJob = 0;
+                  // this.getCategories();
+                  swal.close();
                   this.$router.push('/scanned');
                 })
             })
