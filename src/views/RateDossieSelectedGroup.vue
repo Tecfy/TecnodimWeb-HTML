@@ -440,6 +440,7 @@
                   text: 'Tente novamente mais tarde.',
                   type: "error",
                 })
+                .then(() => this.$router.push('/cut-dossie'))
               }
             });
         } else {
