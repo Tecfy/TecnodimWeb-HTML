@@ -402,6 +402,26 @@
               })
                 .then(() => this.$router.push('/cut-dossie'))
             }
+            if (this.pages.length === 0) {
+              let requestFinish = {
+                documentId: this.$route.params.id,
+                documentStatusId: 3
+              };
+              api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
+                .then(() => {
+
+                })
+                .catch(() => {
+
+                });
+              return swal({
+                title: 'Dossiê finalizado!',
+                text: 'Todas as páginas foram recortadas.',
+                timer: 3000,
+                type: "success",
+              })
+                .then(() => this.$router.push('/cut-dossie'))
+            }
             else{
               this.pages = data.result.pages;
               this.path = data.result.path;
