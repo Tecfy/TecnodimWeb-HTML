@@ -402,7 +402,7 @@
               })
                 .then(() => this.$router.push('/cut-dossie'))
             }
-            if (this.pages.length === 0) {
+            if (data.result.pages.length === 0) {
               let requestFinish = {
                 documentId: this.$route.params.id,
                 documentStatusId: 3
