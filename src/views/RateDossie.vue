@@ -60,7 +60,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(customer, index) in searchResult">
+            <tr v-for="(customer, index) in searchResult" v-bind:key="index">
               <th scope="row">{{ customer.documentId }}</th>
               <td>{{ customer.registration }}</td>
               <td>{{ customer.externalId }}</td>
@@ -68,16 +68,17 @@
               <td>
                 <span v-if="customer.statusId === 3" class="badge badge-danger">Não iniciado</span>
                 <span v-if="customer.statusId === 4" class="badge badge-primary">Iniciado</span>
+                <span v-if="customer.statusId === 5" class="badge badge-primary">Classificado</span>
               </td>
               <td>{{ convertingDate(index) }}</td>
               <td class="text-right">
                 <div class="btn-group">
-                  <router-link v-if="customer.statusId === 3" :to="'/rate-dossie-selected-single/'+customer.documentId"
+                  <router-link v-if="customer.statusId === 3 || customer.statusId === 4 || customer.statusId === 5" :to="'/rate-dossie-selected-single/'+customer.documentId"
                                class="btn btn-lg btn-success js-tooltip-enabled" data-title="Iniciar classificação"><i
                       class="fa fa-file-text-o"></i></router-link>
-                  <router-link v-if="customer.statusId === 4" :to="'/rate-dossie-selected-single/'+customer.documentId"
+                  <!-- <router-link v-if="customer.statusId === 4" :to="'/rate-dossie-selected-single/'+customer.documentId"
                                class="btn btn-lg btn-success js-tooltip-enabled" data-title="Iniciar classificação"><i
-                      class="fa fa-file-text-o"></i></router-link>
+                      class="fa fa-file-text-o"></i></router-link> -->
                 </div>
               </td>
             </tr>
@@ -93,7 +94,7 @@
                   <li class="page-item" :class="{'disabled': currentPage === 1}">
                     <a class="page-link" @click="getDossies('back')">Anterior</a>
                   </li>
-                  <li v-for="(n, key) in numPagination" v-bind="key" v-show="showPagination(n)" class="page-item" :class="{'disabled': currentPage === n}">
+                  <li v-for="(n, key) in numPagination" v-bind:key="key" v-show="showPagination(n)" class="page-item" :class="{'disabled': currentPage === n}">
                     <a class="page-link" href="#" @click="getDossies(n)">{{ n }}</a>
                   </li>
                   <li class="page-item">
