@@ -17,7 +17,7 @@
                 <div class="col-8">
                     <p class="content-heading pt-0">
                         <i class="si si-arrow-left"></i> <span class="h3"> Classificar Dossiê</span>
-                        <a href="cut_dossie.html" class="btn btn-dark btn-lg float-right shadow-sm text-uppercase"><i class="fa fa-arrow-left mr-10"></i> Voltar</a>
+                        <a href="rate-dossie.html" class="btn btn-dark btn-lg float-right shadow-sm text-uppercase"><i class="fa fa-arrow-left mr-10"></i> Voltar</a>
                     </p>
                 </div>
             </div>
