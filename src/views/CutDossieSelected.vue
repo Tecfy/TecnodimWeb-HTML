@@ -378,7 +378,27 @@
 
         });
       },
-
+      async getValidate() {
+        let id = this.$route.params.id;
+        let sucesso = false;
+        api.get('/documents/GetDocumentValidateSlice/' + id)
+          .then(async ({data}) => {
+            if(data.success === true) {
+              this.getDetails();
+              await this.getSlices();
+              this.getPdf();              
+            }
+            else {
+              let errorMessage = data.messages[0];
+              return swal({
+                text: errorMessage,
+                timer: 3000,
+                type: "error",
+              })
+              .then(() => this.$router.push('/cut-dossie'))
+            }
+          });
+      },
       getDetails() {
         let id = this.$route.params.id;
         api.get('/documentDetails/GetDocumentDetailByDocumentId/' + id)
@@ -402,17 +422,16 @@
               })
                 .then(() => this.$router.push('/cut-dossie'))
             }
-            if (data.result.pages.length === 0) {
+            if (data.result.pages.length === 0 && this.slices.length > 0) {
+              let documentStatusId = this.slices.length > 0 ? 3 : 8;
               let requestFinish = {
                 documentId: this.$route.params.id,
-                documentStatusId: 3
+                documentStatusId: documentStatusId,
               };
               api.post('/Documents/PostDocumentUpdateSatus', requestFinish)
                 .then(() => {
-
                 })
                 .catch(() => {
-
                 });
               return swal({
                 title: 'Dossiê finalizado!',
@@ -430,10 +449,10 @@
             }
           })
       },
-      getSlices() {
+      async getSlices() {
         let id = this.$route.params.id;
         this.loading.slicesCategory = true;
-        api.get('/slices/getSlicesByDocumentId/' + id)
+        await api.get('/slices/getSlicesByDocumentId/' + id)
           .then(({data}) => {
             this.slices = data.result;
             this.loading.slicesCategory = false;
@@ -483,7 +502,6 @@
           pages.push({page: item});
         });
 
-        // this.getPdf();
         let request = {
           documentId: this.$route.params.id,
           name: newCut.name,
@@ -709,9 +727,7 @@
       selectable
     },
     mounted() {
-      this.getDetails();
-      this.getPdf();
-      this.getSlices();
+      this.getValidate();
     },
     created() {
       window.addEventListener('keyup', this.shortCut);
