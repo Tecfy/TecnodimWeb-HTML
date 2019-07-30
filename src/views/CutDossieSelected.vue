@@ -392,7 +392,7 @@
               let errorMessage = data.messages[0];
               return swal({
                 text: errorMessage,
-                timer: 3000,
+                timer: 10000,
                 type: "error",
               })
               .then(() => this.$router.push('/cut-dossie'))
