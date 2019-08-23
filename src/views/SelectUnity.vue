@@ -27,9 +27,7 @@
     </div>
 </template>
 
-<script>
-    import swal from 'sweetalert2';
-
+<script>   
     export default {
         name: 'select-unity',
 
@@ -43,11 +41,14 @@
         methods: {
             loadUnitsFromStorage(){
                 try {
-                    let selUnitStorage = window.localStorage.selectedUnit;
                     this.units = JSON.parse( window.localStorage.units);
 
                     if (this.selectedUnit !== 0) {
-                        this.selectedUnit = this.units[window.localStorage.selectedUnit - 1].unityId;
+                        this.units.map((el, index) => {
+                            if (el.unityId === parseInt(window.localStorage.selectedUnit)) {
+                                this.selectedUnit = el.unityId;
+                            }
+                        });
                         this.$router.push('/home');
                         this.notLogged = false
                     }
