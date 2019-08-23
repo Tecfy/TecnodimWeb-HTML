@@ -163,14 +163,17 @@
             },
             loadUnitsFromStorage() {
                 try {
-                    let selUnitStorage = window.localStorage.selectedUnit;
                     this.units = JSON.parse(window.localStorage.units);
 
-                    if (selUnitStorage === null || selUnitStorage === "undefined" || selUnitStorage === "Selecione") {
+                    if (window.localStorage.selectedUnit === null || window.localStorage.selectedUnit === "undefined" || window.localStorage.selectedUnit === "Selecione") {
                         this.selectedUnit = "Selecione";
                     } else {
-                        this.selectedUnit = this.units[window.localStorage.selectedUnit - 1].unityId;
-                        this.unity = this.units[this.selectedUnit - 1].name;
+                        this.units.map((el, index) => {
+                            if (el.unityId === parseInt(window.localStorage.selectedUnit)) {
+                                this.selectedUnit = el.unityId;
+                                this.unity = el.name;
+                            }
+                        });
                     }
                 } catch (e) {
                 }
