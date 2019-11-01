@@ -1,5 +1,5 @@
-const environmentBase = "http://adm.tecnodimweb.tecfy.com.br";
-const environmentLogin = "http://tecnodimweb.tecfy.com.br/login";
+const environmentBase = "https://gedadminhomol.sereduc.com";
+const environmentLogin = "http://gedhomol.sereduc.com/login";
 export default {
     apiUrl: environmentBase + '/api',
     externalLoginUlr: environmentBase,
