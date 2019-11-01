@@ -741,6 +741,7 @@
                   text: 'Tente novamente mais tarde.',
                   type: "error",
                 })
+                .then(() => this.$router.push('/rate-dossie'))
               }
             });
         } else {
@@ -785,6 +786,29 @@
               }
             });
         }
+      },
+      getValidate() {
+        let id = this.$route.params.id;
+        api.get('/documents/GetDocumentValidateClassification/' + id)
+          .then(({data}) => {
+            if(data.success === true) {
+              this.slicesNotClassificated();
+              this.getDetails();
+              this.getCategories();
+              this.getPdf();
+              this.updateSubCategories();
+              this.$refs.searchCode.focus();
+            }
+            else {
+              let errorMessage = data.messages[0];
+              return swal({
+                text: errorMessage,
+                timer: 10000,
+                type: "error",
+              })
+              .then(() => this.$router.push('/rate-dossie'))
+            }
+          });
       },
       getDetails() {
         this.id = this.$route.params.id;
@@ -1128,12 +1152,7 @@
     },
     mounted() {
       if (this.sliceId !== null) {
-        this.slicesNotClassificated();
-        this.getDetails();
-        this.getCategories();
-        this.getPdf();
-        this.updateSubCategories();
-        this.$refs.searchCode.focus();
+        this.getValidate();
       }
     },
     created() {
