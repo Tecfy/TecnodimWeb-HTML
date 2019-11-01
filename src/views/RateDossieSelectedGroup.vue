@@ -405,7 +405,7 @@
                       <div class="form-group row">                    
                         <div class="col-10 offset-1" v-bind:class="{'mt-20': this.additionalFields !== 0}">
                           <v-select ref="selectCategory" v-model="moveToCategory" :options="notClassificatedGroups" label="name"
-                                :selected="selected_category.name">
+                                :selected="selected_category.name" class="border">
                             <span slot="no-options">Nenhum resultado encontrado</span>
                           </v-select>
                         </div>
