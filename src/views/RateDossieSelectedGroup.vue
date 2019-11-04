@@ -79,6 +79,12 @@
                       <i class="fa fa-rotate-right"></i>
                     </a>
                   </div>
+                  <div class="col-12">
+                    <a class="btn btn-lg btn-success js-tooltip pt-3 push text-white"
+                       data-title="Enviar para outro recorte " data-toggle="modal" data-target="#modal-new-dossie">
+                      <i class="fa fa-reply-all"></i>
+                    </a>
+                  </div>
                   <div class="col-12" v-if="loading.buttonsPage">
                     <a class="btn btn-lg btn-success js-tooltip pt-3 push text-white"
                        data-title="Excluir página | ctrl + alt + ◄ " data-toggle="modal" data-target="#modal-del-page">
@@ -141,6 +147,11 @@
                                class="btn btn-sm btn-block btn-gray-500 text-black mr-5 mb-5 shadow">
                     <b>Classificados: </b> <span>{{ student.classificated }}</span>
                   </router-link>
+                </div>
+                <div class="col-md-12 pt-3">
+                  <button type="submit" ref="saveCategoryButton" class="btn btn-lg btn-dark shadow-sm btn-block text-uppercase" data-toggle="modal" data-target="#modal-del-clipping">
+                    Excluir recorte
+                  </button>
                 </div>
               </div>
             </div>
@@ -306,7 +317,7 @@
         </div>
       </div>
     </div>
-    <div class="modal fade" ref="delmodal" id="modal-del-page" tabindex="-1" role="dialog"
+    <div class="modal fade" id="modal-del-page" tabindex="-1" role="dialog"
          aria-labelledby="modal-del-page" aria-hidden="true">
       <div class="modal-dialog modal-dialog-slideup" role="document">
         <div class="modal-content">
@@ -327,8 +338,8 @@
               </h6>
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn-dark btn-lg float-right shadow-sm text-uppercase" data-dismiss="modal"
+          <div class="border-top text-center py-4">
+            <button type="button" class="btn-dark btn-lg shadow-sm text-uppercase" data-dismiss="modal"
                     @click="deletePage()">
               <i class="si si-check mr-10"></i> Apagar página
             </button>
@@ -336,6 +347,119 @@
         </div>
       </div>
     </div>
+    <!-- Modal Move Dossie -->
+    <div class="modal fade" id="modal-new-dossie" tabindex="-1" role="dialog" aria-labelledby="modal-del-page" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-slideup" role="document">
+        <div class="modal-content">
+          <div class="block block-themed block-transparent mb-0 ">
+            <div class="block-header p-0 pt-10 mb-30">
+              <h4 class="text-white mx-auto pt-10 pl-50"><b>Mover página para outro recorte?</b></h4>
+              <div class="block-options mr-15">
+                <button type="button" class="btn-block-option text-dark" data-dismiss="modal" aria-label="Close">
+                  <h5><i class="si si-close"></i></h5>
+                </button>
+              </div>
+            </div>
+            <div class="block-content pt-0">
+              <h5 class="mb-20 mt-50 text-center text-weight-bold">
+                Selecione uma das opções abaixo:
+              </h5>
+            </div>
+            <form>
+              <div class="container">
+                <div class="row">
+                  <div class="col-6 border-left mb-4">
+                    <div class="form-check text-center">
+                      <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="new" v-model="picked" v-on:change="chooseMoveDossie">
+                      <label class="form-check-label font-weight-bold" for="exampleRadios1">
+                        Enviar para um novo recorte
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="form-check text-center">
+                      <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="exists" v-model="picked" v-on:change="chooseMoveDossie">
+                      <label class="form-check-label font-weight-bold" for="exampleRadios2">
+                        Enviar para um recorte existente
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-4" v-show='picked !== ""'>
+                  <div class="col-8 offset-2" v-show='picked === "new"'>
+                    <h6 class="mb-10 mt-20">
+                      <small><i class="fa fa-chevron-right"></i></small>
+                      Digite o <b>nome </b>para identificação do novo recorte.
+                    </h6>
+                    <div class="form-group mb-3">
+                      <input type="text" class="form-control" v-model="newGroupName" placeholder="Digite aqui..."
+                            ref="identificationField" tabindex="1" id="newSlice">
+                    </div>  
+                  </div>                  
+                  <div class="col-8 offset-2" v-show='picked === "exists"'>
+                    <h6 class="mb-10 offset-1 mt-20">
+                      <small><i class="fa fa-chevron-right"></i></small>
+                      Selecione um <strong>recorte</strong> para mover a página.
+                    </h6>
+                    <div class="form-group mb-3">
+                      <div class="form-group row">                    
+                        <div class="col-10 offset-1" v-bind:class="{'mt-20': this.additionalFields !== 0}">
+                          <v-select ref="selectCategory" v-model="moveToCategory" :options="notClassificatedGroups" label="name"
+                                :selected="selected_category.name" class="border">
+                            <span slot="no-options">Nenhum resultado encontrado</span>
+                          </v-select>
+                        </div>
+                      </div>
+                    </div>  
+                  </div>                  
+                </div>
+              </div>
+            </form>
+          </div>          
+          <div class="border-top text-center py-4">            
+            <button type="button" class="btn-dark btn-lg shadow-sm text-uppercase" data-dismiss="modal" @click="movePage()" :disabled="disableMoveButton()" v-if="!disableMoveButton()">
+              <i class="si si-check mr-10"></i> Mover página
+            </button>
+            <button type="button" class="btn-dark btn-lg shadow-sm text-uppercase" data-dismiss="modal" @click="movePage()" :disabled="disableMoveButton2()" v-if="!disableMoveButton2()">
+              <i class="si si-check mr-10"></i> Mover página
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Modal Move Dossie -->
+    <!-- Modal Excluir recorte -->
+    <div class="modal fade" id="modal-del-clipping" tabindex="-1" role="dialog"
+         aria-labelledby="modal-del-clipping" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-slideup" role="document">
+        <div class="modal-content">
+          <div class="block block-themed block-transparent mb-0 ">
+            <div class="block-header p-0 pt-10 mb-30">
+              <h4 class="text-white mx-auto pt-10 pl-50"><b>Excluir recorte?</b></h4>
+              <div class="block-options mr-15">
+                <button type="button" class="btn-block-option text-dark" data-dismiss="modal" aria-label="Close">
+                  <h5><i class="si si-close"></i></h5>
+                </button>
+              </div>
+            </div>
+
+            <div class="block-content pt-0">
+              <h6 class="mb-20 mt-50">
+                <small><i class="fa fa-chevron-right"></i></small>
+                Deseja realmente excluir todo o recorte? Todas as páginas inclusas no recorte serão apagadas.
+              </h6>
+            </div>
+          </div>
+          <div class="border-top text-center py-4">
+            <button type="button" class="btn-dark btn-lg shadow-sm text-uppercase" data-dismiss="modal"
+                    @click="deleteClipping()">
+              <i class="si si-check mr-10"></i> Excluir recorte
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Modal Excluir recorte -->
   </div>
 </template>
 
@@ -378,10 +502,182 @@
         searchField: '',
         loadImg: true,
         dragged: false,
-        keys: []
+        keys: [],
+        picked: '',
+        newGroupName: "",
+        notClassificatedGroups: [],
+        moveToCategory: ''
       }
     },
     methods: {
+      deleteClipping() {
+        this.loading.pagesPdf = true;
+        this.loading.pagesThumb = true;
+        
+        let requestFinish = {
+          sliceId: this.itemsSliced.sliceId
+        };
+
+        api.post('/slices/PostSliceDelete/', requestFinish)
+          .then(({data}) => {
+            if (data.success) {
+              this.loading.pagesPdf = false;
+              this.countPage = 0;
+              this.itemsSliced = [];
+              this.subCategories = [];
+              this.selected_category = 'Selecione';
+              this.additionalFields = 0;
+              this.validateSubCategories = false;
+
+              this.getDetails();
+              this.getCategories();
+              this.getPdf();
+              return swal({
+                title: 'Classificação do Dossiê salvo com sucesso!',
+                toast: true,
+                timer: 3000,
+                type: "success",
+                showConfirmButton: false,
+              }).then(() => {
+              })
+            } else {
+              this.getPdf();
+              return swal({
+                title: 'Erro ao salvar classificação!',
+                toast: true,
+                timer: 3000,
+                type: "error",
+                showConfirmButton: false,
+              });
+            }
+          })
+          .catch(() => {
+            this.loading.pagesPdf = false;
+            return swal({
+              title: 'Erro ao salvar classificação!',
+              toast: true,
+              timer: 3000,
+              type: "error",
+              showConfirmButton: false,
+            })
+            .then(() => window.location.reload());
+          })
+      },
+      
+      disableMoveButton() {
+        if (this.newGroupName === '' || this.newGroupName === null) {
+          return true
+        } else {
+          return false
+        }
+      },
+      disableMoveButton2() {
+        if (this.moveToCategory === '' || this.moveToCategory === null) {
+          return true
+        } else {
+          return false
+        }
+      },
+
+      slicesNotClassificated() {
+        this.id = this.$route.params.id;
+        this.loading.notClassificated = true;
+        api.get('/slices/getSlicesNotClassificatedByDocumentId/' + this.id)
+        .then(({data}) => {
+          this.notClassificatedGroups = data.result;
+          // this.loading.notClassificated = false;
+          // this.numNotClassificatedGroups = this.notClassificatedGroups.length;
+        });
+      },
+      chooseMoveDossie() {
+        if (this.picked === "new") {
+          this.moveToCategory = ''
+        } else {
+          this.newGroupName = '';
+        }
+      },
+
+      movePage() {
+        this.loading.pagesPdf = true;
+        this.loading.pagesThumb = true;
+        
+        if (this.picked === "new") {
+          let moveSlice = {
+            sliceId: this.itemsSliced.sliceId,
+            name: this.newGroupName,
+            page: this.itemsSliced.slicePages[this.countPage].page,
+          };
+          api.post('/slices/PostSliceMoveNew', moveSlice)
+          .then(() => {
+            return swal({
+              title: 'Página movida com sucesso!',
+              // text: '',
+              type: "success",
+            })
+            .then(() => {
+              this.countPage = 0;
+              this.itemsSliced = [];
+              this.subCategories = [];
+              this.selected_category = 'Selecione';
+              this.additionalFields = 0;
+              this.validateSubCategories = false;
+
+              this.getDetails();
+              this.getCategories();
+              this.getPdf();
+
+              this.loading.pagesPdf = false;
+              this.loading.pagesThumb = false;
+              // this.$router.push('/rate-dossie');
+            })
+          })
+          .catch(() => {
+            return swal({
+              title: 'Erro ao mover página!',
+              text: 'Por favor, tente novamente.',
+              type: "error",
+            })
+          });
+        } else if (this.picked === "exists") {
+          let moveSlice = {            
+            sliceNewId: this.moveToCategory.sliceId,
+            sliceOldId: this.slice_id,
+            page: this.itemsSliced.slicePages[this.countPage].page
+          };
+          api.post('/slices/PostSliceMoveExisting', moveSlice)
+          .then(() => {
+            return swal({
+              title: 'Página movida com sucesso!',
+              // text: '',
+              type: "success",
+            })
+            .then(() => {
+              this.countPage = 0;
+              this.itemsSliced = [];
+              this.subCategories = [];
+              this.selected_category = 'Selecione';
+              this.additionalFields = 0;
+              this.validateSubCategories = false;
+
+              this.getDetails();
+              this.getCategories();
+              this.getPdf();
+
+              this.loading.pagesPdf = false;
+              this.loading.pagesThumb = false;
+              // this.$router.push('/rate-dossie');
+            })
+          })
+          .catch(() => {
+            return swal({
+              title: 'Erro ao mover página!',
+              text: 'Por favor, tente novamente.',
+              type: "error",
+            })
+          });
+        }
+      },
+
       onDragged({el, deltaX, deltaY, first, last}) {
         if (first) {
           this.dragged = true;
@@ -396,9 +692,14 @@
         el.style.left = l + deltaX + 'px';
         el.style.top = t + deltaY + 'px';
       },
-      getPdf() {
+      getPdf(e) {
+        // console.log(e)
+        
+        // if (this.slice_id !== un)
         this.id = this.$route.params.id;
-        this.slice_id = this.$route.params.slice_id;
+        if (e === undefined) {
+          this.slice_id = this.$route.params.slice_id;  
+        }        
         this.loading.pagesPdf = true;
         if (!this.slice_id) {
           api.get('/slices/GetSlicePending/' + this.id)
@@ -491,6 +792,7 @@
         api.get('/documents/GetDocumentValidateClassification/' + id)
           .then(({data}) => {
             if(data.success === true) {
+              this.slicesNotClassificated();
               this.getDetails();
               this.getCategories();
               this.getPdf();
@@ -547,6 +849,7 @@
                 for (i = 0; i < numCat; i++) {
                   if (this.categories[i].categoryId === this.itemsSliced.categoryId) {
                     this.selected_category = this.categories[i].name;
+                    this.moveToCategory = this.categories[i].name
                   }
                 }
               }
@@ -723,7 +1026,8 @@
           .then(() => {
             this.loading.pagesPdf = false;
             this.countPage = 0;
-            this.getPdf();
+             
+            this.getPdf("hasPage");
             return swal({
               title: 'Página apagada com sucesso!',
               toast: true,
