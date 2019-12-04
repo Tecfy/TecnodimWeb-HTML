@@ -134,6 +134,15 @@ export default new Router({
         enabled: true,
         claim: "Digitalizar"
       }
+    },
+    {
+      path: '/resend-documents',
+      component: () => import('./views/ResendDocuments'),
+      meta: {
+        requiresAuth: true,
+        enabled: true,
+        claim: "Reenviar"
+      }
     }
   ]
 })

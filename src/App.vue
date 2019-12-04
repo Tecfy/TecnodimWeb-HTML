@@ -43,6 +43,12 @@
                                         class="sidebar-mini-hide">Classificar Dossiê</span></a>
                             </router-link>
 
+                            <router-link tag="li" to="/resend-documents" active-class="active" v-if="claims.reenviar">
+                                <a><span><img src="assets/codebase/media/various/link-label.svg" alt=""></span>
+                                    <i class="fa fa-random"></i>
+                                    <span class="sidebar-mini-hide">Reenviar Dossiê</span></a>
+                            </router-link>
+
                             <router-link tag="li" to="/scanning" active-class="active" v-if="claims.digitalizar">
                                 <a><span><img src="assets/codebase/media/various/link-label.svg" alt=""></span>
                                     <i class="fa fa-clone"></i>
@@ -116,7 +122,8 @@
                 claims: {
                     recortar: false,
                     classificar: false,
-                    digitalizar: false
+                    digitalizar: false,
+                    reenviar: false
                 },
                 fullName: window.localStorage.fullName,
                 units: [],
@@ -157,6 +164,8 @@
                             this.claims.classificar = true;
                         } else if (claim.ClaimType === "Digitalizar") {
                             this.claims.digitalizar = true;
+                        } else if (claim.ClaimType === "Reenviar") {
+                            this.claims.reenviar = true;
                         }
                     });
                 }

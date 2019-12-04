@@ -146,7 +146,6 @@
     },
     methods: {
       focusButton() {
-        alert('opre');
         this.$refs.searchButton.focus();
       },
       getDossies(p) {
