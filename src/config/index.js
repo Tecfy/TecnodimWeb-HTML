@@ -1,5 +1,5 @@
-const environmentBase = "https://gedadmin.sereduc.com";
-const environmentLogin = "http://ged.sereduc.com/login";
+const environmentBase = "https://gedadminhomol.sereduc.com";
+const environmentLogin = "http://gedhomol.sereduc.com/login";
 export default {
     apiUrl: environmentBase + '/api',
     externalLoginUlr: environmentBase,
