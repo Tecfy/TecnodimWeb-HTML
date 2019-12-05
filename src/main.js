@@ -62,7 +62,8 @@ function getClaims(){
     let claimsOb = {
         Recortar: false,
         Classificar: false,
-        Digitalizar: false
+        Digitalizar: false,
+        Reenviar: false
     };
     claims.map( claim => {
         if(claim.ClaimType === "Recortar"){
@@ -71,6 +72,8 @@ function getClaims(){
             claimsOb = {...claimsOb, Classificar: true}
         } else if(claim.ClaimType === "Digitalizar"){
             claimsOb = {...claimsOb, Digitalizar: true}
+        } else if(claim.ClaimType === "Reenviar"){
+            claimsOb = {...claimsOb, Reenviar: true}
         }
     });
     return claimsOb;
