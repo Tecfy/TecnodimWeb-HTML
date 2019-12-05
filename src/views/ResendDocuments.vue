@@ -142,7 +142,6 @@
               });
 
             } else {
-              console.log(data.result);
               this.loadingDossies = false;
               this.noDossies = false;
               this.searchResult = data.result;
@@ -192,14 +191,15 @@
             })
             .then(result => {
               if (result.value) {
+                this.loadingDossies = true;
+                this.noDossies = false;
+                
                 api.post('/resendDocuments', resendDocuments)
                   .then((response) => {
-                    this.loadingDossies = false;
                     this.checkedDocuments = [];
                     this.searchResult = [];
                     this.searchRegistration = '';
                     // this.getDossies();
-                    debugger
                     if (response.data.success) {
                       return swal({
                         title: 'Documento reenviado para fila de recorte. Por favor, aguarde o tempo de processamento.',
@@ -212,7 +212,6 @@
                         this.noDossies = true;
                       })
                     } else {
-                      this.loadingDossies = false;
                       return swal({
                         title: 'Erro ao reenviar documentos!',
                         toast: true,
@@ -233,7 +232,10 @@
                       timer: 3000,
                       type: "error",
                       showConfirmButton: false,
-                    })
+                    }).then(() => {
+                      this.loadingDossies = false;
+                      this.noDossies = true;
+                    }) 
                   })
               }
             })
