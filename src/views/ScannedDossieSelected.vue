@@ -33,8 +33,11 @@
                         <div class="zoom-content text-center">
                           <button @click="zoomImg(i)" data-toggle="modal"
                                   data-target="#modalZoomImg"
-                                  class="btn btn-alt-primary btn-md px-4 text-uppercase my-5">
+                                  class="btn btn-alt-primary btn-md px-4 mx-2 text-uppercase my-5">
                             <i class="fa fa-search-plus"></i>
+                          </button>
+                          <button v-if="slices[selectedJob].jobCategoryPages.length !== 1" @click="deletePage(i)" class="btn btn-alt-primary btn-md px-4 mx-2 text-uppercase my-5">
+                            <i class="fa fa-trash"></i>
                           </button>
                         </div>
                       </div>
@@ -258,6 +261,21 @@
         </div>
       </div>
     </div>
+    <!-- Modal Delete Page -->
+    <div class="modal fade modal-md" ref="modalDeleteImg" id="modalDeleteImg" tabindex="-1" role="dialog"
+         aria-labelledby="modalDeleteImg" aria-hidden="true" v-if="!loading.modalDelete">
+      <div class="block-options mr-15 pull-right">
+        <button type="button" class="btn-block-option btn-close" data-dismiss="modal" aria-label="Close">
+          <i class="si si-close fa-3x text-white"></i>
+        </button>
+      </div>
+      <div class="modal-dialog modal-dialog-slideup modal-lg" role="document">
+        <div class="text-center">
+          <img v-bind:src="linkImg" class="img-fluid" @load="imgLoaded" v-show="!loading.loadImg">
+        </div>
+      </div>
+    </div>
+    <!-- End Modal Delete Page -->
   </div>
 </template>
 
@@ -276,7 +294,8 @@
           slicesCategory: true,
           hasCategory: false,
           loadImg: false,
-          additionalFields: false
+          additionalFields: false,
+          modalDelete: false,
         },
         student: {
           name: '-',
@@ -354,6 +373,13 @@
         this.countPage = e;
         this.selectPage = true;
       },
+      delImg(e) {
+        this.loading.loadImg = false;
+        this.countPage = e;
+        this.linkImg = this.slices[this.selectedJob].jobCategoryPages[this.countPage].image;
+        this.countPage = e;
+        this.selectPage = true;
+      },
       imgLoaded() {
         this.loading.loadImg = false;
       },
@@ -396,7 +422,6 @@
           });
       },
       updateSubCategories(i) {
-        console.log(i);
         try {
           if (this.slices[i].additionalFields === null || this.slices[i].additionalFields.length === 0) {
             this.loading.additionalFields = false;
@@ -505,6 +530,62 @@
             showConfirmButton: false,
           })
         }
+      },
+      deletePage: function (i) {
+        if (this.slices[this.selectedJob].jobCategoryPages.length !== 0) {
+          let request = {
+            jobCategoryPageId: this.slices[this.selectedJob].jobCategoryPages[i].jobCategoryPageId
+          }
+          // console.log(request)
+          return swal({
+            title: 'Apagar Página?',
+            text: 'Deseja realmente excluir página digitalizada?',
+            type: "info",
+            showConfirmButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Confirmar',
+            cancelButtonText: 'Cancelar'
+          })
+            .then(result => {
+              if (result.value) {
+                this.loading.pagesPdf = true;
+                this.loading.slicesCategory = true;
+                api.post('/JobCategoryPages', request)
+                  .then(() => {
+                    this.getJobs(true);
+                    this.selectedJob = 0;
+                    return swal({
+                      title: 'Exclusão da página digitalizada realizado com sucesso',
+                      toast: true,
+                      timer: 3000,
+                      type: "success",
+                      showConfirmButton: false
+                    })
+                  })
+                  .catch(() => {
+                    this.loading.pagesPdf = false;
+                    this.loading.slicesCategory = false;
+                    return swal({
+                      title: 'Erro ao excluir página!',
+                      toast: true,
+                      timer: 3000,
+                      type: "error",
+                      showConfirmButton: false,
+                    })
+                  })
+              }
+            })
+        }
+        
+        // else {
+        //   return swal({
+        //     title: 'Nenhuma categoria selecionada',
+        //     toast: true,
+        //     timer: 3000,
+        //     type: "info",
+        //     showConfirmButton: false,
+        //   })
+        // }
       },
       disapproveJobs: function () {
         if (this.selectedJob !== '') {
