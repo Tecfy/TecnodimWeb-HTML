@@ -19,7 +19,7 @@
     "build-all": "run-s build-dev build-homolog build-prod"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "sweetalert2": "^7.26.11",
     "uuid": "^3.3.2",
     "v-dragged": "0.0.5",
